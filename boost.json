@@ -1,0 +1,15 @@
+{
+    "agents": [
+        "cursor"
+    ],
+    "packages": [
+        "laravel/ai"
+    ],
+    "skills": [
+        "fluxui-development",
+        "livewire-development",
+        "pest-testing",
+        "tailwindcss-development",
+        "ai-sdk-development"
+    ]
+}

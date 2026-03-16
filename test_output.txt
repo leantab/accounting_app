@@ -1,0 +1,17 @@
+
+  [41;1m ERROR [49;22m Test case [Tests\TestCase] can not be used. The folder [C:\Users\tabaj\Projects\accounting-app\tests\Feature\TenantScopingTest.php] already uses the test case [Tests\TestCase].
+
+Location: C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\src\Repositories\TestRepository.php:181
+
+#0 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\src\Repositories\TestRepository.php(163): Pest\Repositories\TestRepository->make(Object(Pest\Factories\TestCaseFactory))
+#1 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\overrides\Runner\TestSuiteLoader.php(97): Pest\Repositories\TestRepository->makeIfNeeded('C:\\Users\\tabaj\\...')
+#2 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\overrides\Runner\TestSuiteLoader.php(98): PHPUnit\Runner\TestSuiteLoader::PHPUnit\Runner\{closure}()
+#3 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\Framework\TestSuite.php(237): PHPUnit\Runner\TestSuiteLoader->load('C:\\Users\\tabaj\\...')
+#4 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\TextUI\Configuration\Xml\TestSuiteMapper.php(104): PHPUnit\Framework\TestSuite->addTestFile('C:\\Users\\tabaj\\...', Array)
+#5 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\TextUI\Configuration\TestSuiteBuilder.php(75): PHPUnit\TextUI\XmlConfiguration\TestSuiteMapper->map('C:\\Users\\tabaj\\...', Object(PHPUnit\TextUI\Configuration\TestSuiteCollection), Array, Array)
+#6 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\TextUI\Application.php(389): PHPUnit\TextUI\Configuration\TestSuiteBuilder->build(Object(PHPUnit\TextUI\Configuration\Configuration))
+#7 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\TextUI\Application.php(196): PHPUnit\TextUI\Application->buildTestSuite(Object(PHPUnit\TextUI\Configuration\Configuration))
+#8 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application->run(Array)
+#9 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\bin\pest(184): Pest\Kernel->handle(Array, Array)
+#10 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\bin\pest(192): {closure}()
+#11 {main}.
