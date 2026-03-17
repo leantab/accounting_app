@@ -18,7 +18,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\Repeater;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -93,6 +95,16 @@ class InvoiceResource extends Resource
                     ->required(),
                 DatePicker::make('payment_due_date')
                     ->label('Payment Due Date'),
+                Repeater::make('items')
+                    ->relationship('items')
+                    ->schema([
+                        TextInput::make('name')->required(),
+                        TextInput::make('amount')->numeric()->required(),
+                        TextInput::make('unit_price')->numeric()->required(),
+                        TextInput::make('total_price')->numeric()->required(),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -100,16 +112,13 @@ class InvoiceResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('customer')
+                TextEntry::make('customer.name')
                     ->label('Customer')
-                    ->relationship('customer')
                     ->visible(fn() => Filament::auth()->user()?->isAdmin()),
-                TextEntry::make('from_company')
-                    ->label('From')
-                    ->relationship('from_company'),
-                TextEntry::make('to_company')
-                    ->label('To')
-                    ->relationship('to_company'),
+                TextEntry::make('fromCompany.name')
+                    ->label('From'),
+                TextEntry::make('toCompany.name')
+                    ->label('To'),
                 TextEntry::make('name'),
                 TextEntry::make('desctiption')
                     ->placeholder('-')
@@ -134,9 +143,15 @@ class InvoiceResource extends Resource
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->placeholder('-'),
-                TextEntry::make('deleted_at')
-                    ->dateTime()
-                    ->visible(fn(Invoice $record): bool => $record->trashed()),
+                RepeatableEntry::make('items')
+                    ->schema([
+                        TextEntry::make('name'),
+                        TextEntry::make('quantity')->numeric(),
+                        TextEntry::make('unit_price')->numeric(),
+                        TextEntry::make('total_price')->numeric(),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -149,10 +164,10 @@ class InvoiceResource extends Resource
                     ->label('Customer')
                     ->sortable()
                     ->visible(fn() => Filament::auth()->user()?->isAdmin()),
-                TextColumn::make('from_company.name')
+                TextColumn::make('fromCompany.name')
                     ->label('From')
                     ->sortable(),
-                TextColumn::make('to_company.name')
+                TextColumn::make('toCompany.name')
                     ->label('To')
                     ->sortable(),
                 TextColumn::make('name')

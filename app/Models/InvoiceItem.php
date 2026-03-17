@@ -33,6 +33,6 @@ class InvoiceItem extends Model
 
     public function invoice()
     {
-        $this->belongsTo(Invoice::class);
+        return $this->belongsTo(Invoice::class);
     }
 }

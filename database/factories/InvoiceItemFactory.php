@@ -23,9 +23,9 @@ class InvoiceItemFactory extends Factory
             'customer_id' => Customer::factory(),
             'invoice_id' => Invoice::factory(),
             'name' => fake()->sentence(2),
-            'amount' => fake()->numberBetween(1, 10),
+            'quantity' => fake()->numberBetween(1, 10),
             'unit_price' => fake()->randomFloat(2, 1, 100),
-            'total_price' => fn (array $attributes) => $attributes['amount'] * $attributes['unit_price'],
+            'total_price' => fn(array $attributes) => $attributes['quantity'] * $attributes['unit_price'],
         ];
     }
 }
