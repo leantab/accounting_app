@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\Invoices;
 
 use App\Filament\Resources\Invoices\Pages\ManageInvoices;
+use App\Models\Company;
+use App\Models\Customer;
 use App\Models\Invoice;
 use BackedEnum;
 use Filament\Facades\Filament;
@@ -25,6 +27,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 
 class InvoiceResource extends Resource
@@ -59,17 +62,23 @@ class InvoiceResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('customer_id')
-                    ->required()
-                    ->numeric()
+                Select::make('customer_id')
+                    ->relationship('customer')
+                    ->label('Customer')
+                    ->searchable()
+                    ->options(Customer::all()->pluck('name', 'id'))
                     ->default(fn() => Filament::auth()->user()?->currentCustomerId())
                     ->visible(fn() => Filament::auth()->user()?->isAdmin()),
-                TextInput::make('from_company_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('to_company_id')
-                    ->required()
-                    ->numeric(),
+                Select::make('from_company_id')
+                    ->relationship('from_company')
+                    ->label('From')
+                    ->searchable()
+                    ->options(Company::all()->pluck('name', 'id')),
+                Select::make('to_company_id')
+                    ->relationship('to_company')
+                    ->label('To')
+                    ->searchable()
+                    ->options(Company::all()->pluck('name', 'id')),
                 TextInput::make('name')
                     ->required(),
                 Textarea::make('desctiption')
@@ -80,8 +89,10 @@ class InvoiceResource extends Resource
                 TextInput::make('payed_amount')
                     ->numeric(),
                 Toggle::make('payed')
+                    ->label('Payed')
                     ->required(),
-                DatePicker::make('payment_due_date'),
+                DatePicker::make('payment_due_date')
+                    ->label('Payment Due Date'),
             ]);
     }
 
@@ -89,12 +100,16 @@ class InvoiceResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('customer_id')
-                    ->numeric(),
-                TextEntry::make('from_company_id')
-                    ->numeric(),
-                TextEntry::make('to_company_id')
-                    ->numeric(),
+                TextEntry::make('customer')
+                    ->label('Customer')
+                    ->relationship('customer')
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                TextEntry::make('from_company')
+                    ->label('From')
+                    ->relationship('from_company'),
+                TextEntry::make('to_company')
+                    ->label('To')
+                    ->relationship('to_company'),
                 TextEntry::make('name'),
                 TextEntry::make('desctiption')
                     ->placeholder('-')
@@ -130,14 +145,15 @@ class InvoiceResource extends Resource
         return $table
             ->recordTitleAttribute('Invoice')
             ->columns([
-                TextColumn::make('customer_id')
-                    ->numeric()
+                TextColumn::make('customer.name')
+                    ->label('Customer')
+                    ->sortable()
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                TextColumn::make('from_company.name')
+                    ->label('From')
                     ->sortable(),
-                TextColumn::make('from_company_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('to_company_id')
-                    ->numeric()
+                TextColumn::make('to_company.name')
+                    ->label('To')
                     ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),
@@ -145,25 +161,32 @@ class InvoiceResource extends Resource
                     ->date()
                     ->sortable(),
                 TextColumn::make('total_amount')
+                    ->label('Total Amount')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('payed_amount')
+                    ->label('Payed Amount')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('payed')
+                    ->label('Payed')
                     ->boolean(),
                 TextColumn::make('payment_due_date')
+                    ->label('Payment Due Date')
                     ->date()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
+                    ->label('Deleted At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

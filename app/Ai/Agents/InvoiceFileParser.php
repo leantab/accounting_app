@@ -21,7 +21,7 @@ class InvoiceFileParser implements Agent, Conversational, HasStructuredOutput, H
      */
     public function instructions(): Stringable|string
     {
-        return 'You are a helpful assistant.';
+        return 'You are a helpful assistant that can parse invoice files.';
     }
 
     /**
@@ -50,7 +50,26 @@ class InvoiceFileParser implements Agent, Conversational, HasStructuredOutput, H
     public function schema(JsonSchema $schema): array
     {
         return [
-            'value' => $schema->string()->required(),
+            'invoice' => $schema->object([
+                'invoice_number' => $schema->string()->required(),
+                'invoice_date' => $schema->string()->required(),
+                'invoice_amount' => $schema->number()->required(),
+                'invoice_currency' => $schema->string()->required(),
+                'invoice_payment_due_date' => $schema->string()->required(),
+            ])->required(),
+            'invoice_items' => $schema->array()->required(),
+            'from_company' => $schema->object([
+                'name' => $schema->string()->required(),
+                'social_reason' => $schema->string()->required(),
+                'address' => $schema->string()->required(),
+                'tax_id' => $schema->string()->required(),
+            ])->required(),
+            'to_company' => $schema->object([
+                'name' => $schema->string()->required(),
+                'social_reason' => $schema->string()->required(),
+                'address' => $schema->string()->required(),
+                'tax_id' => $schema->string()->required(),
+            ])->required(),
         ];
     }
 }

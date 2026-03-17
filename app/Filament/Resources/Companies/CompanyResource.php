@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Companies;
 
 use App\Filament\Resources\Companies\Pages\ManageCompanies;
 use App\Models\Company;
+use App\Models\Customer;
 use BackedEnum;
 use Filament\Facades\Filament;
 use Filament\Actions\BulkActionGroup;
@@ -11,6 +12,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Infolists\Components\TextEntry;
@@ -52,6 +54,13 @@ class CompanyResource extends Resource
     {
         return $schema
             ->components([
+                Select::make('customer_id')
+                    ->relationship('customer')
+                    ->label('Customer')
+                    ->searchable()
+                    ->options(Customer::all()->pluck('name', 'id'))
+                    ->default(fn() => Filament::auth()->user()?->currentCustomerId())
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
                 TextInput::make('name')
                     ->required(),
                 Textarea::make('description')
@@ -97,6 +106,10 @@ class CompanyResource extends Resource
         return $table
             ->recordTitleAttribute('Company')
             ->columns([
+                TextColumn::make('customer.name')
+                    ->label('Customer')
+                    ->sortable()
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('phone')
@@ -107,12 +120,15 @@ class CompanyResource extends Resource
                 TextColumn::make('address')
                     ->searchable(),
                 TextColumn::make('tax_id')
+                    ->label('Tax ID')
                     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
