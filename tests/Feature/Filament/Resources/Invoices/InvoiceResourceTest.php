@@ -4,7 +4,6 @@ use App\Filament\Resources\Invoices\Pages\ManageInvoices;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
-use function Pest\Livewire\livewire;
 use function Pest\Laravel\actingAs;
 
 uses(TestCase::class);

@@ -50,6 +50,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -61,7 +62,7 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -83,11 +84,6 @@ class User extends Authenticatable
     public function hasRole(string $role): bool
     {
         return $this->roles()->where('name', $role)->exists();
-    }
-
-    public function is_admin(): bool
-    {
-        return (bool) ($this->getAttribute('is_admin') ?? false);
     }
 
     public function isAdmin(): bool

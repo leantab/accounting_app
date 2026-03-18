@@ -2,34 +2,55 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCustomer;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Concerns\BelongsToCustomer;
 
 /**
  * Invoice model
- * 
+ *
  * @property int $id
  * @property int $customer_id
  * @property int $from_company_id
  * @property int $to_company_id
  * @property string $name
- * @property string $description
- * @property \Carbon\Carbon $date
- * @property double $total_amount
- * @property double $payed_amount
+ * @property string|null $invoice_number
+ * @property string|null $description
+ * @property Carbon|null $date
+ * @property float|null $total_amount
+ * @property float $discount_percentage
+ * @property float $discount_amount
+ * @property float $tax_percentage
+ * @property float $tax_amount
+ * @property float|null $final_amount
+ * @property Carbon|null $payment_due_date
+ * @property float|null $payed_amount
  * @property bool $payed
- * @property \Carbon\Carbon $payment_due_date
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
- * @property \Carbon\Carbon $deleted_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
+ * @property Carbon $deleted_at
  */
 class Invoice extends Model
 {
-    use HasFactory;
     use BelongsToCustomer;
+    use HasFactory;
 
     protected $guarded = [];
+
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date',
+            'payment_due_date' => 'date',
+            'payed' => 'boolean',
+            'total_amount' => 'decimal:2',
+            'discount_amount' => 'decimal:2',
+            'tax_amount' => 'decimal:2',
+            'final_amount' => 'decimal:2',
+            'payed_amount' => 'decimal:2',
+        ];
+    }
 
     public function customer()
     {

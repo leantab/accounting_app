@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Invoice;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\Invoice;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,8 +24,17 @@ class InvoiceFactory extends Factory
             'from_company_id' => Company::factory(),
             'to_company_id' => Company::factory(),
             'name' => fake()->sentence(3),
+            'invoice_number' => fake()->unique()->bothify('INV-####-????'),
+            'description' => fake()->optional()->sentence(),
             'date' => now(),
-            'total_amount' => fake()->randomFloat(2, 10, 1000),
+            'total_amount' => function (array $attributes) {
+                return fake()->randomFloat(2, 10, 1000);
+            },
+            'discount_percentage' => 0,
+            'discount_amount' => 0,
+            'tax_percentage' => 0,
+            'tax_amount' => 0,
+            'final_amount' => fn (array $attributes) => $attributes['total_amount'],
             'payed_amount' => 0,
             'payed' => false,
             'payment_due_date' => now()->addDays(30),

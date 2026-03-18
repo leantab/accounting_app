@@ -26,6 +26,7 @@ class CompanyFactory extends Factory
             'email' => fake()->optional()->safeEmail(),
             'address' => fake()->optional()->address(),
             'tax_id' => fake()->optional()->bothify('??########'),
+            'is_tax_retained' => fake()->boolean(),
         ];
     }
 }

@@ -17,9 +17,10 @@ return new class extends Migration
             $table->foreignId('from_company_id')->constrained('companies');
             $table->foreignId('to_company_id')->constrained('companies');
             $table->foreignId('invoice_id')->nullable();
-            $table->string('reference');
-            $table->double('amount', 20, 2);
+            $table->string('reference')->nullable();
+            $table->decimal('amount', 20, 2);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Customer;
-use App\Models\InvoiceItem;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -25,7 +25,9 @@ class InvoiceItemFactory extends Factory
             'name' => fake()->sentence(2),
             'quantity' => fake()->numberBetween(1, 10),
             'unit_price' => fake()->randomFloat(2, 1, 100),
-            'total_price' => fn(array $attributes) => $attributes['quantity'] * $attributes['unit_price'],
+            'discount_percentage' => 0,
+            'discount_amount' => 0,
+            'total_price' => fn (array $attributes) => ($attributes['quantity'] * $attributes['unit_price']) - $attributes['discount_amount'],
         ];
     }
 }

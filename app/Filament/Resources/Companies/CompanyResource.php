@@ -6,19 +6,22 @@ use App\Filament\Resources\Companies\Pages\ManageCompanies;
 use App\Models\Company;
 use App\Models\Customer;
 use BackedEnum;
-use Filament\Facades\Filament;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -59,8 +62,8 @@ class CompanyResource extends Resource
                     ->label('Customer')
                     ->searchable()
                     ->options(Customer::all()->pluck('name', 'id'))
-                    ->default(fn() => Filament::auth()->user()?->currentCustomerId())
-                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                    ->default(fn () => Filament::auth()->user()?->currentCustomerId())
+                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
                 TextInput::make('name')
                     ->required(),
                 Textarea::make('description')
@@ -72,6 +75,9 @@ class CompanyResource extends Resource
                     ->email(),
                 TextInput::make('address'),
                 TextInput::make('tax_id'),
+                Toggle::make('is_tax_retained')
+                    ->label('Tax Retained')
+                    ->default(false),
             ]);
     }
 
@@ -92,6 +98,9 @@ class CompanyResource extends Resource
                     ->placeholder('-'),
                 TextEntry::make('tax_id')
                     ->placeholder('-'),
+                IconEntry::make('is_tax_retained')
+                    ->boolean()
+                    ->label('Tax Retained'),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),
@@ -109,7 +118,7 @@ class CompanyResource extends Resource
                 TextColumn::make('customer.name')
                     ->label('Customer')
                     ->sortable()
-                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('phone')
@@ -122,6 +131,9 @@ class CompanyResource extends Resource
                 TextColumn::make('tax_id')
                     ->label('Tax ID')
                     ->searchable(),
+                IconColumn::make('is_tax_retained')
+                    ->boolean()
+                    ->label('Tax Retained'),
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()

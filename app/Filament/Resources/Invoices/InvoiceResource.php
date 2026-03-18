@@ -7,30 +7,30 @@ use App\Models\Company;
 use App\Models\Customer;
 use App\Models\Invoice;
 use BackedEnum;
-use Filament\Facades\Filament;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Forms\Components\Repeater;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Actions\Action;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Notifications\Notification;
 
 class InvoiceResource extends Resource
 {
@@ -69,8 +69,8 @@ class InvoiceResource extends Resource
                     ->label('Customer')
                     ->searchable()
                     ->options(Customer::all()->pluck('name', 'id'))
-                    ->default(fn() => Filament::auth()->user()?->currentCustomerId())
-                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                    ->default(fn () => Filament::auth()->user()?->currentCustomerId())
+                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
                 Select::make('from_company_id')
                     ->relationship('from_company')
                     ->label('From')
@@ -83,10 +83,25 @@ class InvoiceResource extends Resource
                     ->options(Company::all()->pluck('name', 'id')),
                 TextInput::make('name')
                     ->required(),
-                Textarea::make('desctiption')
+                TextInput::make('invoice_number'),
+                Textarea::make('description')
                     ->columnSpanFull(),
                 DatePicker::make('date'),
                 TextInput::make('total_amount')
+                    ->numeric(),
+                TextInput::make('discount_percentage')
+                    ->numeric()
+                    ->default(0),
+                TextInput::make('discount_amount')
+                    ->numeric()
+                    ->default(0),
+                TextInput::make('tax_percentage')
+                    ->numeric()
+                    ->default(0),
+                TextInput::make('tax_amount')
+                    ->numeric()
+                    ->default(0),
+                TextInput::make('final_amount')
                     ->numeric(),
                 TextInput::make('payed_amount')
                     ->numeric(),
@@ -99,8 +114,10 @@ class InvoiceResource extends Resource
                     ->relationship('items')
                     ->schema([
                         TextInput::make('name')->required(),
-                        TextInput::make('amount')->numeric()->required(),
+                        TextInput::make('quantity')->numeric()->required(),
                         TextInput::make('unit_price')->numeric()->required(),
+                        TextInput::make('discount_percentage')->numeric()->default(0),
+                        TextInput::make('discount_amount')->numeric()->default(0),
                         TextInput::make('total_price')->numeric()->required(),
                     ])
                     ->columns(4)
@@ -114,19 +131,36 @@ class InvoiceResource extends Resource
             ->components([
                 TextEntry::make('customer.name')
                     ->label('Customer')
-                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
                 TextEntry::make('fromCompany.name')
                     ->label('From'),
                 TextEntry::make('toCompany.name')
                     ->label('To'),
                 TextEntry::make('name'),
-                TextEntry::make('desctiption')
+                TextEntry::make('invoice_number')
+                    ->placeholder('-'),
+                TextEntry::make('description')
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('date')
                     ->date()
                     ->placeholder('-'),
                 TextEntry::make('total_amount')
+                    ->numeric()
+                    ->placeholder('-'),
+                TextEntry::make('discount_percentage')
+                    ->numeric()
+                    ->placeholder('-'),
+                TextEntry::make('discount_amount')
+                    ->numeric()
+                    ->placeholder('-'),
+                TextEntry::make('tax_percentage')
+                    ->numeric()
+                    ->placeholder('-'),
+                TextEntry::make('tax_amount')
+                    ->numeric()
+                    ->placeholder('-'),
+                TextEntry::make('final_amount')
                     ->numeric()
                     ->placeholder('-'),
                 TextEntry::make('payed_amount')
@@ -148,6 +182,8 @@ class InvoiceResource extends Resource
                         TextEntry::make('name'),
                         TextEntry::make('quantity')->numeric(),
                         TextEntry::make('unit_price')->numeric(),
+                        TextEntry::make('discount_percentage')->numeric(),
+                        TextEntry::make('discount_amount')->numeric(),
                         TextEntry::make('total_price')->numeric(),
                     ])
                     ->columns(4)
@@ -163,7 +199,7 @@ class InvoiceResource extends Resource
                 TextColumn::make('customer.name')
                     ->label('Customer')
                     ->sortable()
-                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
                 TextColumn::make('fromCompany.name')
                     ->label('From')
                     ->sortable(),
@@ -172,11 +208,25 @@ class InvoiceResource extends Resource
                     ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('invoice_number')
+                    ->searchable(),
                 TextColumn::make('date')
                     ->date()
                     ->sortable(),
                 TextColumn::make('total_amount')
                     ->label('Total Amount')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('discount_amount')
+                    ->label('Discount')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('tax_amount')
+                    ->label('Tax')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('final_amount')
+                    ->label('Final Amount')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('payed_amount')
@@ -216,7 +266,7 @@ class InvoiceResource extends Resource
                     ->form([
                         FileUpload::make('file')
                             ->label('File to Process')
-                            ->required()
+                            ->required(),
                     ])
                     ->action(function (array $data): void {
                         $filePath = $data['file'];

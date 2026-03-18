@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Company;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,12 +17,18 @@ return new class extends Migration
             $table->foreignId('from_company_id')->constrained('companies');
             $table->foreignId('to_company_id')->constrained('companies');
             $table->string('name');
-            $table->text('desctiption')->nullable();
+            $table->string('invoice_number')->nullable();
+            $table->text('description')->nullable();
             $table->date('date')->nullable();
-            $table->double('total_amount', 20, 2)->nullable();
-            $table->double('payed_amount', 20, 2)->nullable();
-            $table->boolean('payed')->default(false);
+            $table->decimal('total_amount', 20, 2)->nullable();
+            $table->decimal('discount_percentage', 5, 2)->default(0);
+            $table->decimal('discount_amount', 10, 2)->default(0);
+            $table->decimal('tax_percentage', 5, 2)->default(0);
+            $table->decimal('tax_amount', 10, 2)->default(0);
+            $table->decimal('final_amount', 20, 2)->nullable();
             $table->date('payment_due_date')->nullable();
+            $table->decimal('payed_amount', 20, 2)->nullable();
+            $table->boolean('payed')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
