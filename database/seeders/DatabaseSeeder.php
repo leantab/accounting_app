@@ -24,16 +24,34 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('company_roles')->insert([
-            ['name' => 'Vendor'],
-            ['name' => 'Customer'],
-            ['name' => 'Client'],
-            ['name' => 'Provider'],
+            ['name' => 'Cliente'],
+            ['name' => 'Proveedor'],
+            ['name' => 'Empleado'],
+            ['name' => 'Contratista'],
         ]);
 
         DB::table('user_roles')->insert([
-            ['name' => 'Owner'],
+            ['name' => 'Dueño'],
+            ['name' => 'Administrador'],
             ['name' => 'Manager'],
-            ['name' => 'Employee'],
+            ['name' => 'Empleado'],
+        ]);
+
+        DB::table('project_statuses')->insert([
+            ['name' => 'Borrador'],
+            ['name' => 'En Proceso'],
+            ['name' => 'Completado'],
+            ['name' => 'Cancelado'],
+        ]);
+
+        DB::table('time_tracker_item_types')->insert([
+            ['name' => 'Horas'],
+            ['name' => 'Jornada'],
+            ['name' => 'Montaje'],
+            ['name' => 'Desarme'],
+            ['name' => 'Guardia'],
+            ['name' => 'Viáticos'],
+            ['name' => 'Gastos'],
         ]);
     }
 }
