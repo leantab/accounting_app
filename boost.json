@@ -3,13 +3,12 @@
         "cursor"
     ],
     "packages": [
-        "laravel/ai"
+        "filament/filament"
     ],
     "skills": [
         "fluxui-development",
         "livewire-development",
         "pest-testing",
-        "tailwindcss-development",
-        "ai-sdk-development"
+        "tailwindcss-development"
     ]
 }
