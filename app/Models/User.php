@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -62,7 +63,7 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->map(fn($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -87,6 +88,16 @@ class User extends Authenticatable
             ->withPivot('customer_id');
     }
 
+    public function userRates(): HasMany
+    {
+        return $this->hasMany(UserRate::class);
+    }
+
+    public function timeTrackers(): HasMany
+    {
+        return $this->hasMany(TimeTracker::class);
+    }
+
     public function hasRole(string $role): bool
     {
         return $this->roles()->where('name', $role)->exists();
@@ -96,6 +107,17 @@ class User extends Authenticatable
     {
         return (bool) $this->is_admin;
     }
+
+    public function fullName(): string
+    {
+        return "{$this->name} {$this->lastname}";
+    }
+
+
+
+
+
+    /****** TODO Review all of the following methods */
 
     public function isOwner(): bool
     {

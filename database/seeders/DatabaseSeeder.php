@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('user_roles')->insert([
-            ['name' => 'Dueño'],
+            ['name' => 'Owner'],
             ['name' => 'Administrador'],
             ['name' => 'Manager'],
             ['name' => 'Empleado'],

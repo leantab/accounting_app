@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $customer_id
  * @property int $user_id
- * @property int $project_id
+ * @property int|null $project_id
+ * @property string $name
  * @property string $date_start
  * @property string $date_end
  * @property float|null $hours
