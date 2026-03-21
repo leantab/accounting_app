@@ -62,7 +62,7 @@ class User extends Authenticatable
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
+            ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
@@ -81,6 +81,12 @@ class User extends Authenticatable
         return $this->belongsToMany(CompanyRole::class, 'company_role', 'user_id', 'role_id');
     }
 
+    public function userRoles(): BelongsToMany
+    {
+        return $this->belongsToMany(UserRole::class, 'customer_user_role', 'user_id', 'user_role_id')
+            ->withPivot('customer_id');
+    }
+
     public function hasRole(string $role): bool
     {
         return $this->roles()->where('name', $role)->exists();
@@ -88,7 +94,7 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->is_admin();
+        return (bool) $this->is_admin;
     }
 
     public function isOwner(): bool

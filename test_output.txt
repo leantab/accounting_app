@@ -1,17 +1,85 @@
 
-  [41;1m ERROR [49;22m Test case [Tests\TestCase] can not be used. The folder [C:\Users\tabaj\Projects\accounting-app\tests\Feature\TenantScopingTest.php] already uses the test case [Tests\TestCase].
+   PASS  Tests\Unit\ExampleTest
+  ✓ that true is true
 
-Location: C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\src\Repositories\TestRepository.php:181
+   PASS  Tests\Feature\Auth\AuthenticationTest
+  ✓ login scre… 1.30s  
+  ✓ users can…  0.06s  
+  ✓ users can…  0.06s  
+  ✓ users with… 0.04s  
+  ✓ users can…  0.03s  
 
-#0 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\src\Repositories\TestRepository.php(163): Pest\Repositories\TestRepository->make(Object(Pest\Factories\TestCaseFactory))
-#1 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\overrides\Runner\TestSuiteLoader.php(97): Pest\Repositories\TestRepository->makeIfNeeded('C:\\Users\\tabaj\\...')
-#2 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\overrides\Runner\TestSuiteLoader.php(98): PHPUnit\Runner\TestSuiteLoader::PHPUnit\Runner\{closure}()
-#3 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\Framework\TestSuite.php(237): PHPUnit\Runner\TestSuiteLoader->load('C:\\Users\\tabaj\\...')
-#4 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\TextUI\Configuration\Xml\TestSuiteMapper.php(104): PHPUnit\Framework\TestSuite->addTestFile('C:\\Users\\tabaj\\...', Array)
-#5 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\TextUI\Configuration\TestSuiteBuilder.php(75): PHPUnit\TextUI\XmlConfiguration\TestSuiteMapper->map('C:\\Users\\tabaj\\...', Object(PHPUnit\TextUI\Configuration\TestSuiteCollection), Array, Array)
-#6 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\TextUI\Application.php(389): PHPUnit\TextUI\Configuration\TestSuiteBuilder->build(Object(PHPUnit\TextUI\Configuration\Configuration))
-#7 C:\Users\tabaj\Projects\accounting-app\vendor\phpunit\phpunit\src\TextUI\Application.php(196): PHPUnit\TextUI\Application->buildTestSuite(Object(PHPUnit\TextUI\Configuration\Configuration))
-#8 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application->run(Array)
-#9 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\bin\pest(184): Pest\Kernel->handle(Array, Array)
-#10 C:\Users\tabaj\Projects\accounting-app\vendor\pestphp\pest\bin\pest(192): {closure}()
-#11 {main}.
+   PASS  Tests\Feature\Auth\EmailVerificationTest
+  ✓ email veri… 0.05s  
+  ✓ email can…  0.05s  
+  ✓ email is n… 0.03s  
+  ✓ already ve… 0.04s  
+
+   PASS  Tests\Feature\Auth\PasswordConfirmationTest
+  ✓ confirm pa… 0.05s  
+
+   PASS  Tests\Feature\Auth\PasswordResetTest
+  ✓ reset pass… 0.04s  
+  ✓ reset pass… 0.25s  
+  ✓ reset pass… 0.28s  
+  ✓ password c… 0.28s  
+
+   PASS  Tests\Feature\Auth\RegistrationTest
+  ✓ registrati… 0.05s  
+  ✓ new users…  0.04s  
+
+   PASS  Tests\Feature\Auth\TwoFactorChallengeTest
+  ✓ two factor… 0.04s  
+  ✓ two factor… 0.05s  
+
+   PASS  Tests\Feature\DashboardTest
+  ✓ guests are… 0.04s  
+  ✓ authentica… 0.06s  
+
+   PASS  Tests\Feature\ExampleTest
+  ✓ returns a…  0.03s  
+
+   FAIL  Tests\Feature\Filament\Resources\Invoices\InvoiceResourceTest
+  ⨯ can upload… 0.07s  
+
+   PASS  Tests\Feature\Settings\ProfileUpdateTest
+  ✓ profile pa… 0.05s  
+  ✓ profile in… 0.09s  
+  ✓ email veri… 0.08s  
+  ✓ user can d… 0.06s  
+  ✓ correct pa… 0.06s  
+
+   PASS  Tests\Feature\Settings\SecurityTest
+  ✓ security s… 0.06s  
+  ✓ security s… 0.04s  
+  ✓ security s… 0.06s  
+  ✓ two factor… 0.04s  
+  ✓ password c… 0.08s  
+  ✓ correct pa… 0.07s  
+
+   PASS  Tests\Feature\TenantScopingTest
+  ✓ non admin…  0.12s  
+  ✓ admin user… 0.04s  
+  ✓ non admin…  0.05s  
+  ───────────────────  
+   F…  ViewException   
+  Call to undefined method App\Models\User::is_admin() (View: C:\Users\tabaj\Projects\accounting-app\storage\framework\views\a168b0ebcff266df6b662fc4b6d06e88.blade.php)
+
+  at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+     63▕      * @throws \BadMethodCallException
+     64▕      */
+     65▕     protected static function throwBadMethodCallException($method)
+     66▕     {
+  ➜  67▕         throw new BadMethodCallException(sprintf(
+     68▕             'Call to undefined method %s::%s()', static::class, $method
+     69▕         ));
+     70▕     }
+     71▕ }
+
+  1   vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+  2   vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:36
+
+
+  Tests:    1 failed, 36 passed (104 assertions)
+  Duration: 4.03s
+

@@ -17,13 +17,7 @@ trait BelongsToCustomer
                 return;
             }
 
-            $isAdmin = false;
-
-            if (method_exists($user, 'isAdmin')) {
-                $isAdmin = $user->isAdmin();
-            } elseif (isset($user->is_admin)) {
-                $isAdmin = (bool) $user->is_admin;
-            }
+            $isAdmin = (bool) $user->is_admin;
 
             if ($isAdmin) {
                 return;
@@ -55,13 +49,7 @@ trait BelongsToCustomer
                 return;
             }
 
-            $isAdmin = false;
-
-            if (method_exists($user, 'isAdmin')) {
-                $isAdmin = $user->isAdmin();
-            } elseif (isset($user->is_admin)) {
-                $isAdmin = (bool) $user->is_admin;
-            }
+            $isAdmin = (bool) $user->is_admin;
 
             if ($isAdmin) {
                 return;
@@ -81,4 +69,3 @@ trait BelongsToCustomer
         });
     }
 }
-
