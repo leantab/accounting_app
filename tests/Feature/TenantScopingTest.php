@@ -5,13 +5,16 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Payment;
+use App\Models\Project;
+use App\Models\ProjectStatus;
+use App\Models\TimeTracker;
+use App\Models\TimeTrackerItem;
 use App\Models\User;
-// use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 use function Pest\Laravel\actingAs;
 
-uses(TestCase::class); //, RefreshDatabase::class);
+uses(TestCase::class);
 
 test('non admin users only see records for their customer', function (): void {
     $tenantCustomer = Customer::factory()->create();
@@ -66,6 +69,31 @@ test('non admin users only see records for their customer', function (): void {
         'invoice_id' => $otherInvoice->id,
     ]);
 
+    $tenantProject = Project::factory()->create(['customer_id' => $tenantCustomer->id, 'company_id' => $tenantCompany->id]);
+    $otherProject = Project::factory()->create(['customer_id' => $otherCustomer->id, 'company_id' => $otherCompany->id]);
+
+    $tenantTimeTracker = TimeTracker::factory()->create([
+        'customer_id' => $tenantCustomer->id,
+        'user_id' => $tenantUser->id,
+        'project_id' => $tenantProject->id,
+    ]);
+
+    $otherTimeTracker = TimeTracker::factory()->create([
+        'customer_id' => $otherCustomer->id,
+        'user_id' => $otherTenantUser->id,
+        'project_id' => $otherProject->id,
+    ]);
+
+    $tenantTimeTrackerItem = TimeTrackerItem::factory()->create([
+        'time_tracker_id' => $tenantTimeTracker->id,
+        'user_id' => $tenantUser->id,
+    ]);
+
+    $otherTimeTrackerItem = TimeTrackerItem::factory()->create([
+        'time_tracker_id' => $otherTimeTracker->id,
+        'user_id' => $otherTenantUser->id,
+    ]);
+
     actingAs($tenantUser);
 
     expect(Company::query()->pluck('id'))
@@ -84,6 +112,18 @@ test('non admin users only see records for their customer', function (): void {
         ->toContain($tenantItem->id)
         ->not->toContain($otherItem->id);
 
+    expect(Project::query()->pluck('id'))
+        ->toContain($tenantProject->id)
+        ->not->toContain($otherProject->id);
+
+    expect(TimeTracker::query()->pluck('id'))
+        ->toContain($tenantTimeTracker->id)
+        ->not->toContain($otherTimeTracker->id);
+
+    expect(TimeTrackerItem::query()->pluck('id'))
+        ->toContain($tenantTimeTrackerItem->id)
+        ->not->toContain($otherTimeTrackerItem->id);
+
     actingAs($otherTenantUser);
 
     expect(Company::query()->pluck('id'))
@@ -101,6 +141,18 @@ test('non admin users only see records for their customer', function (): void {
     expect(InvoiceItem::query()->pluck('id'))
         ->toContain($otherItem->id)
         ->not->toContain($tenantItem->id);
+
+    expect(Project::query()->pluck('id'))
+        ->toContain($otherProject->id)
+        ->not->toContain($tenantProject->id);
+
+    expect(TimeTracker::query()->pluck('id'))
+        ->toContain($otherTimeTracker->id)
+        ->not->toContain($tenantTimeTracker->id);
+
+    expect(TimeTrackerItem::query()->pluck('id'))
+        ->toContain($otherTimeTrackerItem->id)
+        ->not->toContain($tenantTimeTrackerItem->id);
 });
 
 test('admin users can see records for all customers', function (): void {
@@ -151,6 +203,34 @@ test('admin users can see records for all customers', function (): void {
         'invoice_id' => $otherInvoice->id,
     ]);
 
+    $tenantProject = Project::factory()->create(['customer_id' => $tenantCustomer->id, 'company_id' => $tenantCompany->id]);
+    $otherProject = Project::factory()->create(['customer_id' => $otherCustomer->id, 'company_id' => $otherCompany->id]);
+
+    $tenantUser = User::factory()->create(['customer_id' => $tenantCustomer->id, 'is_admin' => false]);
+    $otherTenantUser = User::factory()->create(['customer_id' => $otherCustomer->id, 'is_admin' => false]);
+
+    $tenantTimeTracker = TimeTracker::factory()->create([
+        'customer_id' => $tenantCustomer->id,
+        'user_id' => $tenantUser->id,
+        'project_id' => $tenantProject->id,
+    ]);
+
+    $otherTimeTracker = TimeTracker::factory()->create([
+        'customer_id' => $otherCustomer->id,
+        'user_id' => $otherTenantUser->id,
+        'project_id' => $otherProject->id,
+    ]);
+
+    $tenantTimeTrackerItem = TimeTrackerItem::factory()->create([
+        'time_tracker_id' => $tenantTimeTracker->id,
+        'user_id' => $tenantUser->id,
+    ]);
+
+    $otherTimeTrackerItem = TimeTrackerItem::factory()->create([
+        'time_tracker_id' => $otherTimeTracker->id,
+        'user_id' => $otherTenantUser->id,
+    ]);
+
     actingAs($admin);
 
     expect(Company::query()->pluck('id'))
@@ -168,6 +248,18 @@ test('admin users can see records for all customers', function (): void {
     expect(InvoiceItem::query()->pluck('id'))
         ->toContain($tenantItem->id)
         ->toContain($otherItem->id);
+
+    expect(Project::query()->pluck('id'))
+        ->toContain($tenantProject->id)
+        ->toContain($otherProject->id);
+
+    expect(TimeTracker::query()->pluck('id'))
+        ->toContain($tenantTimeTracker->id)
+        ->toContain($otherTimeTracker->id);
+
+    expect(TimeTrackerItem::query()->pluck('id'))
+        ->toContain($tenantTimeTrackerItem->id)
+        ->toContain($otherTimeTrackerItem->id);
 });
 
 test('non admin users automatically get their customer id on create', function (): void {
@@ -208,4 +300,27 @@ test('non admin users automatically get their customer id on create', function (
     ]);
 
     expect($payment->customer_id)->toBe($customer->id);
+
+    $project = Project::create([
+        'company_id' => $company->id,
+        'name' => 'Test Project',
+        'start_date' => now(),
+        'project_status_id' => ProjectStatus::firstOrCreate(['name' => 'Active'])->id,
+    ]);
+
+    expect($project->customer_id)->toBe($customer->id);
+
+    $timeTracker = TimeTracker::create([
+        'user_id' => $tenantUser->id,
+        'project_id' => $project->id,
+        'name' => 'Test Tracker',
+        'date_start' => now(),
+        'date_end' => now()->addDay(),
+        'invoice_id' => $invoice->id,
+        'payment_id' => $payment->id,
+        'approved_by' => $tenantUser->id,
+    ]);
+
+    // TimeTracker should have inherited tenant user's customer_id
+    expect($timeTracker->customer_id)->toBe($customer->id);
 });

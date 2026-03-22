@@ -263,7 +263,7 @@ class InvoiceResource extends Resource
                 Action::make('uploadAndProcess')
                     ->label('Upload & Process')
                     ->icon('heroicon-o-arrow-up-tray')
-                    ->form([
+                    ->schema([
                         FileUpload::make('file')
                             ->label('File to Process')
                             ->required(),

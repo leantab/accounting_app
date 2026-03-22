@@ -5,7 +5,6 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -60,11 +59,19 @@ class User extends Authenticatable
      */
     public function initials(): string
     {
-        return Str::of($this->name)
+        $name = Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
+            ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+
+        $lastname = Str::of($this->lastname)
+            ->explode(' ')
+            ->take(2)
+            ->map(fn ($word) => Str::substr($word, 0, 1))
+            ->implode('');
+
+        return $name.$lastname;
     }
 
     public function customer(): BelongsTo
@@ -72,20 +79,9 @@ class User extends Authenticatable
         return $this->belongsTo(Customer::class);
     }
 
-    public function companies(): BelongsToMany
+    public function role(): BelongsTo
     {
-        return $this->belongsToMany(Company::class, 'company_user', 'user_id', 'company_id');
-    }
-
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(CompanyRole::class, 'company_role', 'user_id', 'role_id');
-    }
-
-    public function userRoles(): BelongsToMany
-    {
-        return $this->belongsToMany(UserRole::class, 'customer_user_role', 'user_id', 'user_role_id')
-            ->withPivot('customer_id');
+        return $this->belongsTo(UserRole::class, 'user_role_id');
     }
 
     public function userRates(): HasMany
@@ -98,9 +94,9 @@ class User extends Authenticatable
         return $this->hasMany(TimeTracker::class);
     }
 
-    public function hasRole(string $role): bool
+    public function fullName(): string
     {
-        return $this->roles()->where('name', $role)->exists();
+        return "{$this->name} {$this->lastname}";
     }
 
     public function isAdmin(): bool
@@ -108,121 +104,28 @@ class User extends Authenticatable
         return (bool) $this->is_admin;
     }
 
-    public function fullName(): string
-    {
-        return "{$this->name} {$this->lastname}";
-    }
-
-
-
-
-
-    /****** TODO Review all of the following methods */
-
     public function isOwner(): bool
     {
-        return $this->hasRole('owner');
+        return $this->role->name === 'Owner';
+    }
+
+    public function isAccountant(): bool
+    {
+        return $this->role->name === 'Administrador';
     }
 
     public function isManager(): bool
     {
-        return $this->hasRole('manager');
+        return $this->role->name === 'Manager';
     }
 
     public function isEmployee(): bool
     {
-        return $this->hasRole('employee');
+        return $this->role->name === 'Empleado';
     }
 
-    public function currentCompany(): ?Company
+    public function canAccessCustomer(Customer $customer): bool
     {
-        return $this->companies()->where('is_active', true)->first();
-    }
-
-    public function setCurrentCompany(Company $company): void
-    {
-        $this->companies()->updateExistingPivot($company->id, ['is_active' => true]);
-    }
-
-    public function canAccessCompany(Company $company): bool
-    {
-        return $this->companies()->where('company_id', $company->id)->exists();
-    }
-
-    public function canEditCompany(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager());
-    }
-
-    public function canDeleteCompany(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner());
-    }
-
-    public function canCreateInvoice(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager() || $this->isEmployee());
-    }
-
-    public function canEditInvoice(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager() || $this->isEmployee());
-    }
-
-    public function canDeleteInvoice(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager());
-    }
-
-    public function canCreatePayment(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager() || $this->isEmployee());
-    }
-
-    public function canEditPayment(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager() || $this->isEmployee());
-    }
-
-    public function canDeletePayment(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager());
-    }
-
-    public function canCreateCustomer(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager() || $this->isEmployee());
-    }
-
-    public function canEditCustomer(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager() || $this->isEmployee());
-    }
-
-    public function canDeleteCustomer(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager());
-    }
-
-    public function canCreateUser(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager());
-    }
-
-    public function canEditUser(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner() || $this->isManager());
-    }
-
-    public function canDeleteUser(Company $company): bool
-    {
-        return $this->canAccessCompany($company) && ($this->isAdmin() || $this->isOwner());
-    }
-
-    public function currentCustomerId(): ?int
-    {
-        $customerId = $this->getAttribute('customer_id');
-
-        return $customerId !== null ? (int) $customerId : null;
+        return $this->customer_id === $customer->id || $this->isAdmin();
     }
 }

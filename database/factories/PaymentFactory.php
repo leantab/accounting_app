@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Company;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,7 +21,7 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            'customer_id' => null,
+            'customer_id' => Customer::factory(),
             'invoice_id' => Invoice::factory(),
             'from_company_id' => Company::factory(),
             'to_company_id' => Company::factory(),

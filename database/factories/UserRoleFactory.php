@@ -21,4 +21,18 @@ class UserRoleFactory extends Factory
             'name' => fake()->jobTitle(),
         ];
     }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => 'Admin',
+        ]);
+    }
+
+    public function customerEmployee(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'name' => 'Customer Employee',
+        ]);
+    }
 }

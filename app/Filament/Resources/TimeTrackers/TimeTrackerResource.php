@@ -3,15 +3,24 @@
 namespace App\Filament\Resources\TimeTrackers;
 
 use App\Filament\Resources\TimeTrackers\Pages\ManageTimeTrackers;
+use App\Models\Project;
 use App\Models\TimeTracker;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
+use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -37,24 +46,29 @@ class TimeTrackerResource extends Resource
                 Select::make('customer_id')
                     ->label('Cliente')
                     ->relationship('customer', 'name')
-                    ->default(auth()->user()->customer_id)
-                    ->hidden()
+                    ->default(Filament::auth()->user()->customer_id)
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                     ->required(),
-                Select::make('user_id')
-                    ->label('Usuario')
-                    ->relationship('user', 'name')
-                    ->default(auth()->user()->id)
-                    ->hidden()
-                    ->required(),
+                Hidden::make('user_id')
+                    ->default(Filament::auth()->user()->id),
                 Select::make('project_id')
                     ->label('Proyecto')
-                    ->relationship('project', 'name')
+                    ->options(function () {
+                        $user = Filament::auth()->user();
+                        if ($user->is_admin) {
+                            return Project::all()->pluck('name', 'id');
+                        }
+
+                        return Project::where('customer_id', $user->customer_id)->get()->pluck('name', 'id');
+                    })
                     ->required(),
-                TextInput::make('date_start')
+                DatePicker::make('date_start')
                     ->label('Fecha de inicio')
+                    ->format('Y-m-d')
                     ->required(),
-                TextInput::make('date_end')
+                DatePicker::make('date_end')
                     ->label('Fecha de fin')
+                    ->format('Y-m-d')
                     ->required(),
                 TextInput::make('hours')
                     ->label('Horas'),
@@ -63,6 +77,33 @@ class TimeTrackerResource extends Resource
                 TextInput::make('amount')
                     ->label('Monto')
                     ->disabled(true),
+                Repeater::make('items')
+                    ->relationship('items')
+                    ->schema([
+                        Hidden::make('user_id')
+                            ->default(Filament::auth()->user()->id),
+                        DatePicker::make('date')
+                            ->required(),
+                        Select::make('time_tracker_item_type_id')
+                            ->relationship('timeTrackerItemType', 'name')
+                            ->required(),
+                        TextInput::make('hours')
+                            ->numeric()
+                            ->requiredWithout('time_start', 'time_end'),
+                        TimePicker::make('time_start')
+                            ->format('H:i')
+                            ->requiredWithout('hours'),
+                        TimePicker::make('time_end')
+                            ->format('H:i')
+                            ->requiredWithout('hours'),
+                        TextInput::make('description'),
+                        // Toggle::make('is_billable'),
+                        // TextInput::make('rate')->numeric(),
+                        TextInput::make('amount')
+                            ->numeric(),
+                    ])
+                    ->columns(3)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -72,7 +113,8 @@ class TimeTrackerResource extends Resource
             ->components([
                 TextEntry::make('name'),
                 TextEntry::make('customer.name')
-                    ->label('Cliente'),
+                    ->label('Cliente')
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 TextEntry::make('user.full_name')
                     ->label('Usuario'),
                 TextEntry::make('project.name')
@@ -87,6 +129,37 @@ class TimeTrackerResource extends Resource
                     ->label('Descripción'),
                 TextEntry::make('amount')
                     ->label('Monto'),
+                RepeatableEntry::make('items')
+                    ->schema([
+                        TextEntry::make('timeTrackerItemType.name'),
+                        TextEntry::make('user.name'),
+                        TextEntry::make('date')->date(),
+                        TextEntry::make('hours'),
+                        TextEntry::make('time_start')->time(),
+                        TextEntry::make('time_end')->time(),
+                        TextEntry::make('description'),
+                        TextEntry::make('rate'),
+                        TextEntry::make('amount'),
+                    ])
+                    ->columns(3)
+                    ->columnSpanFull(),
+            ])
+            ->headerActions([
+                Action::make('Approve')
+                    ->label('Aprobar')
+                    ->icon('heroicon-o-check')
+                    ->action(function (TimeTracker $record): void {
+                        $user = Filament::auth()->user();
+                        $record->update([
+                            'is_approved' => true,
+                            'approved_by' => $user->id,
+                            'approved_at' => now(),
+                        ]);
+                    })
+                    ->requiresConfirmation()
+                    ->color('warning')
+                    ->modalIcon('heroicon-o-check')
+                    ->modalIconColor('warning'),
             ]);
     }
 
@@ -97,6 +170,25 @@ class TimeTrackerResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('customer.name')
+                    ->label('Cliente')
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
+                TextColumn::make('user.full_name')
+                    ->label('Usuario')
+                    ->searchable(),
+                TextColumn::make('project.name')
+                    ->label('Proyecto')
+                    ->searchable(),
+                TextColumn::make('date_start')
+                    ->label('Fecha de inicio'),
+                TextColumn::make('date_end')
+                    ->label('Fecha de fin'),
+                TextColumn::make('hours')
+                    ->label('Horas'),
+                TextColumn::make('description')
+                    ->label('Descripción'),
+                TextColumn::make('amount')
+                    ->label('Monto'),
             ])
             ->filters([
                 //

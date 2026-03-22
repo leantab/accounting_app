@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToCustomer;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -27,6 +30,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class TimeTracker extends Model
 {
+    use BelongsToCustomer;
+    use HasFactory;
+
     protected $guarded = [];
 
     protected $casts = [
@@ -66,5 +72,10 @@ class TimeTracker extends Model
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(TimeTrackerItem::class);
     }
 }

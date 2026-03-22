@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase;
 
     public function test_login_screen_can_be_rendered(): void
     {
@@ -70,7 +70,7 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_logout(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create()->first();
 
         $response = $this->actingAs($user)->post(route('logout'));
 

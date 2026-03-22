@@ -5,15 +5,14 @@ namespace App\Filament\Resources\Users;
 use App\Filament\Resources\Users\Pages\ManageUsers;
 use App\Models\User;
 use BackedEnum;
-use Filament\Facades\Filament;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\DateTimePicker;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -60,21 +59,18 @@ class UserResource extends Resource
                     ->label('Email address')
                     ->email()
                     ->required(),
-                DateTimePicker::make('email_verified_at'),
                 TextInput::make('password')
                     ->password()
                     ->required(),
-                Textarea::make('two_factor_secret')
-                    ->columnSpanFull(),
-                Textarea::make('two_factor_recovery_codes')
-                    ->columnSpanFull(),
-                DateTimePicker::make('two_factor_confirmed_at'),
                 TextInput::make('phone')
                     ->tel(),
                 TextInput::make('address'),
                 TextInput::make('tax_id'),
-                TextInput::make('customer_id')
-                    ->numeric(),
+                Select::make('customer_id')
+                    ->relationship('customer', 'name')
+                    ->default(Filament::auth()->user()->customer_id)
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin)
+                    ->requiredIf('is_admin', false),
                 Toggle::make('is_active')
                     ->required(),
                 Toggle::make('is_admin')
@@ -90,26 +86,15 @@ class UserResource extends Resource
                 TextEntry::make('lastname'),
                 TextEntry::make('email')
                     ->label('Email address'),
-                TextEntry::make('email_verified_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('two_factor_secret')
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('two_factor_recovery_codes')
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('two_factor_confirmed_at')
-                    ->dateTime()
-                    ->placeholder('-'),
                 TextEntry::make('phone')
                     ->placeholder('-'),
                 TextEntry::make('address')
                     ->placeholder('-'),
                 TextEntry::make('tax_id')
                     ->placeholder('-'),
-                TextEntry::make('customer_id')
-                    ->numeric()
+                TextEntry::make('customer.name')
+                    ->label('Cliente')
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                     ->placeholder('-'),
                 IconEntry::make('is_active')
                     ->boolean(),
@@ -129,6 +114,10 @@ class UserResource extends Resource
         return $table
             ->recordTitleAttribute('User')
             ->columns([
+                TextColumn::make('customer.name')
+                    ->label('Cliente')
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin)
+                    ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('lastname')
@@ -136,21 +125,12 @@ class UserResource extends Resource
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
-                TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
-                TextColumn::make('two_factor_confirmed_at')
-                    ->dateTime()
-                    ->sortable(),
                 TextColumn::make('phone')
                     ->searchable(),
                 TextColumn::make('address')
                     ->searchable(),
                 TextColumn::make('tax_id')
                     ->searchable(),
-                TextColumn::make('customer_id')
-                    ->numeric()
-                    ->sortable(),
                 IconColumn::make('is_active')
                     ->boolean(),
                 IconColumn::make('is_admin')

@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class PasswordResetTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase;
 
     protected function setUp(): void
     {

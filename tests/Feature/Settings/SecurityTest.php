@@ -3,7 +3,7 @@
 namespace Tests\Feature\Settings;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+// use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\Features;
 use Livewire\Livewire;
@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class SecurityTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase;
 
     protected function setUp(): void
     {

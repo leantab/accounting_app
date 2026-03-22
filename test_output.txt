@@ -1,85 +1,33 @@
 
-   PASS  Tests\Unit\ExampleTest
-  ✓ that true is true
+   FAIL  Tests\Feature\Auth\InvitedUserRegistrationTest
+  ✓ registration screen ca… 1.97s  
+  ⨯ invited user can regis… 0.31s  
+  ───────────────────────────────  
+   FAILED  Tests\Feature\Auth\I…   
+  Failed asserting that a row in the table [users] matches the attributes {
+    "email": "test@example.com",
+    "customer_id": 2
+}.
 
-   PASS  Tests\Feature\Auth\AuthenticationTest
-  ✓ login scre… 1.30s  
-  ✓ users can…  0.06s  
-  ✓ users can…  0.06s  
-  ✓ users with… 0.04s  
-  ✓ users can…  0.03s  
+Found similar results: [
+    {
+        "email": "test@example.com",
+        "customer_id": null
+    }
+].
 
-   PASS  Tests\Feature\Auth\EmailVerificationTest
-  ✓ email veri… 0.05s  
-  ✓ email can…  0.05s  
-  ✓ email is n… 0.03s  
-  ✓ already ve… 0.04s  
-
-   PASS  Tests\Feature\Auth\PasswordConfirmationTest
-  ✓ confirm pa… 0.05s  
-
-   PASS  Tests\Feature\Auth\PasswordResetTest
-  ✓ reset pass… 0.04s  
-  ✓ reset pass… 0.25s  
-  ✓ reset pass… 0.28s  
-  ✓ password c… 0.28s  
-
-   PASS  Tests\Feature\Auth\RegistrationTest
-  ✓ registrati… 0.05s  
-  ✓ new users…  0.04s  
-
-   PASS  Tests\Feature\Auth\TwoFactorChallengeTest
-  ✓ two factor… 0.04s  
-  ✓ two factor… 0.05s  
-
-   PASS  Tests\Feature\DashboardTest
-  ✓ guests are… 0.04s  
-  ✓ authentica… 0.06s  
-
-   PASS  Tests\Feature\ExampleTest
-  ✓ returns a…  0.03s  
-
-   FAIL  Tests\Feature\Filament\Resources\Invoices\InvoiceResourceTest
-  ⨯ can upload… 0.07s  
-
-   PASS  Tests\Feature\Settings\ProfileUpdateTest
-  ✓ profile pa… 0.05s  
-  ✓ profile in… 0.09s  
-  ✓ email veri… 0.08s  
-  ✓ user can d… 0.06s  
-  ✓ correct pa… 0.06s  
-
-   PASS  Tests\Feature\Settings\SecurityTest
-  ✓ security s… 0.06s  
-  ✓ security s… 0.04s  
-  ✓ security s… 0.06s  
-  ✓ two factor… 0.04s  
-  ✓ password c… 0.08s  
-  ✓ correct pa… 0.07s  
-
-   PASS  Tests\Feature\TenantScopingTest
-  ✓ non admin…  0.12s  
-  ✓ admin user… 0.04s  
-  ✓ non admin…  0.05s  
-  ───────────────────  
-   F…  ViewException   
-  Call to undefined method App\Models\User::is_admin() (View: C:\Users\tabaj\Projects\accounting-app\storage\framework\views\a168b0ebcff266df6b662fc4b6d06e88.blade.php)
-
-  at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
-     63▕      * @throws \BadMethodCallException
-     64▕      */
-     65▕     protected static function throwBadMethodCallException($method)
-     66▕     {
-  ➜  67▕         throw new BadMethodCallException(sprintf(
-     68▕             'Call to undefined method %s::%s()', static::class, $method
-     69▕         ));
-     70▕     }
-     71▕ }
-
-  1   vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
-  2   vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:36
+  at tests\Feature\Auth\InvitedUserRegistrationTest.php:46
+     42▕         ->call('register')
+     43▕         ->assertRedirect(route('dashboard'));
+     44▕ 
+     45▕     $this->assertAuthenticated();
+  ➜  46▕     $this->assertDatabaseHas('users', [
+     47▕         'email' => 'test@example.com',
+     48▕         'customer_id' => $customer->id,
+     49▕     ]);
+     50▕ });
 
 
-  Tests:    1 failed, 36 passed (104 assertions)
-  Duration: 4.03s
+  Tests:    1 failed, 1 passed (6 assertions)
+  Duration: 2.41s
 

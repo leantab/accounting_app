@@ -24,6 +24,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_admin')->default(false);
+            $table->foreignId('user_role_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

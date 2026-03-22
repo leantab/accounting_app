@@ -9,7 +9,7 @@ use Tests\TestCase;
 
 class TwoFactorChallengeTest extends TestCase
 {
-    use RefreshDatabase;
+    // use RefreshDatabase;
 
     protected function setUp(): void
     {
