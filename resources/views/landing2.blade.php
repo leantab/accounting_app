@@ -63,7 +63,7 @@
                         "on-error-container": "#ffd2c8",
                         "primary-fixed": "#f8a010",
                         "tertiary-fixed-dim": "#bacae4",
-                        "background": "#060e20",
+                        "background": "#0d1a37ff",
                         "on-background": "#dee5ff",
                         "on-secondary-fixed-variant": "#004da8",
                         "on-secondary": "#001e4a",
