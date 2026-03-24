@@ -19,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property ?string $address
  * @property ?string $tax_id
  * @property bool $is_tax_retained
+ * @property string|null $companyable_type
+ * @property int|null $companyable_id
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Carbon $deleted_at
@@ -40,6 +42,11 @@ class Company extends Model
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function companyable()
+    {
+        return $this->morphTo();
     }
 
     public function roles()

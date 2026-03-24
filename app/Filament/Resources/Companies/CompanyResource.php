@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Companies;
 use App\Filament\Resources\Companies\Pages\ManageCompanies;
 use App\Models\Company;
 use App\Models\Customer;
+use App\Models\User;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -12,6 +13,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\MorphToSelect;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -64,6 +66,15 @@ class CompanyResource extends Resource
                     ->options(Customer::all()->pluck('name', 'id'))
                     ->default(fn () => Filament::auth()->user()?->currentCustomerId())
                     ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                MorphToSelect::make('companyable')
+                    ->types([
+                        MorphToSelect\Type::make(Customer::class)
+                            ->titleAttribute('name'),
+                        MorphToSelect\Type::make(User::class)
+                            ->titleAttribute('email'),
+                    ])
+                    ->searchable()
+                    ->preload(),
                 TextInput::make('name')
                     ->required(),
                 Textarea::make('description')
@@ -85,6 +96,11 @@ class CompanyResource extends Resource
     {
         return $schema
             ->components([
+                TextEntry::make('companyable_type')
+                    ->label('Related Type')
+                    ->formatStateUsing(fn ($state) => class_basename($state)),
+                TextEntry::make('companyable.name')
+                    ->label('Related Entity'),
                 TextEntry::make('name'),
                 TextEntry::make('description')
                     ->placeholder('-')
@@ -119,6 +135,14 @@ class CompanyResource extends Resource
                     ->label('Customer')
                     ->sortable()
                     ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                TextColumn::make('companyable_type')
+                    ->label('Related Type')
+                    ->formatStateUsing(fn ($state) => class_basename($state))
+                    ->sortable(),
+                TextColumn::make('companyable.name')
+                    ->label('Related Entity')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('phone')

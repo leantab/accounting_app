@@ -2,14 +2,8 @@
     "agents": [
         "cursor"
     ],
-    "packages": [
-        "livewire/blaze"
-    ],
-    "skills": [
-        "fluxui-development",
-        "livewire-development",
-        "pest-testing",
-        "tailwindcss-development",
-        "blaze-optimize"
-    ]
+    "herd_mcp": false,
+    "mcp": true,
+    "nightwatch_mcp": false,
+    "sail": false
 }

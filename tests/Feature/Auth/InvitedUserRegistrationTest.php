@@ -8,7 +8,6 @@ use Tests\TestCase;
 uses(TestCase::class);
 
 test('registration screen can be rendered for invited user', function () {
-    $this->withoutExceptionHandling();
     $customer = Customer::factory()->create();
 
     $response = $this->get(route('invited.register', [

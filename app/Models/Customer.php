@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
  * Customer model
+ *
  * @property int $id
  * @property string $name
  * @property ?string $icon
@@ -16,14 +19,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property ?string $address
  * @property ?string $tax_id
  * @property bool $is_active
- * @property \Carbon\Carbon $created_at
- * @property \Carbon\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  */
 class Customer extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
+
+    public function company(): MorphOne
+    {
+        return $this->morphOne(Company::class, 'companyable');
+    }
 
     public function users()
     {
