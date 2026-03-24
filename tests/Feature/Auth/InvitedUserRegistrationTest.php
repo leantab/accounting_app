@@ -2,11 +2,10 @@
 
 use App\Livewire\Auth\InvitedUserRegister;
 use App\Models\Customer;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-uses(TestCase::class, RefreshDatabase::class);
+uses(TestCase::class);
 
 test('registration screen can be rendered for invited user', function () {
     $this->withoutExceptionHandling();

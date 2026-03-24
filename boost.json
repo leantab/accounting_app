@@ -3,12 +3,13 @@
         "cursor"
     ],
     "packages": [
-        "filament/filament"
+        "livewire/blaze"
     ],
     "skills": [
         "fluxui-development",
         "livewire-development",
         "pest-testing",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "blaze-optimize"
     ]
 }

@@ -100,7 +100,7 @@ Browser tests run in real browsers for full integration testing:
 
 - Browser tests live in `tests/Browser/`.
 - Use Laravel features like `Event::fake()`, `assertAuthenticated()`, and model factories.
-- Use `RefreshDatabase` for clean state per test.
+- Do not use `RefreshDatabase` for clean state per test.
 - Interact with page: click, type, scroll, select, submit, drag-and-drop, touch gestures.
 - Test on multiple browsers (Chrome, Firefox, Safari) if requested.
 - Test on different devices/viewports (iPhone 14 Pro, tablets) if requested.
