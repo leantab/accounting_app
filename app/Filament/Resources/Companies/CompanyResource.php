@@ -64,8 +64,8 @@ class CompanyResource extends Resource
                     ->label('Customer')
                     ->searchable()
                     ->options(Customer::all()->pluck('name', 'id'))
-                    ->default(fn () => Filament::auth()->user()?->currentCustomerId())
-                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                    ->default(fn() => Filament::auth()->user()?->currentCustomerId())
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
                 MorphToSelect::make('companyable')
                     ->types([
                         MorphToSelect\Type::make(Customer::class)
@@ -98,7 +98,7 @@ class CompanyResource extends Resource
             ->components([
                 TextEntry::make('companyable_type')
                     ->label('Related Type')
-                    ->formatStateUsing(fn ($state) => class_basename($state)),
+                    ->formatStateUsing(fn($state) => class_basename($state)),
                 TextEntry::make('companyable.name')
                     ->label('Related Entity'),
                 TextEntry::make('name'),
@@ -134,10 +134,10 @@ class CompanyResource extends Resource
                 TextColumn::make('customer.name')
                     ->label('Customer')
                     ->sortable()
-                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
                 TextColumn::make('companyable_type')
                     ->label('Related Type')
-                    ->formatStateUsing(fn ($state) => class_basename($state))
+                    ->formatStateUsing(fn($state) => class_basename($state))
                     ->sortable(),
                 TextColumn::make('companyable.name')
                     ->label('Related Entity')
