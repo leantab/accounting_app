@@ -17,13 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class UserRate extends Model
 {
-    protected $fillable = [
-        'customer_id',
-        'user_id',
-        'time_tracker_item_type_id',
-        'description',
-        'rate',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'rate' => 'decimal:2',

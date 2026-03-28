@@ -7,8 +7,9 @@ use Filament\Actions\CreateAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Filament\Forms;
-use Filament\Tables;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
 
 class UserRatesRelationManager extends RelationManager
 {
@@ -23,11 +24,11 @@ class UserRatesRelationManager extends RelationManager
                 CreateAction::make(),
             ])
             ->columns([
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label('Descripción'),
-                Tables\Columns\TextColumn::make('rate')
+                TextColumn::make('rate')
                     ->label('Tarifa'),
-                Tables\Columns\TextColumn::make('timeTrackerItemType.name')
+                TextColumn::make('timeTrackerItemType.name')
                     ->label('Tipo de item'),
             ]);
     }
@@ -36,13 +37,13 @@ class UserRatesRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Forms\Components\TextInput::make('description')
+                TextInput::make('description')
                     ->label('Descripción')
                     ->required(),
-                Forms\Components\TextInput::make('rate')
+                TextInput::make('rate')
                     ->label('Tarifa')
                     ->required(),
-                Forms\Components\Select::make('time_tracker_item_type_id')
+                Select::make('time_tracker_item_type_id')
                     ->label('Tipo de item')
                     ->relationship('timeTrackerItemType', 'name')
                     ->required(),
