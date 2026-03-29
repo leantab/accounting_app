@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Invoices;
 
+use App\Enums\UserRoleEnum;
 use App\Filament\Resources\Invoices\Pages\ManageInvoices;
 use App\Models\Company;
 use App\Models\Customer;
@@ -48,11 +49,11 @@ class InvoiceResource extends Resource
             return false;
         }
 
-        if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
+        if ($user->is_admin) {
             return true;
         }
 
-        return $user->currentCustomerId() !== null;
+        return in_array($user->role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value]);
     }
 
     public static function canAccess(): bool
@@ -69,18 +70,18 @@ class InvoiceResource extends Resource
                     ->label('Customer')
                     ->searchable()
                     ->options(Customer::all()->pluck('name', 'id'))
-                    ->default(fn () => Filament::auth()->user()?->currentCustomerId())
-                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                    ->default(fn() => Filament::auth()->user()?->customer_id)
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
                 Select::make('from_company_id')
-                    ->relationship('from_company')
-                    ->label('From')
+                    ->relationship('fromCompany')
+                    ->label('De')
                     ->searchable()
-                    ->options(Company::all()->pluck('name', 'id')),
+                    ->options(fn() => Filament::auth()->user()->customer_id ? Company::where('customer_id', Filament::auth()->user()->customer_id)->pluck('name', 'id') : Company::all()->pluck('name', 'id')),
                 Select::make('to_company_id')
-                    ->relationship('to_company')
-                    ->label('To')
+                    ->relationship('toCompany')
+                    ->label('Para')
                     ->searchable()
-                    ->options(Company::all()->pluck('name', 'id')),
+                    ->options(fn() => Filament::auth()->user()->customer_id ? Company::where('customer_id', Filament::auth()->user()->customer_id)->pluck('name', 'id') : Company::all()->pluck('name', 'id')),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('invoice_number'),
@@ -131,7 +132,7 @@ class InvoiceResource extends Resource
             ->components([
                 TextEntry::make('customer.name')
                     ->label('Customer')
-                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
                 TextEntry::make('fromCompany.name')
                     ->label('From'),
                 TextEntry::make('toCompany.name')
@@ -199,7 +200,7 @@ class InvoiceResource extends Resource
                 TextColumn::make('customer.name')
                     ->label('Customer')
                     ->sortable()
-                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
                 TextColumn::make('fromCompany.name')
                     ->label('From')
                     ->sortable(),

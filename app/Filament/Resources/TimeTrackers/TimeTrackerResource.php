@@ -20,9 +20,11 @@ class TimeTrackerResource extends Resource
 {
     protected static ?string $model = TimeTracker::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $navigationLabel = 'Planillas de horas';
+
+    protected static ?string $recordTitleAttribute = 'Planilla de horas';
 
     public static function form(Schema $schema): Schema
     {

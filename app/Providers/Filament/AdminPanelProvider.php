@@ -67,6 +67,8 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->databaseNotifications();
+            ->databaseNotifications()
+            ->brandLogo(asset('icon3.png'))
+            ->favicon(asset('icon3.png'));
     }
 }

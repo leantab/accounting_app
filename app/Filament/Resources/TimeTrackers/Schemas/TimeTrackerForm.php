@@ -8,10 +8,9 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class TimeTrackerForm
@@ -24,7 +23,7 @@ class TimeTrackerForm
                     ->label('Cliente')
                     ->relationship('customer', 'name')
                     ->default(Filament::auth()->user()->customer_id)
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin)
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                     ->required(),
                 Hidden::make('user_id')
                     ->default(Filament::auth()->user()->id),
@@ -35,6 +34,7 @@ class TimeTrackerForm
                         if ($user->is_admin) {
                             return Project::all()->pluck('name', 'id');
                         }
+
                         return Project::where('customer_id', $user->customer_id)->get()->pluck('name', 'id');
                     })
                     ->required(),
@@ -42,11 +42,15 @@ class TimeTrackerForm
                     ->required(),
                 DatePicker::make('date_start')
                     ->label('Fecha de inicio')
+                    ->native(false)
                     ->format('Y-m-d')
+                    ->displayFormat('d/m/Y')
                     ->required(),
                 DatePicker::make('date_end')
                     ->label('Fecha de fin')
+                    ->native(false)
                     ->format('Y-m-d')
+                    ->displayFormat('d/m/Y')
                     ->required(),
                 Textarea::make('description')
                     ->label('Descripción')
@@ -57,6 +61,9 @@ class TimeTrackerForm
                         Hidden::make('user_id')
                             ->default(Filament::auth()->user()->id),
                         DatePicker::make('date')
+                            ->format('Y-m-d')
+                            ->native(false)
+                            ->displayFormat('d/m/Y')
                             ->required(),
                         Select::make('time_tracker_item_type_id')
                             ->relationship('timeTrackerItemType', 'name')
@@ -66,16 +73,23 @@ class TimeTrackerForm
                             ->requiredWithout('time_start', 'time_end'),
                         TimePicker::make('time_start')
                             ->format('H:i')
+                            ->native(false)
+                            ->seconds(false)
+                            ->minutesStep(15)
+                            ->displayFormat('H:i')
                             ->requiredWithout('hours'),
                         TimePicker::make('time_end')
                             ->format('H:i')
+                            ->native(false)
+                            ->seconds(false)
+                            ->minutesStep(15)
+                            ->displayFormat('H:i')
                             ->requiredWithout('hours'),
                         TextInput::make('description')
                             ->label('Descripción'),
                         TextInput::make('amount')
                             ->label('Monto')
-                            ->numeric()
-                            ->visible(fn($item) => $item->timeTrackerItemType->name === 'Consultoría'),
+                            ->numeric(),
                     ])
                     ->columns(3)
                     ->columnSpanFull(),

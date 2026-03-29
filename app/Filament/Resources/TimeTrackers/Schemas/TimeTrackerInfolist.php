@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TimeTrackers\Schemas;
 
 use Filament\Facades\Filament;
 use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -15,9 +16,9 @@ class TimeTrackerInfolist
         return $schema
             ->components([
                 TextEntry::make('customer.name')
-                    ->label('Cliente')
+                    ->label('Cuenta')
                     ->hidden(fn() => ! Filament::auth()->user()->is_admin),
-                TextEntry::make('user.full_name')
+                TextEntry::make('user.name')
                     ->label('Usuario'),
                 TextEntry::make('project.name')
                     ->label('Proyecto'),
@@ -62,9 +63,8 @@ class TimeTrackerInfolist
                     ->label('Fecha de aprobación')
                     ->date('d/m/Y')
                     ->placeholder('-'),
-                TextEntry::make('approved_by')
-                    ->label('Aprobado por')
-                    ->numeric(),
+                TextEntry::make('approvedBy.fullName')
+                    ->label('Aprobado por'),
                 TextEntry::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime('d/m/Y')
@@ -73,37 +73,36 @@ class TimeTrackerInfolist
                     ->label('Fecha de actualización')
                     ->dateTime('d/m/Y')
                     ->placeholder('-'),
-                Section::make('Items')
-                    ->components([
-                        //TODO: Add items infolist
-                        Schema::make()
-                            ->components([
-                                TextEntry::make('date')
-                                    ->label('Fecha')
-                                    ->date('d/m/Y'),
-                                TextEntry::make('timeTrackerItemType.name')
-                                    ->label('Tipo'),
-                                TextEntry::make('hours')
-                                    ->label('Horas')
-                                    ->numeric()
-                                    ->placeholder('-'),
-                                TextEntry::make('time_start')
-                                    ->label('Hora de inicio')
-                                    ->time('H:i')
-                                    ->placeholder('-'),
-                                TextEntry::make('time_end')
-                                    ->label('Hora de fin')
-                                    ->time('H:i')
-                                    ->placeholder('-'),
-                                TextEntry::make('description')
-                                    ->label('Descripción')
-                                    ->placeholder('-'),
-                                TextEntry::make('amount')
-                                    ->label('Monto')
-                                    ->numeric()
-                                    ->placeholder('-'),
-                            ])
-                    ])
+                RepeatableEntry::make('items')
+                    ->label('Items')
+                    ->columnSpanFull()
+                    ->columns(4)
+                    ->schema([
+                        TextEntry::make('date')
+                            ->label('Fecha')
+                            ->date('d/m/Y'),
+                        TextEntry::make('timeTrackerItemType.name')
+                            ->label('Tipo'),
+                        TextEntry::make('hours')
+                            ->label('Horas')
+                            ->numeric()
+                            ->placeholder('-'),
+                        TextEntry::make('time_start')
+                            ->label('Hora de inicio')
+                            ->time('H:i')
+                            ->placeholder('-'),
+                        TextEntry::make('time_end')
+                            ->label('Hora de fin')
+                            ->time('H:i')
+                            ->placeholder('-'),
+                        TextEntry::make('description')
+                            ->label('Descripción')
+                            ->placeholder('-'),
+                        TextEntry::make('amount')
+                            ->label('Monto')
+                            ->numeric()
+                            ->placeholder('-'),
+                    ]),
             ]);
     }
 }

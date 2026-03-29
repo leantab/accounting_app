@@ -4,9 +4,10 @@ namespace App\Filament\Resources\TimeTrackers\Pages;
 
 use App\Enums\UserRoleEnum;
 use App\Filament\Resources\TimeTrackers\TimeTrackerResource;
+use App\Models\User;
 use Filament\Actions\Action;
-use Filament\Facades\Filament;
 use Filament\Actions\EditAction;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 
@@ -22,7 +23,7 @@ class ViewTimeTracker extends ViewRecord
                 ->label('Aprobar')
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
-                ->visible(fn($record) => (Filament::auth()->user()->is_admin
+                ->visible(fn ($record) => (Filament::auth()->user()->is_admin
                     || in_array(Filament::auth()->user()->role, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value]))
                     && ! $record->approved)
                 ->action(function ($record) {
@@ -32,10 +33,12 @@ class ViewTimeTracker extends ViewRecord
                         'approved_by' => Filament::auth()->user()->id,
                     ]);
 
+                    /** @var User $user */
+                    $user = User::find($record->user_id);
                     Notification::make()
                         ->title('Planilla aprobada')
                         ->success()
-                        ->toDatabase();
+                        ->sendToDatabase($user);
                 }),
         ];
     }

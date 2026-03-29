@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TimeTrackers\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -21,8 +22,8 @@ class TimeTrackersTable
                 TextColumn::make('customer.name')
                     ->label('Customer')
                     ->searchable()
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
-                TextColumn::make('user.full_name')
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
+                TextColumn::make('user.name')
                     ->label('Usuario')
                     ->searchable(),
                 TextColumn::make('project.name')
@@ -69,7 +70,7 @@ class TimeTrackersTable
                     ->label('Fecha de aprobación')
                     ->date('d/m/Y')
                     ->sortable(),
-                TextColumn::make('approvedBy.full_name')
+                TextColumn::make('approvedBy.fullName')
                     ->label('Aprobado por'),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
@@ -85,10 +86,10 @@ class TimeTrackersTable
                 SelectFilter::make('customer_id')
                     ->label('Cliente')
                     ->relationship('customer', 'name')
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 SelectFilter::make('user_id')
                     ->label('Usuario')
-                    ->relationship('user', 'full_name'),
+                    ->relationship('user', 'lastname'),
                 SelectFilter::make('project_id')
                     ->label('Proyecto')
                     ->relationship('project', 'name'),
@@ -116,9 +117,15 @@ class TimeTrackersTable
                 EditAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                // BulkActionGroup::make([
+                //     DeleteBulkAction::make(),
+                // ]),
+                Action::make('auto_complete')
+                    ->label('Auto-Completar')
+                    ->icon('heroicon-o-document-text')
+                    ->action(function () {
+                        // TODO: Add export action
+                    }),
             ]);
     }
 }

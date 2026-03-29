@@ -6,6 +6,7 @@ use App\Models\Concerns\BelongsToCustomer;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -45,5 +46,10 @@ class Project extends Model
     public function status(): BelongsTo
     {
         return $this->belongsTo(ProjectStatus::class, 'project_status_id');
+    }
+
+    public function timeTrackers(): HasMany
+    {
+        return $this->hasMany(TimeTracker::class);
     }
 }

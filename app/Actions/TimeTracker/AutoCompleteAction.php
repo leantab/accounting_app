@@ -2,31 +2,54 @@
 
 namespace App\Actions\TimeTracker;
 
+use App\Enums\TimeTrackerItemTypeEnum;
 use App\Models\TimeTracker;
 use App\Models\User;
 use Carbon\Carbon;
 
 class AutoCompleteAction
 {
-    public function execute()
+    public function execute(): void
     {
-        $timeTrackers = TimeTracker::whereNull('amount  ')->get();
+        $timeTrackers = TimeTracker::query()
+            ->whereNull('amount')
+            ->with(['items.timeTrackerItemType'])
+            ->get();
 
         foreach ($timeTrackers as $timeTracker) {
             $user = User::find($timeTracker->user_id);
+
+            if ($user === null) {
+                continue;
+            }
+
             $rates = $user->userRates;
 
-            $amount = 0;
+            $amount = 0.0;
+
             foreach ($timeTracker->items as $item) {
-                $rate = $rates->where('time_tracker_item_type_id', $item->time_tracker_item_type_id)->first()->rate;
+                $rate = (float) ($rates->firstWhere('time_tracker_item_type_id', $item->time_tracker_item_type_id)?->rate ?? 0);
+
                 if (empty($item->hours)) {
-                    $hours = Carbon::parse($item->time_end)->diffInHours(Carbon::parse($item->time_start));
-                    $item->update([
-                        'hours' => $hours,
-                    ]);
+                    if ($item->time_start !== null && $item->time_end !== null) {
+                        $hours = (int) Carbon::parse($item->time_start)->diffInHours(Carbon::parse($item->time_end));
+                        $item->update([
+                            'hours' => $hours,
+                        ]);
+                    }
                 }
-                $item->fresh();
-                $amount += $item->hours * $rate;
+
+                $item->refresh();
+
+                $itemHours = (float) ($item->hours ?? 0);
+
+                if ($item->timeTrackerItemType->name === TimeTrackerItemTypeEnum::HOURS->label()) {
+                    $amount += $itemHours * $rate;
+                } elseif ($rate > 0) {
+                    $amount += $rate;
+                } else {
+                    $amount += (float) ($item->amount ?? 0);
+                }
             }
 
             $timeTracker->update([

@@ -55,6 +55,10 @@ class ProjectResource extends Resource
                     ->default(Filament::auth()->user()->customer_id)
                     ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                     ->required(),
+                Select::make('company_id')
+                    ->label('Empresa')
+                    ->relationship('company', 'name')
+                    ->nullable(),
                 TextInput::make('description')
                     ->label('Descripción')
                     ->maxLength(255),
@@ -65,7 +69,7 @@ class ProjectResource extends Resource
                     ->label('Fecha de fin'),
                 Select::make('project_status_id')
                     ->label('Estado')
-                    ->relationship('projectStatus', 'name')
+                    ->relationship('status', 'name')
                     ->required(),
             ]);
     }
@@ -84,7 +88,7 @@ class ProjectResource extends Resource
                     ->label('Fecha de inicio'),
                 TextEntry::make('end_date')
                     ->label('Fecha de fin'),
-                TextEntry::make('projectStatus.name')
+                TextEntry::make('status.name')
                     ->label('Estado'),
             ]);
     }

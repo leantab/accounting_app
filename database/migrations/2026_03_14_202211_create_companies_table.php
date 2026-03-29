@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
-            $table->nullableMorphs('companyable');
             $table->string('name');
             $table->string('social_reason')->nullable();
             $table->text('description')->nullable();

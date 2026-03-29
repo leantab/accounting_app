@@ -17,19 +17,19 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('project_id')->constrained()->cascadeOnDelete()->nullable();
             $table->string('name');
-            $table->date('date_start');
-            $table->date('date_end');
+            $table->date('date_start')->nullable();
+            $table->date('date_end')->nullable();
             $table->decimal('hours', 5, 2)->nullable();
             $table->text('description')->nullable();
             $table->boolean('billed')->default(false);
             $table->decimal('amount', 10, 2)->nullable();
-            $table->foreignId('invoice_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('invoice_id')->nullable()->constrained();
             $table->boolean('paid')->default(false);
-            $table->foreignId('payment_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('payment_id')->nullable()->constrained();
             $table->date('paid_date')->nullable();
             $table->boolean('approved')->default(false);
             $table->date('approved_at')->nullable();
-            $table->foreignId('approved_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('approved_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }
