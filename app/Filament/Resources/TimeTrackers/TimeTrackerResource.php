@@ -26,6 +26,11 @@ class TimeTrackerResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Planilla de horas';
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('approved', false)->count();
+    }
+
     public static function form(Schema $schema): Schema
     {
         return TimeTrackerForm::configure($schema);

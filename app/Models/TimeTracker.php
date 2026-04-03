@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $approved
  * @property string|null $approved_at
  * @property int|null $approved_by
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  */
 class TimeTracker extends Model
 {

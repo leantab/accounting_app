@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\TimeTrackers\Schemas;
 
+use App\Enums\TimeTrackerItemTypeEnum;
+use App\Enums\UserRoleEnum;
+use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Project;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
@@ -11,7 +15,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Get;
 
 class TimeTrackerForm
 {
@@ -23,7 +29,7 @@ class TimeTrackerForm
                     ->label('Cliente')
                     ->relationship('customer', 'name')
                     ->default(Filament::auth()->user()->customer_id)
-                    ->hidden(fn () => ! Filament::auth()->user()->is_admin)
+                    ->hidden(fn() => ! Filament::auth()->user()->is_admin)
                     ->required(),
                 Hidden::make('user_id')
                     ->default(Filament::auth()->user()->id),
@@ -55,6 +61,32 @@ class TimeTrackerForm
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpanFull(),
+                // Select::make('invoice_id')
+                //     ->label('Factura')
+                //     ->options(function () {
+                //         $user = Filament::auth()->user();
+                //         if ($user->is_admin) {
+                //             return Invoice::all()->pluck('name', 'id');
+                //         }
+
+                //         return Invoice::where('customer_id', $user->customer_id)->get()->pluck('name', 'id');
+                //     })
+                //     ->hidden(fn() => Filament::auth()->user()->role_id == UserRoleEnum::Employee->value),
+                Toggle::make('paid')
+                    ->label('Pagado')
+                    ->default(false)
+                    ->hidden(fn() => Filament::auth()->user()->role_id == UserRoleEnum::Employee->value),
+                // Select::make('payment_id')
+                //     ->label('Pago')
+                //     ->options(function () {
+                //         $user = Filament::auth()->user();
+                //         if ($user->is_admin) {
+                //             return Payment::all()->pluck('name', 'id');
+                //         }
+
+                //         return Payment::where('customer_id', $user->customer_id)->get()->pluck('name', 'id');
+                //     })
+                //     ->hidden(fn() => Filament::auth()->user()->role_id == UserRoleEnum::Employee->value),
                 Repeater::make('items')
                     ->relationship('items')
                     ->schema([
@@ -64,6 +96,7 @@ class TimeTrackerForm
                             ->format('Y-m-d')
                             ->native(false)
                             ->displayFormat('d/m/Y')
+                            ->closeOnDateSelection()
                             ->required(),
                         Select::make('time_tracker_item_type_id')
                             ->relationship('timeTrackerItemType', 'name')
@@ -89,7 +122,9 @@ class TimeTrackerForm
                             ->label('Descripción'),
                         TextInput::make('amount')
                             ->label('Monto')
-                            ->numeric(),
+                            ->numeric()
+                            ->visible(fn(Get $get) => $get('time_tracker_item_type_id') == TimeTrackerItemTypeEnum::EXPENSES->value)
+                            ->live(onBlur: true),
                     ])
                     ->columns(3)
                     ->columnSpanFull(),
