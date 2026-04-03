@@ -17,6 +17,7 @@ use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -37,9 +38,9 @@ class InvoiceResource extends Resource
 {
     protected static ?string $model = Invoice::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
-    protected static ?string $recordTitleAttribute = 'Invoice';
+    protected static ?string $recordTitleAttribute = 'Facturas';
 
     public static function canViewAny(): bool
     {
@@ -66,12 +67,11 @@ class InvoiceResource extends Resource
         return $schema
             ->components([
                 Select::make('customer_id')
-                    ->relationship('customer')
                     ->label('Customer')
                     ->searchable()
                     ->options(Customer::all()->pluck('name', 'id'))
                     ->default(fn() => Filament::auth()->user()?->customer_id)
-                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                    ->visible(fn() => Filament::auth()->user()?->is_admin),
                 Select::make('from_company_id')
                     ->relationship('fromCompany')
                     ->label('De')
@@ -83,43 +83,58 @@ class InvoiceResource extends Resource
                     ->searchable()
                     ->options(fn() => Filament::auth()->user()->customer_id ? Company::where('customer_id', Filament::auth()->user()->customer_id)->pluck('name', 'id') : Company::all()->pluck('name', 'id')),
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
-                TextInput::make('invoice_number'),
-                Textarea::make('description')
-                    ->columnSpanFull(),
-                DatePicker::make('date'),
+                TextInput::make('invoice_number')
+                    ->label('Número de factura'),
+                TextInput::make('description')
+                    ->label('Descripción'),
+                DatePicker::make('date')
+                    ->label('Fecha')
+                    ->native(false)
+                    ->displayFormat('d/m/Y')
+                    ->default(now()),
                 TextInput::make('total_amount')
+                    ->label('Monto total')
                     ->numeric(),
                 TextInput::make('discount_percentage')
+                    ->label('Porcentaje de descuento')
                     ->numeric()
                     ->default(0),
                 TextInput::make('discount_amount')
+                    ->label('Monto de descuento')
                     ->numeric()
                     ->default(0),
                 TextInput::make('tax_percentage')
+                    ->label('Porcentaje de impuesto')
                     ->numeric()
                     ->default(0),
                 TextInput::make('tax_amount')
+                    ->label('Monto de impuesto')
                     ->numeric()
                     ->default(0),
                 TextInput::make('final_amount')
+                    ->label('Monto final')
                     ->numeric(),
                 TextInput::make('payed_amount')
+                    ->label('Monto pagado')
                     ->numeric(),
                 Toggle::make('payed')
-                    ->label('Payed')
+                    ->label('Pagado')
                     ->required(),
                 DatePicker::make('payment_due_date')
-                    ->label('Payment Due Date'),
+                    ->label('Fecha de vencimiento de pago')
+                    ->native(false)
+                    ->displayFormat('d/m/Y'),
                 Repeater::make('items')
                     ->relationship('items')
                     ->schema([
-                        TextInput::make('name')->required(),
-                        TextInput::make('quantity')->numeric()->required(),
-                        TextInput::make('unit_price')->numeric()->required(),
-                        TextInput::make('discount_percentage')->numeric()->default(0),
-                        TextInput::make('discount_amount')->numeric()->default(0),
-                        TextInput::make('total_price')->numeric()->required(),
+                        TextInput::make('name')->label('Nombre')->required(),
+                        TextInput::make('quantity')->label('Cantidad')->numeric()->required(),
+                        TextInput::make('unit_price')->label('Precio unitario')->numeric()->required(),
+                        TextInput::make('discount_percentage')->label('Porcentaje de descuento')->numeric()->default(0),
+                        TextInput::make('discount_amount')->label('Monto de descuento')->numeric()->default(0),
+                        TextInput::make('total_price')->label('Precio total')->numeric()->required(),
                     ])
                     ->columns(4)
                     ->columnSpanFull(),

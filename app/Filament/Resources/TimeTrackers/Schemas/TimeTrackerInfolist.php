@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TimeTrackers\Schemas;
 
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -76,30 +77,32 @@ class TimeTrackerInfolist
                 RepeatableEntry::make('items')
                     ->label('Items')
                     ->columnSpanFull()
-                    ->columns(4)
+                    // ->columns(4)
+                    ->table([
+                        TableColumn::make('Fecha'),
+                        TableColumn::make('Tipo'),
+                        TableColumn::make('Horas'),
+                        TableColumn::make('Hora de inicio'),
+                        TableColumn::make('Hora de fin'),
+                        TableColumn::make('Descripción'),
+                        TableColumn::make('Monto'),
+                    ])
                     ->schema([
                         TextEntry::make('date')
-                            ->label('Fecha')
                             ->date('d/m/Y'),
-                        TextEntry::make('timeTrackerItemType.name')
-                            ->label('Tipo'),
+                        TextEntry::make('timeTrackerItemType.name'),
                         TextEntry::make('hours')
-                            ->label('Horas')
                             ->numeric()
                             ->placeholder('-'),
                         TextEntry::make('time_start')
-                            ->label('Hora de inicio')
                             ->time('H:i')
                             ->placeholder('-'),
                         TextEntry::make('time_end')
-                            ->label('Hora de fin')
                             ->time('H:i')
                             ->placeholder('-'),
                         TextEntry::make('description')
-                            ->label('Descripción')
                             ->placeholder('-'),
                         TextEntry::make('amount')
-                            ->label('Monto')
                             ->numeric()
                             ->placeholder('-'),
                     ]),

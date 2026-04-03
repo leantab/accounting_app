@@ -29,7 +29,7 @@ class UserRatesRelationManager extends RelationManager
                 TextColumn::make('rate')
                     ->label('Tarifa'),
                 TextColumn::make('timeTrackerItemType.name')
-                    ->label('Tipo de item'),
+                    ->label('Tipo de item Planilla'),
             ]);
     }
 

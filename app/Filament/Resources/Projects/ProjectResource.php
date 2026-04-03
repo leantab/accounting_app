@@ -27,20 +27,9 @@ class ProjectResource extends Resource
 {
     protected static ?string $model = Project::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
 
-    protected static ?string $recordTitleAttribute = 'name';
-
-    public function getTabs(): array
-    {
-        return [
-            'all' => Tab::make('Todos'),
-            'active' => Tab::make('Activos')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('project_status_id', 1)),
-            'inactive' => Tab::make('Inactivos')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('project_status_id', 2)),
-        ];
-    }
+    protected static ?string $recordTitleAttribute = 'Proyectos';
 
     public static function form(Schema $schema): Schema
     {
@@ -53,7 +42,7 @@ class ProjectResource extends Resource
                     ->label('Cliente')
                     ->relationship('customer', 'name')
                     ->default(Filament::auth()->user()->customer_id)
-                    ->hidden(fn () => ! Filament::auth()->user()->is_admin)
+                    ->hidden(fn() => ! Filament::auth()->user()->is_admin)
                     ->required(),
                 Select::make('company_id')
                     ->label('Empresa')
@@ -81,7 +70,7 @@ class ProjectResource extends Resource
                 TextEntry::make('name'),
                 TextEntry::make('customer.name')
                     ->label('Cliente')
-                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
+                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
                 TextEntry::make('description')
                     ->label('Descripción'),
                 TextEntry::make('start_date')
@@ -102,7 +91,7 @@ class ProjectResource extends Resource
                     ->searchable(),
                 TextColumn::make('customer.name')
                     ->label('Cliente')
-                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
+                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
                 TextColumn::make('description')
                     ->label('Descripción')
                     ->limit(20),

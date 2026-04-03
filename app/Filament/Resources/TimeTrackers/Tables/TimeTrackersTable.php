@@ -22,7 +22,7 @@ class TimeTrackersTable
                 TextColumn::make('customer.name')
                     ->label('Customer')
                     ->searchable()
-                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
+                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
                 TextColumn::make('user.name')
                     ->label('Usuario')
                     ->searchable(),
@@ -43,13 +43,13 @@ class TimeTrackersTable
                 TextColumn::make('hours')
                     ->label('Horas')
                     ->numeric(),
-                IconColumn::make('billed')
-                    ->label('Facturado')
-                    ->boolean(),
                 TextColumn::make('amount')
                     ->label('Monto')
                     ->numeric()
                     ->sortable(),
+                IconColumn::make('billed')
+                    ->label('Facturado')
+                    ->boolean(),
                 TextColumn::make('invoice.name')
                     ->label('Factura')
                     ->searchable(),
@@ -86,13 +86,19 @@ class TimeTrackersTable
                 SelectFilter::make('customer_id')
                     ->label('Cliente')
                     ->relationship('customer', 'name')
-                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
+                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
                 SelectFilter::make('user_id')
                     ->label('Usuario')
                     ->relationship('user', 'lastname'),
                 SelectFilter::make('project_id')
                     ->label('Proyecto')
                     ->relationship('project', 'name'),
+                SelectFilter::make('approved')
+                    ->label('Aprobado')
+                    ->options([
+                        '1' => 'Aprobado',
+                        '0' => 'No aprobado',
+                    ]),
                 SelectFilter::make('billed')
                     ->label('Facturado')
                     ->options([
@@ -104,12 +110,6 @@ class TimeTrackersTable
                     ->options([
                         '1' => 'Pagado',
                         '0' => 'No pagado',
-                    ]),
-                SelectFilter::make('approved')
-                    ->label('Aprobado')
-                    ->options([
-                        '1' => 'Aprobado',
-                        '0' => 'No aprobado',
                     ]),
             ])
             ->recordActions([

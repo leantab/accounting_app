@@ -23,9 +23,9 @@ class PaymentResource extends Resource
 {
     protected static ?string $model = Payment::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 
-    protected static ?string $recordTitleAttribute = 'Payment';
+    protected static ?string $recordTitleAttribute = 'Pagos';
 
     public static function canViewAny(): bool
     {
@@ -54,8 +54,8 @@ class PaymentResource extends Resource
                 TextInput::make('customer_id')
                     ->required()
                     ->numeric()
-                    ->default(fn () => Filament::auth()->user()?->currentCustomerId())
-                    ->visible(fn () => Filament::auth()->user()?->isAdmin()),
+                    ->default(fn() => Filament::auth()->user()?->currentCustomerId())
+                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
                 TextInput::make('from_company_id')
                     ->required()
                     ->numeric(),

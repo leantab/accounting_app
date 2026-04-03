@@ -20,14 +20,13 @@ class InvoiceItemFactory extends Factory
     public function definition(): array
     {
         return [
-            'customer_id' => Customer::factory(),
             'invoice_id' => Invoice::factory(),
             'name' => fake()->sentence(2),
             'quantity' => fake()->numberBetween(1, 10),
             'unit_price' => fake()->randomFloat(2, 1, 100),
             'discount_percentage' => 0,
             'discount_amount' => 0,
-            'total_price' => fn (array $attributes) => ($attributes['quantity'] * $attributes['unit_price']) - $attributes['discount_amount'],
+            'total_price' => fn(array $attributes) => ($attributes['quantity'] * $attributes['unit_price']) - $attributes['discount_amount'],
         ];
     }
 }
