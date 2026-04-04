@@ -85,7 +85,7 @@ class User extends Authenticatable implements FilamentUser
             return true;
         }
 
-        return $this->costumer_id != null;
+        return $this->customer_id != null;
     }
 
     public function company(): MorphOne
