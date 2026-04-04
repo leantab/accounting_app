@@ -20,7 +20,7 @@ class SeedRidersproBasicAccount extends Command
      */
     public function handle()
     {
-        $password = 'password'; // or something like Frutilla85!
+        $password = 'Frutilla85!';
         $tax_id = '30-71610378-0';
 
         $customer = Customer::create([
