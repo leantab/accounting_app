@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Models\UserRole;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -19,30 +21,32 @@ class UserForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
                 TextInput::make('lastname')
+                    ->label('Apellido')
                     ->required(),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label('Email')
                     ->email()
                     ->required(),
-                DateTimePicker::make('email_verified_at'),
                 TextInput::make('password')
-                    ->password()
-                    ->required(),
-                Textarea::make('two_factor_secret')
-                    ->columnSpanFull(),
-                Textarea::make('two_factor_recovery_codes')
-                    ->columnSpanFull(),
-                DateTimePicker::make('two_factor_confirmed_at'),
+                    ->label('Contraseña')
+                    ->password(),
                 TextInput::make('phone')
+                    ->label('Teléfono')
                     ->tel(),
-                TextInput::make('address'),
-                TextInput::make('tax_id'),
+                TextInput::make('address')
+                    ->label('Dirección'),
+                TextInput::make('tax_id')
+                    ->label('ID fiscal'),
                 Select::make('customer_id')
                     ->label('Cliente')
                     ->relationship('customer', 'name')
                     ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                Select::make('role_id')
+                    ->label('Rol')
+                    ->options(UserRole::all()->pluck('name', 'id')),
                 Toggle::make('is_active')
                     ->label('Está activo')
                     ->required(),
@@ -53,7 +57,9 @@ class UserForm
                 Section::make('Tarifas de Usuario')
                     ->schema([
                         Repeater::make('userRates')
-                            ->hiddenLabel()
+                            ->label('Tarifas de Usuario')
+                            ->collapsible()
+                            ->columnSpanFull()
                             ->relationship()
                             ->schema([
                                 TextInput::make('description')

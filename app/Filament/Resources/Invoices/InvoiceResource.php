@@ -109,6 +109,7 @@ class InvoiceResource extends Resource
                 TextInput::make('discount_percentage')
                     ->label('Porcentaje de descuento')
                     ->numeric()
+                    ->suffix('%')
                     ->default(0),
                 TextInput::make('discount_amount')
                     ->label('Monto de descuento')
@@ -117,6 +118,7 @@ class InvoiceResource extends Resource
                 TextInput::make('tax_percentage')
                     ->label('Porcentaje de impuesto')
                     ->numeric()
+                    ->suffix('%')
                     ->default(0),
                 TextInput::make('tax_amount')
                     ->label('Monto de impuesto')
@@ -175,12 +177,14 @@ class InvoiceResource extends Resource
                     ->placeholder('-'),
                 TextEntry::make('discount_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->placeholder('-'),
                 TextEntry::make('discount_amount')
                     ->numeric()
                     ->placeholder('-'),
                 TextEntry::make('tax_percentage')
                     ->numeric()
+                    ->suffix('%')
                     ->placeholder('-'),
                 TextEntry::make('tax_amount')
                     ->numeric()

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enums\UserRoleEnum;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,29 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Filament\Panel;
 
+/**
+ * Model User
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $lastname
+ * @property string $email
+ * @property string $password
+ * @property string|null $tax_id
+ * @property int|null $customer_id
+ * @property int|null $user_role_id
+ * @property bool $is_admin
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Customer|null $customer
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TimeTracker> $timeTrackers
+ * @property-read int|null $time_trackers_count
+ * @property-read \App\Models\UserRole|null $role
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserRate> $userRates
+ * @property-read int|null $user_rates_count
+ */
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
@@ -31,6 +55,12 @@ class User extends Authenticatable implements FilamentUser
         'lastname',
         'email',
         'password',
+        'email_verified_at',
+        'customer_id',
+        'user_role_id',
+        'tax_id',
+        'is_admin',
+        'is_active',
     ];
 
     /**
@@ -56,6 +86,7 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -127,22 +158,22 @@ class User extends Authenticatable implements FilamentUser
 
     public function isOwner(): bool
     {
-        return $this->role->name === 'Owner';
+        return $this->role_id === UserRoleEnum::Owner->value;
     }
 
     public function isAccountant(): bool
     {
-        return $this->role->name === 'Administrador';
+        return $this->role_id === UserRoleEnum::Admin->value;
     }
 
     public function isManager(): bool
     {
-        return $this->role->name === 'Manager';
+        return $this->role_id === UserRoleEnum::Manager->value;
     }
 
     public function isEmployee(): bool
     {
-        return $this->role->name === 'Empleado';
+        return $this->role_id === UserRoleEnum::Employee->value;
     }
 
     public function canAccessCustomer(Customer $customer): bool

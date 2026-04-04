@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('user_rates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('time_tracker_item_type_id')->constrained()->cascadeOnDelete();
             $table->string('description')->nullable();

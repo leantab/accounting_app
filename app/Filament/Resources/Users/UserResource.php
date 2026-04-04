@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users;
 
+use App\Enums\UserRoleEnum;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ManageUsers;
@@ -34,8 +35,11 @@ class UserResource extends Resource
         if (! $user) {
             return false;
         }
+        if ($user->is_admin) {
+            return true;
+        }
 
-        return $user->is_admin;
+        return $user->customer_id != null && in_array($user->role_id, [UserRoleEnum::Owner->value, UserRoleEnum::Admin->value]);
     }
 
     public static function canAccess(): bool

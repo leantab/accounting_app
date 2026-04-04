@@ -37,12 +37,11 @@ class PaymentResource extends Resource
         if (! $user) {
             return false;
         }
-
         if ($user->is_admin) {
             return true;
         }
 
-        return in_array($user->role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value]);
+        return $user->customer_id != null && in_array($user->role_id, [UserRoleEnum::Owner->value, UserRoleEnum::Admin->value]);
     }
 
     public static function canAccess(): bool

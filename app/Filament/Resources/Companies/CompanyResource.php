@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Companies;
 
+use App\Enums\UserRoleEnum;
 use App\Filament\Resources\Companies\Pages\ManageCompanies;
 use App\Models\Company;
 use App\Models\Customer;
@@ -43,11 +44,11 @@ class CompanyResource extends Resource
             return false;
         }
 
-        if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
+        if ($user->is_admin) {
             return true;
         }
 
-        return $user->currentCustomerId() !== null;
+        return $user->customer_id != null && in_array($user->role_id, [UserRoleEnum::Owner->value, UserRoleEnum::Admin->value]);
     }
 
     public static function canAccess(): bool
