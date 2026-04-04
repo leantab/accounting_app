@@ -20,7 +20,7 @@ class SeedRidersproBasicAccount extends Command
      */
     public function handle()
     {
-        $password = 'Frutilla85!';
+        $password = 'password'; // or something like Frutilla85!
         $tax_id = '30-71610378-0';
 
         $customer = Customer::create([
@@ -83,5 +83,7 @@ class SeedRidersproBasicAccount extends Command
             'companyable_id' => $user4->id,
             'companyable_type' => User::class,
         ]);
+
+        $this->info('Riderspro basic account created successfully');
     }
 }
