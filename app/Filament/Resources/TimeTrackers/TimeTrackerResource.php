@@ -11,6 +11,7 @@ use App\Filament\Resources\TimeTrackers\Schemas\TimeTrackerInfolist;
 use App\Filament\Resources\TimeTrackers\Tables\TimeTrackersTable;
 use App\Models\TimeTracker;
 use BackedEnum;
+use Filament\Facades\Filament;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -28,7 +29,7 @@ class TimeTrackerResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('approved', false)->count();
+        return static::getModel()::where('customer_id', Filament::auth()->user()->customer_id)->where('approved', false)->count();
     }
 
     public static function form(Schema $schema): Schema
