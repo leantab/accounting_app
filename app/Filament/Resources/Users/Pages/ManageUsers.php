@@ -33,7 +33,7 @@ class ManageUsers extends ManageRecords
                         ->label('Customer')
                         ->options(Customer::all()->pluck('name', 'id'))
                         ->default(Filament::auth()->user()->customer_id)
-                        ->hidden(fn () => ! Filament::auth()->user()->is_admin)
+                        ->hidden(fn() => ! Filament::auth()->user()->is_admin)
                         ->required(),
                     TextInput::make('email')
                         ->label('Email')

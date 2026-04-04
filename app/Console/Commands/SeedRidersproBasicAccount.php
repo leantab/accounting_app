@@ -11,17 +11,21 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
-#[Signature('app:seed-riderspro-basic-account --password=password --tax_id=1234567890')]
+#[Signature('app:seed-riderspro-basic-account')]
 #[Description('Create the scaffolding for the riderspro basic account')]
 class SeedRidersproBasicAccount extends Command
 {
     /**
      * Execute the console command.
      */
-    public function handle(string $password, string $tax_id)
+    public function handle()
     {
+        $password = 'Frutilla85!';
+        $tax_id = '30-71610378-0';
+
         $customer = Customer::create([
             'name' => 'Riders Pro',
+            'email' => 'info@riderspro.com.ar',
             'tax_id' => $tax_id,
         ]);
 

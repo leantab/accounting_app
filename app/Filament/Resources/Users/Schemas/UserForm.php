@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use Filament\Facades\Filament;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -39,10 +40,15 @@ class UserForm
                 TextInput::make('address'),
                 TextInput::make('tax_id'),
                 Select::make('customer_id')
-                    ->relationship('customer', 'name'),
+                    ->label('Cliente')
+                    ->relationship('customer', 'name')
+                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
                 Toggle::make('is_active')
+                    ->label('Está activo')
                     ->required(),
                 Toggle::make('is_admin')
+                    ->label('Es administrador')
+                    ->hidden(fn() => ! Filament::auth()->user()->is_admin)
                     ->required(),
                 Section::make('Tarifas de Usuario')
                     ->schema([
