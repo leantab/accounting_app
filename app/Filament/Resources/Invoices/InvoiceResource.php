@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Invoices;
 
+use App\Actions\ProcessPDFInvoice;
 use App\Enums\UserRoleEnum;
 use App\Filament\Resources\Invoices\Pages\ManageInvoices;
 use App\Models\Company;
@@ -32,6 +33,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class InvoiceResource extends Resource
@@ -39,6 +41,8 @@ class InvoiceResource extends Resource
     protected static ?string $model = Invoice::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
+
+    protected static ?string $navigationLabel = 'Facturas';
 
     protected static ?string $recordTitleAttribute = 'Facturas';
 
@@ -60,6 +64,11 @@ class InvoiceResource extends Resource
     public static function canAccess(): bool
     {
         return static::canViewAny();
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('customer_id', Filament::auth()->user()->customer_id)->where('payed', false)->count();
     }
 
     public static function form(Schema $schema): Schema
@@ -273,7 +282,17 @@ class InvoiceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('customer_id')
+                    ->label('Customer')
+                    ->searchable()
+                    ->options(Customer::all()->pluck('name', 'id'))
+                    ->hidden(fn() => ! Filament::auth()->user()?->is_admin),
+                SelectFilter::make('payed')
+                    ->label('Pagado')
+                    ->options([
+                        'true' => 'Pagado',
+                        'false' => 'No pagado',
+                    ]),
             ])
             ->headerActions([
                 Action::make('uploadAndProcess')
@@ -281,16 +300,17 @@ class InvoiceResource extends Resource
                     ->icon('heroicon-o-arrow-up-tray')
                     ->schema([
                         FileUpload::make('file')
-                            ->label('File to Process')
+                            ->label('Archivo a procesar')
                             ->required(),
                     ])
                     ->action(function (array $data): void {
                         $filePath = $data['file'];
                         // Perform custom processing on the file here
                         // e.g., $contents = Storage::get($filePath);
+                        ProcessPDFInvoice::execute($filePath);
 
                         Notification::make()
-                            ->title('File processed successfully')
+                            ->title('Archivo procesado correctamente')
                             ->success()
                             ->send();
                     }),

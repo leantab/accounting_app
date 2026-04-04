@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Payments;
 
+use App\Enums\UserRoleEnum;
 use App\Filament\Resources\Payments\Pages\ManagePayments;
 use App\Models\Payment;
 use BackedEnum;
@@ -25,6 +26,8 @@ class PaymentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 
+    protected static ?string $navigationLabel = 'Pagos';
+
     protected static ?string $recordTitleAttribute = 'Pagos';
 
     public static function canViewAny(): bool
@@ -35,11 +38,11 @@ class PaymentResource extends Resource
             return false;
         }
 
-        if (method_exists($user, 'isAdmin') && $user->isAdmin()) {
+        if ($user->is_admin) {
             return true;
         }
 
-        return $user->currentCustomerId() !== null;
+        return in_array($user->role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value]);
     }
 
     public static function canAccess(): bool

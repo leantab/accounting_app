@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects;
 
+use App\Enums\UserRoleEnum;
 use App\Filament\Resources\Projects\Pages\ManageProjects;
 use App\Models\Project;
 use BackedEnum;
@@ -29,7 +30,29 @@ class ProjectResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
 
+    protected static ?string $navigationLabel = 'Proyectos';
+
     protected static ?string $recordTitleAttribute = 'Proyectos';
+
+    public static function canViewAny(): bool
+    {
+        $user = Filament::auth()->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->is_admin) {
+            return true;
+        }
+
+        return in_array($user->role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value, UserRoleEnum::Manager->value]);
+    }
+
+    public static function canAccess(): bool
+    {
+        return static::canViewAny();
+    }
 
     public static function form(Schema $schema): Schema
     {

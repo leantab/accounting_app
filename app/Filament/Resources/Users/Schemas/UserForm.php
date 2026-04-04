@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class UserForm
@@ -42,6 +44,28 @@ class UserForm
                     ->required(),
                 Toggle::make('is_admin')
                     ->required(),
+                Section::make('Tarifas de Usuario')
+                    ->schema([
+                        Repeater::make('userRates')
+                            ->hiddenLabel()
+                            ->relationship()
+                            ->schema([
+                                TextInput::make('description')
+                                    ->label('Descripción')
+                                    ->required(),
+                                TextInput::make('rate')
+                                    ->label('Tarifa')
+                                    ->numeric()
+                                    ->required(),
+                                Select::make('time_tracker_item_type_id')
+                                    ->label('Tipo de item')
+                                    ->relationship('timeTrackerItemType', 'name')
+                                    ->required(),
+                            ])
+                            ->defaultItems(0)
+                            ->addActionLabel('Agregar tarifa')
+                            ->columns(3),
+                    ]),
             ]);
     }
 }
