@@ -48,7 +48,7 @@ class CompanyResource extends Resource
             return true;
         }
 
-        return $user->customer_id != null && in_array($user->role_id, [UserRoleEnum::Owner->value, UserRoleEnum::Admin->value]);
+        return $user->customer_id != null && in_array($user->user_role_id, [UserRoleEnum::Owner->value, UserRoleEnum::Admin->value]);
     }
 
     public static function canAccess(): bool

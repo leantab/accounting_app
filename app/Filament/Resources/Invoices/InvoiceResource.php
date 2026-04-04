@@ -58,7 +58,7 @@ class InvoiceResource extends Resource
             return true;
         }
 
-        return in_array($user->role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value]);
+        return in_array($user->user_role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value]);
     }
 
     public static function canAccess(): bool

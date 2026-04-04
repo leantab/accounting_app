@@ -46,7 +46,7 @@ class ProjectResource extends Resource
             return true;
         }
 
-        return in_array($user->role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value, UserRoleEnum::Manager->value]);
+        return in_array($user->user_role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value, UserRoleEnum::Manager->value]);
     }
 
     public static function canAccess(): bool
