@@ -20,6 +20,10 @@ class UserForm
     {
         return $schema
             ->components([
+                Select::make('customer_id')
+                    ->label('Cliente')
+                    ->relationship('customer', 'name')
+                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
                 TextInput::make('name')
                     ->label('Nombre')
                     ->required(),
@@ -30,9 +34,6 @@ class UserForm
                     ->label('Email')
                     ->email()
                     ->required(),
-                TextInput::make('password')
-                    ->label('Contraseña')
-                    ->password(),
                 TextInput::make('phone')
                     ->label('Teléfono')
                     ->tel(),
@@ -40,10 +41,6 @@ class UserForm
                     ->label('Dirección'),
                 TextInput::make('tax_id')
                     ->label('ID fiscal'),
-                Select::make('customer_id')
-                    ->label('Cliente')
-                    ->relationship('customer', 'name')
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
                 Select::make('role_id')
                     ->label('Rol')
                     ->options(UserRole::all()->pluck('name', 'id')),
@@ -55,6 +52,7 @@ class UserForm
                     ->hidden(fn() => ! Filament::auth()->user()->is_admin)
                     ->required(),
                 Section::make('Tarifas de Usuario')
+                    ->columnSpanFull()
                     ->schema([
                         Repeater::make('userRates')
                             ->label('Tarifas de Usuario')
@@ -62,16 +60,15 @@ class UserForm
                             ->columnSpanFull()
                             ->relationship()
                             ->schema([
-                                TextInput::make('description')
-                                    ->label('Descripción')
-                                    ->required(),
-                                TextInput::make('rate')
-                                    ->label('Tarifa')
-                                    ->numeric()
-                                    ->required(),
                                 Select::make('time_tracker_item_type_id')
                                     ->label('Tipo de item')
                                     ->relationship('timeTrackerItemType', 'name')
+                                    ->required(),
+                                TextInput::make('description')
+                                    ->label('Descripción'),
+                                TextInput::make('rate')
+                                    ->label('Tarifa')
+                                    ->numeric()
                                     ->required(),
                             ])
                             ->defaultItems(0)
