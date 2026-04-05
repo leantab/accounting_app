@@ -11,7 +11,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/app')->name('dashboard');
+    // Route::get('/app')->name('dashboard');
 });
 
 require __DIR__ . '/settings.php';

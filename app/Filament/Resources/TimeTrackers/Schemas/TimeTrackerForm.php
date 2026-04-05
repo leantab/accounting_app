@@ -89,8 +89,6 @@ class TimeTrackerForm
                 Repeater::make('items')
                     ->relationship('items')
                     ->schema([
-                        Hidden::make('user_id')
-                            ->default(Filament::auth()->user()->id),
                         DatePicker::make('date')
                             ->format('Y-m-d')
                             ->native(false)
@@ -103,27 +101,29 @@ class TimeTrackerForm
                             ->live(),
                         TextInput::make('hours')
                             ->numeric()
-                            ->requiredWithout('time_start', 'time_end'),
+                            ->visible(fn(Get $get) => $get('time_tracker_item_type_id') == TimeTrackerItemTypeEnum::HOURS->value)
+                            ->requiredIf('time_tracker_item_type_id', TimeTrackerItemTypeEnum::HOURS->value),
                         TimePicker::make('time_start')
                             ->format('H:i')
                             ->native(false)
                             ->seconds(false)
                             ->minutesStep(15)
                             ->displayFormat('H:i')
-                            ->requiredWithout('hours'),
+                            ->visible(fn(Get $get) => $get('time_tracker_item_type_id') == TimeTrackerItemTypeEnum::HOURS->value),
                         TimePicker::make('time_end')
                             ->format('H:i')
                             ->native(false)
                             ->seconds(false)
                             ->minutesStep(15)
                             ->displayFormat('H:i')
-                            ->requiredWithout('hours'),
+                            ->visible(fn(Get $get) => $get('time_tracker_item_type_id') == TimeTrackerItemTypeEnum::HOURS->value),
                         TextInput::make('description')
-                            ->label('Descripción'),
+                            ->label('Descripción')
+                            ->visible(fn(Get $get) => in_array($get('time_tracker_item_type_id'), [TimeTrackerItemTypeEnum::EXPENSES->value, TimeTrackerItemTypeEnum::TRAVEL->value, TimeTrackerItemTypeEnum::GUARD->value])),
                         TextInput::make('amount')
                             ->label('Monto')
                             ->numeric()
-                            ->visible(fn(Get $get) => $get('time_tracker_item_type_id') == TimeTrackerItemTypeEnum::EXPENSES->value)
+                            ->visible(fn(Get $get) => in_array($get('time_tracker_item_type_id'), [TimeTrackerItemTypeEnum::EXPENSES->value, TimeTrackerItemTypeEnum::TRAVEL->value]))
                             ->live(onBlur: true),
                     ])
                     ->columns(3)

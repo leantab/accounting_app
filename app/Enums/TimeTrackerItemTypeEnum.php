@@ -4,23 +4,21 @@ namespace App\Enums;
 
 enum TimeTrackerItemTypeEnum: int
 {
-    case GENERAL = 1;
-    case HOURS = 2;
-    case DAY = 3;
-    case ASSEMBLY = 4;
-    case DISASSEMBLY = 5;
-    case GUARD = 6;
-    case TRAVEL = 7;
-    case EXPENSES = 8;
+    case HOURS = 1;
+    case DAY = 2;
+    case HALF_DAY = 3;
+    case RIGGING = 4;
+    case GUARD = 5;
+    case TRAVEL = 6;
+    case EXPENSES = 7;
 
     public function label(): string
     {
         return match ($this) {
-            self::GENERAL => 'General',
             self::HOURS => 'Horas',
             self::DAY => 'Jornada',
-            self::ASSEMBLY => 'Montaje',
-            self::DISASSEMBLY => 'Desarme',
+            self::HALF_DAY => 'Media Jornada',
+            self::RIGGING => 'Montaje',
             self::GUARD => 'Guardia',
             self::TRAVEL => 'Viáticos',
             self::EXPENSES => 'Gastos',

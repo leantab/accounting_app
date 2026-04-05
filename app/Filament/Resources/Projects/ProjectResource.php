@@ -108,6 +108,7 @@ class ProjectResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn(Builder $query) => Filament::auth()->user()->is_admin ? $query : $query->where('customer_id', Filament::auth()->user()->customer_id))
             ->recordTitleAttribute('Proyecto')
             ->columns([
                 TextColumn::make('name')
@@ -124,7 +125,13 @@ class ProjectResource extends Resource
                     ->label('Fecha de fin'),
                 TextColumn::make('status.name')
                     ->label('Estado')
-                    ->badge(),
+                    ->badge()
+                    ->color(fn($state) => match ($state) {
+                        'Borrador' => 'gray',
+                        'En Proceso' => 'blue',
+                        'Completado' => 'green',
+                        'Cancelado' => 'red',
+                    }),
             ])
             ->filters([
                 //
