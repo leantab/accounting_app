@@ -21,7 +21,7 @@ class InvoiceFileParser implements Agent, Conversational, HasStructuredOutput, H
      */
     public function instructions(): Stringable|string
     {
-        return 'You are a helpful assistant that can parse invoice files.';
+        return 'You are a helpful assistant for an accounting company that can parse invoice files in PDF format.';
     }
 
     /**

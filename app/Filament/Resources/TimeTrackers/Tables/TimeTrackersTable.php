@@ -53,38 +53,33 @@ class TimeTrackersTable
                     ->label('Fecha de fin')
                     ->date('d/m/Y')
                     ->sortable(),
-                TextColumn::make('hours')
-                    ->label('Horas')
-                    ->numeric(),
                 TextColumn::make('amount')
                     ->label('Monto')
                     ->numeric()
                     ->sortable(),
+                IconColumn::make('approved')
+                    ->label('Aprobado')
+                    ->boolean(),
                 IconColumn::make('billed')
                     ->label('Facturado')
                     ->boolean(),
-                TextColumn::make('invoice.name')
-                    ->label('Factura')
-                    ->searchable(),
                 IconColumn::make('paid')
                     ->label('Pagado')
                     ->boolean(),
+                TextColumn::make('approved_at')
+                    ->label('Fecha de aprobación')
+                    ->date('d/m/Y'),
+                TextColumn::make('approvedBy.fullName')
+                    ->label('Aprobado por'),
+                TextColumn::make('invoice.name')
+                    ->label('Factura')
+                    ->searchable(),
                 TextColumn::make('payment.id')
                     ->label('Payment')
                     ->searchable(),
                 TextColumn::make('paid_date')
                     ->label('Fecha de pago')
-                    ->date('d/m/Y')
-                    ->sortable(),
-                IconColumn::make('approved')
-                    ->label('Aprobado')
-                    ->boolean(),
-                TextColumn::make('approved_at')
-                    ->label('Fecha de aprobación')
-                    ->date('d/m/Y')
-                    ->sortable(),
-                TextColumn::make('approvedBy.fullName')
-                    ->label('Aprobado por'),
+                    ->date('d/m/Y'),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()

@@ -2,12 +2,17 @@
 
 namespace App\Actions;
 
+use App\Actions\Invoices\CreateInvoiceAction;
 use App\Ai\Agents\InvoiceFileParser;
+use App\Data\CreateInvoiceData;
+use App\Models\Company;
+use Filament\Facades\Filament;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 
 class ProcessPDFInvoice
 {
-    public static function execute(UploadedFile $file)
+    public static function execute(UploadedFile $file, ?int $customerId = null)
     {
         $content = $file->get();
 
@@ -56,6 +61,30 @@ class ProcessPDFInvoice
 
         $result = $agent->prompt($prompt, ['file_content' => $content]);
 
-        dd($result);
+        //Find or Create FromCompany
+        $fromCompany = Company::where('tax_id', $result['from_company']['tax_id'])->first();
+        if (!$fromCompany) {
+            $fromCompany = Company::create([
+                'name' => $result['from_company']['name'],
+                'social_reason' => $result['from_company']['social_reason'],
+                'tax_id' => $result['from_company']['tax_id'],
+                'customer_id' => Filament::auth()->user()->customer_id ?? Auth::user()->customer_id,
+            ]);
+        }
+
+        //Find or Create ToCompany
+        $toCompany = Company::where('tax_id', $result['to_company']['tax_id'])->first();
+        if (!$toCompany) {
+            $toCompany = Company::create([
+                'name' => $result['to_company']['name'],
+                'social_reason' => $result['to_company']['social_reason'],
+                'tax_id' => $result['to_company']['tax_id'],
+                'customer_id' => Filament::auth()->user()->customer_id ?? Auth::user()->customer_id,
+            ]);
+        }
+
+        $data = CreateInvoiceData::from($result);
+
+        return CreateInvoiceAction::execute($data);
     }
 }
