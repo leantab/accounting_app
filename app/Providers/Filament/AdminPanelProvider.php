@@ -70,6 +70,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->databaseNotifications()
             ->brandLogo(asset('icon3.png'))
+            ->brandName(config('app.name'))
             ->favicon(asset('icon3.png'));
     }
 }

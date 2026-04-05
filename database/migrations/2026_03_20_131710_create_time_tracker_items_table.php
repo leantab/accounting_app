@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('time_tracker_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('time_tracker_id')->constrained()->cascadeOnDelete();
             $table->foreignId('time_tracker_item_type_id')->constrained()->cascadeOnDelete();
             $table->date('date');
@@ -21,7 +20,6 @@ return new class extends Migration
             $table->time('time_start')->nullable();
             $table->time('time_end')->nullable();
             $table->text('description')->nullable();
-            $table->boolean('is_billable')->default(false);
             $table->decimal('rate', 10, 2)->nullable();
             $table->decimal('amount', 10, 2)->nullable();
             $table->timestamps();

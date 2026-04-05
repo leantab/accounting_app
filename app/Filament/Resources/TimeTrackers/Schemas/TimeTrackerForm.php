@@ -7,6 +7,7 @@ use App\Enums\UserRoleEnum;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Project;
+use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
@@ -31,8 +32,12 @@ class TimeTrackerForm
                     ->default(Filament::auth()->user()->customer_id)
                     ->hidden(fn() => ! Filament::auth()->user()->is_admin)
                     ->required(),
-                Hidden::make('user_id')
-                    ->default(Filament::auth()->user()->id),
+                Select::make('user_id')
+                    ->label('Usuario')
+                    ->options(fn() => Filament::auth()->user()->is_admin ? User::all()->pluck('name', 'id') : User::where('customer_id', Filament::auth()->user()->customer_id)->get()->pluck('name', 'id'))
+                    ->default(Filament::auth()->user()->id)
+                    ->hidden(fn() => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value)
+                    ->required(),
                 Select::make('project_id')
                     ->label('Proyecto')
                     ->options(function () {
@@ -42,8 +47,7 @@ class TimeTrackerForm
                         }
 
                         return Project::where('customer_id', $user->customer_id)->get()->pluck('name', 'id');
-                    })
-                    ->required(),
+                    }),
                 TextInput::make('name')
                     ->required(),
                 DatePicker::make('date_start')
@@ -51,12 +55,14 @@ class TimeTrackerForm
                     ->native(false)
                     ->format('Y-m-d')
                     ->displayFormat('d/m/Y')
+                    ->closeOnDateSelection()
                     ->required(),
                 DatePicker::make('date_end')
                     ->label('Fecha de fin')
                     ->native(false)
                     ->format('Y-m-d')
                     ->displayFormat('d/m/Y')
+                    ->closeOnDateSelection()
                     ->required(),
                 Textarea::make('description')
                     ->label('Descripción')
@@ -76,17 +82,10 @@ class TimeTrackerForm
                     ->label('Pagado')
                     ->default(false)
                     ->hidden(fn() => Filament::auth()->user()->role_id == UserRoleEnum::Employee->value),
-                // Select::make('payment_id')
-                //     ->label('Pago')
-                //     ->options(function () {
-                //         $user = Filament::auth()->user();
-                //         if ($user->is_admin) {
-                //             return Payment::all()->pluck('name', 'id');
-                //         }
-
-                //         return Payment::where('customer_id', $user->customer_id)->get()->pluck('name', 'id');
-                //     })
-                //     ->hidden(fn() => Filament::auth()->user()->role_id == UserRoleEnum::Employee->value),
+                Select::make('payment_id')
+                    ->label('Pago')
+                    ->options(fn() => Filament::auth()->user()->is_admin ? Payment::all()->pluck('reference', 'id') : Payment::where('customer_id', Filament::auth()->user()->customer_id)->get()->pluck('reference', 'id'))
+                    ->hidden(fn() => Filament::auth()->user()->role_id == UserRoleEnum::Employee->value),
                 Repeater::make('items')
                     ->relationship('items')
                     ->schema([
@@ -100,7 +99,8 @@ class TimeTrackerForm
                             ->required(),
                         Select::make('time_tracker_item_type_id')
                             ->relationship('timeTrackerItemType', 'name')
-                            ->required(),
+                            ->required()
+                            ->live(),
                         TextInput::make('hours')
                             ->numeric()
                             ->requiredWithout('time_start', 'time_end'),

@@ -47,8 +47,8 @@ class DatabaseSeeder extends Seeder
         DB::table('time_tracker_item_types')->insert([
             ['name' => 'Horas'],
             ['name' => 'Jornada'],
+            ['name' => 'Media Jornada'],
             ['name' => 'Montaje'],
-            ['name' => 'Desarme'],
             ['name' => 'Guardia'],
             ['name' => 'Viáticos'],
             ['name' => 'Gastos'],

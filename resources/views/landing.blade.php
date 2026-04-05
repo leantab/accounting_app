@@ -121,23 +121,24 @@
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <img class="h-8 w-8 object-contain" data-alt="Logotipo minimalista Soberano color ámbar"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD-5E5sth771VrMu7BfXfxYDFppxdKw31kmQdk2Ds0-01dem1LApMFvUt9V1ovJuzQCXOIuMdbOfTBeaDEUMaFDmh1NbkZAFHbU6FfBx2WcbON-mGDxLIL_WeY-3ktCqqWw7zTjnpV2CnGK2ZiioYDDnPPf8FjceFY76PK2rHDNQ4BtTQDMnE1Az9cDBBtn3-YduJEWVzoCadJqBr6XH2vW6B8iQjT7OZ1hTdYC3zKlhF10NrcoY_nm4ofFo_sWnnKHBifv1aGcC4" />
-                <span class="text-xl font-black text-[#dee5ff] tracking-tight">Soberano</span>
+                    src="{{ asset('icon3.png') }}" />
+                <span class="text-xl font-black text-[#dee5ff] tracking-tight">{{ config('app.name') }}</span>
             </div>
             <div class="hidden md:flex items-center space-gap-8 gap-8">
                 <a class="font-['Manrope'] font-bold text-sm tracking-wide text-[#ffad3a] border-b-2 border-[#f59e0a] pb-1"
                     href="#">Inicio</a>
                 <a class="font-['Manrope'] font-bold text-sm tracking-wide text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-                    href="#">Funciones</a>
+                    href="#features">Funciones</a>
                 <a class="font-['Manrope'] font-bold text-sm tracking-wide text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-                    href="#">Precios</a>
+                    href="#pricing">Precios</a>
                 <a class="font-['Manrope'] font-bold text-sm tracking-wide text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-                    href="#">Contacto</a>
+                    href="#contact">Contacto</a>
             </div>
             <div class="flex items-center gap-4">
                 <button
-                    class="bg-amber-gradient text-on-primary-fixed px-5 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95 duration-150">
-                    Prueba Gratis
+                    class="bg-amber-gradient text-on-primary-fixed px-5 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95 duration-150"
+                    onclick="window.location.href = '/app/login'">
+                    Ingresar
                 </button>
                 <button class="md:hidden text-on-surface">
                     <span class="material-symbols-outlined">menu</span>
@@ -192,7 +193,7 @@
             </div>
         </section>
         <!-- Bento Grid Features -->
-        <section class="py-24 px-6 bg-surface-container-low">
+        <section class="py-24 px-6 bg-surface-container-low" id="features">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16 space-y-4">
                     <h2 class="text-3xl md:text-5xl font-bold text-on-surface tracking-tight">Potencia tu flujo de
@@ -244,7 +245,7 @@
             </div>
         </section>
         <!-- Pricing Section -->
-        <section class="py-24 px-6 bg-surface">
+        <section class="py-24 px-6 bg-surface" id="pricing">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16">
                     <h2 class="text-4xl font-extrabold text-on-surface mb-4">Planes para cada etapa</h2>
@@ -253,9 +254,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Plan Basic -->
                     <div class="bg-surface-container p-10 rounded-2xl border border-outline-variant/10 flex flex-col">
-                        <h4 class="text-lg font-bold text-on-surface-variant mb-2">Básico</h4>
+                        <h4 class="text-lg font-bold text-on-surface-variant mb-2">Profesional</h4>
                         <div class="flex items-baseline gap-1 mb-6">
-                            <span class="text-4xl font-black text-on-surface">$29</span>
+                            <span class="text-4xl font-black text-on-surface">U$D 29</span>
                             <span class="text-on-surface-variant">/mes</span>
                         </div>
                         <ul class="space-y-4 mb-10 flex-grow">
@@ -284,9 +285,9 @@
                             class="absolute top-0 right-10 -translate-y-1/2 bg-amber-gradient text-on-primary-fixed px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">
                             Popular
                         </div>
-                        <h4 class="text-lg font-bold text-primary mb-2">Profesional</h4>
+                        <h4 class="text-lg font-bold text-primary mb-2">PyME</h4>
                         <div class="flex items-baseline gap-1 mb-6">
-                            <span class="text-4xl font-black text-on-surface">$79</span>
+                            <span class="text-4xl font-black text-on-surface">U$D 79</span>
                             <span class="text-on-surface-variant">/mes</span>
                         </div>
                         <ul class="space-y-4 mb-10 flex-grow">
@@ -318,9 +319,9 @@
                     </div>
                     <!-- Plan Enterprise -->
                     <div class="bg-surface-container p-10 rounded-2xl border border-outline-variant/10 flex flex-col">
-                        <h4 class="text-lg font-bold text-on-surface-variant mb-2">Empresarial</h4>
+                        <h4 class="text-lg font-bold text-on-surface-variant mb-2">Empresa</h4>
                         <div class="flex items-baseline gap-1 mb-6">
-                            <span class="text-4xl font-black text-on-surface">$199</span>
+                            <span class="text-4xl font-black text-on-surface">U$D 199</span>
                             <span class="text-on-surface-variant">/mes</span>
                         </div>
                         <ul class="space-y-4 mb-10 flex-grow">

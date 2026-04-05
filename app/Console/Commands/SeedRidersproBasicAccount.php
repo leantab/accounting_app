@@ -43,40 +43,40 @@ class SeedRidersproBasicAccount extends Command
         $user = User::create([
             'name' => 'Fabio',
             'lastname' => 'Razugny',
-            'email' => 'admin@riderspro.com',
+            'email' => 'fabio@riderspro.com.ar',
             'customer_id' => $customer->id,
             'password' => Hash::make($password),
-            'role_id' => UserRoleEnum::Owner->value,
+            'user_role_id' => UserRoleEnum::Owner->value,
             'email_verified_at' => now(),
         ]);
 
         $user2 = User::create([
             'name' => 'Sabrina',
             'lastname' => 'Sanchez',
-            'email' => 'info@riderspro.com',
+            'email' => 'info@riderspro.com.ar',
             'customer_id' => $customer->id,
             'password' => Hash::make($password),
-            'role_id' => UserRoleEnum::Admin->value,
+            'user_role_id' => UserRoleEnum::Admin->value,
             'email_verified_at' => now(),
         ]);
 
         $user3 = User::create([
             'name' => 'Maro',
             'lastname' => 'Papardopulos',
-            'email' => 'maro@riderspro.com',
+            'email' => 'maro@riderspro.com.ar',
             'customer_id' => $customer->id,
             'password' => Hash::make($password),
-            'role_id' => UserRoleEnum::Manager->value,
+            'user_role_id' => UserRoleEnum::Manager->value,
             'email_verified_at' => now(),
         ]);
 
         $user4 = User::create([
             'name' => 'Maria',
             'lastname' => 'Perez',
-            'email' => 'empleado@riderspro.com',
+            'email' => 'empleado@riderspro.com.ar',
             'customer_id' => $customer->id,
             'password' => Hash::make($password),
-            'role_id' => UserRoleEnum::Employee->value,
+            'user_role_id' => UserRoleEnum::Employee->value,
             'tax_id' => '1234567890',
             'email_verified_at' => now(),
         ]);
