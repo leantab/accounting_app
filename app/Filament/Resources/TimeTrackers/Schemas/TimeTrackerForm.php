@@ -67,25 +67,29 @@ class TimeTrackerForm
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpanFull(),
-                // Select::make('invoice_id')
-                //     ->label('Factura')
-                //     ->options(function () {
-                //         $user = Filament::auth()->user();
-                //         if ($user->is_admin) {
-                //             return Invoice::all()->pluck('name', 'id');
-                //         }
+                Toggle::make('billed')
+                    ->label('Facturado')
+                    ->default(false)
+                    ->hidden(fn() => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value),
+                Select::make('invoice_id')
+                    ->label('Factura')
+                    ->options(function () {
+                        $user = Filament::auth()->user();
+                        if ($user->is_admin) {
+                            return Invoice::all()->pluck('name', 'id');
+                        }
 
-                //         return Invoice::where('customer_id', $user->customer_id)->get()->pluck('name', 'id');
-                //     })
-                //     ->hidden(fn() => Filament::auth()->user()->role_id == UserRoleEnum::Employee->value),
+                        return Invoice::where('customer_id', $user->customer_id)->get()->pluck('name', 'id');
+                    })
+                    ->hidden(fn() => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value),
                 Toggle::make('paid')
                     ->label('Pagado')
                     ->default(false)
-                    ->hidden(fn() => Filament::auth()->user()->role_id == UserRoleEnum::Employee->value),
+                    ->hidden(fn() => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value),
                 Select::make('payment_id')
                     ->label('Pago')
                     ->options(fn() => Filament::auth()->user()->is_admin ? Payment::all()->pluck('reference', 'id') : Payment::where('customer_id', Filament::auth()->user()->customer_id)->get()->pluck('reference', 'id'))
-                    ->hidden(fn() => Filament::auth()->user()->role_id == UserRoleEnum::Employee->value),
+                    ->hidden(fn() => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value),
                 Repeater::make('items')
                     ->relationship('items')
                     ->schema([

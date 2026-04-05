@@ -7,9 +7,9 @@ use App\Models\TimeTracker;
 use App\Models\User;
 use Carbon\Carbon;
 
-class AutoCompleteAction
+class AutoCompleteTimeTrackerAction
 {
-    public function execute(): void
+    public static function execute(): void
     {
         $timeTrackers = TimeTracker::query()
             ->whereNull('amount')
@@ -42,14 +42,19 @@ class AutoCompleteAction
                 $item->refresh();
 
                 $itemHours = (float) ($item->hours ?? 0);
+                $itemAmount = (float) ($item->amount ?? 0);
 
                 if ($item->timeTrackerItemType->name === TimeTrackerItemTypeEnum::HOURS->label()) {
-                    $amount += $itemHours * $rate;
+                    $itemAmount = $itemHours * $rate;
                 } elseif ($rate > 0) {
-                    $amount += $rate;
-                } else {
-                    $amount += (float) ($item->amount ?? 0);
+                    $itemAmount = $rate;
                 }
+
+                $item->update([
+                    'amount' => $itemAmount,
+                ]);
+
+                $amount += $itemAmount;
             }
 
             $timeTracker->update([

@@ -24,8 +24,8 @@ class ViewTimeTracker extends ViewRecord
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(fn($record) => (Filament::auth()->user()->is_admin
-                    || in_array(Filament::auth()->user()->role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value]))
-                    && ! $record->approved)
+                    || in_array(Filament::auth()->user()->user_role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value])
+                    && ! $record->approved))
                 ->action(function ($record) {
                     $record->update([
                         'approved' => true,

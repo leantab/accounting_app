@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TimeTrackers\Tables;
 
+use App\Actions\TimeTracker\AutoCompleteTimeTrackerAction;
 use App\Enums\UserRoleEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -35,7 +36,7 @@ class TimeTrackersTable
                     ->label('Customer')
                     ->searchable()
                     ->hidden(fn() => ! Filament::auth()->user()->is_admin),
-                TextColumn::make('user.name')
+                TextColumn::make('user.fullName')
                     ->label('Usuario')
                     ->searchable(),
                 TextColumn::make('project.name')
@@ -137,6 +138,7 @@ class TimeTrackersTable
                     ->icon('heroicon-o-document-text')
                     ->action(function () {
                         // TODO: Add export action
+                        AutoCompleteTimeTrackerAction::execute();
                     }),
             ]);
     }
