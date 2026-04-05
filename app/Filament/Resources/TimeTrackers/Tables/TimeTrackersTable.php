@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TimeTrackers\Tables;
 
+use App\Enums\UserRoleEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -19,7 +20,16 @@ class TimeTrackersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => Filament::auth()->user()->is_admin ? $query : $query->where('customer_id', Filament::auth()->user()->customer_id))
+            ->modifyQueryUsing(function (Builder $query): Builder {
+                $user = Filament::auth()->user();
+                if ($user->is_admin) {
+                    return $query;
+                }
+                if ($user->user_role_id == UserRoleEnum::Employee->value) {
+                    return $query->where('user_id', $user->id);
+                }
+                return $query->where('customer_id', $user->customer_id);
+            })
             ->columns([
                 TextColumn::make('customer.name')
                     ->label('Customer')

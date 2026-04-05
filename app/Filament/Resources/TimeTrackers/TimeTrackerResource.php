@@ -32,6 +32,11 @@ class TimeTrackerResource extends Resource
         return static::getModel()::where('customer_id', Filament::auth()->user()->customer_id)->where('approved', false)->count();
     }
 
+    public static function canAccess(): bool
+    {
+        return Filament::auth()->user()->is_admin || Filament::auth()->user()->customer_id != null;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return TimeTrackerForm::configure($schema);

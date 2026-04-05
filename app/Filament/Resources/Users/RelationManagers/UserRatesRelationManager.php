@@ -24,12 +24,12 @@ class UserRatesRelationManager extends RelationManager
                 CreateAction::make(),
             ])
             ->columns([
+                TextColumn::make('timeTrackerItemType.name')
+                    ->label('Tipo de item Planilla'),
                 TextColumn::make('description')
                     ->label('Descripción'),
                 TextColumn::make('rate')
                     ->label('Tarifa'),
-                TextColumn::make('timeTrackerItemType.name')
-                    ->label('Tipo de item Planilla'),
             ]);
     }
 
@@ -37,15 +37,15 @@ class UserRatesRelationManager extends RelationManager
     {
         return $schema
             ->components([
+                Select::make('time_tracker_item_type_id')
+                    ->label('Tipo de item')
+                    ->relationship('timeTrackerItemType', 'name')
+                    ->required(),
                 TextInput::make('description')
                     ->label('Descripción')
                     ->required(),
                 TextInput::make('rate')
                     ->label('Tarifa')
-                    ->required(),
-                Select::make('time_tracker_item_type_id')
-                    ->label('Tipo de item')
-                    ->relationship('timeTrackerItemType', 'name')
                     ->required(),
             ]);
     }
