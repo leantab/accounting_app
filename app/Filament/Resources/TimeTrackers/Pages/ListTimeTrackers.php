@@ -22,7 +22,7 @@ class ListTimeTrackers extends ListRecords
     public function getTabs(): array
     {
         return [
-            'all' => Tab::make(),
+            'Todas' => Tab::make(),
             'Pendiente Aprobación' => Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('approved', false)),
             'Aprobadas no facturadas' => Tab::make()

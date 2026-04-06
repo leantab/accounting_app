@@ -25,7 +25,9 @@ class TimeTrackerResource extends Resource
 
     protected static ?string $navigationLabel = 'Planillas de horas';
 
-    protected static ?string $recordTitleAttribute = 'Planilla de horas';
+    protected static ?string $modelLabel = 'Planilla de horas';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationBadge(): ?string
     {
