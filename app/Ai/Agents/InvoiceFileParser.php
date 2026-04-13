@@ -49,6 +49,7 @@ class InvoiceFileParser implements Agent, Conversational, HasStructuredOutput, H
      */
     public function schema(JsonSchema $schema): array
     {
+        // OpenAI Error [400]: invalid_request_error - Invalid schema for response_format 'schema_definition': In context=('properties', 'invoice'), 'additionalProperties' is required to be supplied and to be false
         return [
             'invoice' => $schema->object([
                 'invoice_number' => $schema->string()->required(),
@@ -70,6 +71,7 @@ class InvoiceFileParser implements Agent, Conversational, HasStructuredOutput, H
                 'address' => $schema->string()->required(),
                 'tax_id' => $schema->string()->required(),
             ])->required(),
+            'additionalProperties' => false,
         ];
     }
 }
