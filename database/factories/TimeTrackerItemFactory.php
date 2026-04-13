@@ -12,13 +12,11 @@ class TimeTrackerItemFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
             'time_tracker_id' => TimeTracker::factory(),
             'time_tracker_item_type_id' => TimeTrackerItemType::firstOrCreate(['name' => 'General'])->id,
             'date' => now(),
             'hours' => 5,
             'description' => $this->faker->sentence(),
-            'is_billable' => true,
             'rate' => 100,
             'amount' => 500,
         ];

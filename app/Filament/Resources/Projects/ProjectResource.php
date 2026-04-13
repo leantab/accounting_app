@@ -32,7 +32,9 @@ class ProjectResource extends Resource
 
     protected static ?string $navigationLabel = 'Proyectos';
 
-    protected static ?string $recordTitleAttribute = 'Proyectos';
+    protected static ?string $modelLabel = 'Proyecto';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function canViewAny(): bool
     {
@@ -59,6 +61,7 @@ class ProjectResource extends Resource
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required()
                     ->maxLength(255),
                 Select::make('customer_id')
@@ -76,9 +79,13 @@ class ProjectResource extends Resource
                     ->maxLength(255),
                 DatePicker::make('start_date')
                     ->label('Fecha de inicio')
+                    ->native(false)
+                    ->displayFormat('d/m/Y')
                     ->required(),
                 DatePicker::make('end_date')
-                    ->label('Fecha de fin'),
+                    ->label('Fecha de fin')
+                    ->native(false)
+                    ->displayFormat('d/m/Y'),
                 Select::make('project_status_id')
                     ->label('Estado')
                     ->relationship('status', 'name')
@@ -90,16 +97,21 @@ class ProjectResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
+                TextEntry::make('name')
+                    ->label('Nombre'),
                 TextEntry::make('customer.name')
                     ->label('Cliente')
                     ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                TextEntry::make('company.name')
+                    ->label('Empresa'),
                 TextEntry::make('description')
                     ->label('Descripción'),
                 TextEntry::make('start_date')
-                    ->label('Fecha de inicio'),
+                    ->label('Fecha de inicio')
+                    ->date('d/m/Y'),
                 TextEntry::make('end_date')
-                    ->label('Fecha de fin'),
+                    ->label('Fecha de fin')
+                    ->date('d/m/Y'),
                 TextEntry::make('status.name')
                     ->label('Estado'),
             ]);
@@ -112,17 +124,23 @@ class ProjectResource extends Resource
             ->recordTitleAttribute('Proyecto')
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable(),
                 TextColumn::make('customer.name')
                     ->label('Cliente')
                     ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                TextColumn::make('company.name')
+                    ->label('Empresa')
+                    ->searchable(),
                 TextColumn::make('description')
                     ->label('Descripción')
                     ->limit(20),
                 TextColumn::make('start_date')
-                    ->label('Fecha de inicio'),
+                    ->label('Fecha de inicio')
+                    ->date('d/m/Y'),
                 TextColumn::make('end_date')
-                    ->label('Fecha de fin'),
+                    ->label('Fecha de fin')
+                    ->date('d/m/Y'),
                 TextColumn::make('status.name')
                     ->label('Estado')
                     ->badge()

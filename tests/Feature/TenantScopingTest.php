@@ -86,12 +86,10 @@ test('non admin users only see records for their customer', function (): void {
 
     $tenantTimeTrackerItem = TimeTrackerItem::factory()->create([
         'time_tracker_id' => $tenantTimeTracker->id,
-        'user_id' => $tenantUser->id,
     ]);
 
     $otherTimeTrackerItem = TimeTrackerItem::factory()->create([
         'time_tracker_id' => $otherTimeTracker->id,
-        'user_id' => $otherTenantUser->id,
     ]);
 
     actingAs($tenantUser);
@@ -223,12 +221,10 @@ test('admin users can see records for all customers', function (): void {
 
     $tenantTimeTrackerItem = TimeTrackerItem::factory()->create([
         'time_tracker_id' => $tenantTimeTracker->id,
-        'user_id' => $tenantUser->id,
     ]);
 
     $otherTimeTrackerItem = TimeTrackerItem::factory()->create([
         'time_tracker_id' => $otherTimeTracker->id,
-        'user_id' => $otherTenantUser->id,
     ]);
 
     actingAs($admin);

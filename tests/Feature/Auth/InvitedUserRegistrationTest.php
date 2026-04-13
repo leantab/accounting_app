@@ -5,7 +5,7 @@ use App\Models\Customer;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-uses(TestCase::class);
+uses(TestCase::class, \Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 test('registration screen can be rendered for invited user', function () {
     $customer = Customer::factory()->create();

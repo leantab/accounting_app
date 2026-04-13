@@ -12,6 +12,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
@@ -19,6 +20,8 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use App\Models\Company;
+use App\Models\Invoice;
 
 class PaymentResource extends Resource
 {
@@ -28,7 +31,9 @@ class PaymentResource extends Resource
 
     protected static ?string $navigationLabel = 'Pagos';
 
-    protected static ?string $recordTitleAttribute = 'Pagos';
+    protected static ?string $modelLabel = 'Pago';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function canViewAny(): bool
     {
@@ -53,22 +58,34 @@ class PaymentResource extends Resource
     {
         return $schema
             ->components([
-                TextInput::make('customer_id')
-                    ->required()
-                    ->numeric()
-                    ->default(fn() => Filament::auth()->user()?->currentCustomerId())
-                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
-                TextInput::make('from_company_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('to_company_id')
-                    ->required()
-                    ->numeric(),
-                TextInput::make('invoice_id')
-                    ->numeric(),
+                Select::make('customer_id')
+                    ->label('Cliente')
+                    ->relationship('customer', 'name')
+                    ->default(fn() => Filament::auth()->user()?->customer_id)
+                    ->visible(fn() => Filament::auth()->user()?->is_admin)
+                    ->required(),
+                Select::make('from_company_id')
+                    ->relationship('fromCompany')
+                    ->label('De')
+                    ->searchable()
+                    ->options(fn() => Filament::auth()->user()->customer_id ? Company::where('customer_id', Filament::auth()->user()->customer_id)->pluck('name', 'id') : Company::all()->pluck('name', 'id'))
+                    ->required(),
+                Select::make('to_company_id')
+                    ->relationship('toCompany')
+                    ->label('Para')
+                    ->searchable()
+                    ->options(fn() => Filament::auth()->user()->customer_id ? Company::where('customer_id', Filament::auth()->user()->customer_id)->pluck('name', 'id') : Company::all()->pluck('name', 'id'))
+                    ->required(),
+                Select::make('invoice_id')
+                    ->relationship('invoice', 'name')
+                    ->label('Factura')
+                    ->searchable()
+                    ->nullable(),
                 TextInput::make('reference')
+                    ->label('Referencia')
                     ->required(),
                 TextInput::make('amount')
+                    ->label('Monto')
                     ->required()
                     ->numeric(),
             ]);
@@ -78,23 +95,28 @@ class PaymentResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('customer_id')
-                    ->numeric(),
-                TextEntry::make('from_company_id')
-                    ->numeric(),
-                TextEntry::make('to_company_id')
-                    ->numeric(),
-                TextEntry::make('invoice_id')
-                    ->numeric()
+                TextEntry::make('customer.name')
+                    ->label('Cliente')
+                    ->visible(fn() => Filament::auth()->user()?->is_admin),
+                TextEntry::make('fromCompany.name')
+                    ->label('De'),
+                TextEntry::make('toCompany.name')
+                    ->label('Para'),
+                TextEntry::make('invoice.name')
+                    ->label('Factura')
                     ->placeholder('-'),
-                TextEntry::make('reference'),
+                TextEntry::make('reference')
+                    ->label('Referencia'),
                 TextEntry::make('amount')
+                    ->label('Monto')
                     ->numeric(),
                 TextEntry::make('created_at')
-                    ->dateTime()
+                    ->label('Fecha de creación')
+                    ->date('d/m/Y')
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
-                    ->dateTime()
+                    ->label('Fecha de actualización')
+                    ->date('d/m/Y')
                     ->placeholder('-'),
             ]);
     }
@@ -104,29 +126,34 @@ class PaymentResource extends Resource
         return $table
             ->recordTitleAttribute('Payment')
             ->columns([
-                TextColumn::make('customer_id')
-                    ->numeric()
+                TextColumn::make('customer.name')
+                    ->label('Cliente')
+                    ->sortable()
+                    ->visible(fn() => Filament::auth()->user()?->is_admin),
+                TextColumn::make('fromCompany.name')
+                    ->label('De')
                     ->sortable(),
-                TextColumn::make('from_company_id')
-                    ->numeric()
+                TextColumn::make('toCompany.name')
+                    ->label('Para')
                     ->sortable(),
-                TextColumn::make('to_company_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('invoice_id')
-                    ->numeric()
+                TextColumn::make('invoice.name')
+                    ->label('Factura')
                     ->sortable(),
                 TextColumn::make('reference')
+                    ->label('Referencia')
                     ->searchable(),
                 TextColumn::make('amount')
+                    ->label('Monto')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Fecha de creación')
+                    ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Fecha de actualización')
+                    ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

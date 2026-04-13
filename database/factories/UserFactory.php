@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\UserRoleEnum;
 use App\Models\Customer;
 use App\Models\User;
 use App\Models\UserRole;
@@ -47,7 +48,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
@@ -57,7 +58,7 @@ class UserFactory extends Factory
      */
     public function withTwoFactor(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'two_factor_secret' => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),
@@ -66,31 +67,49 @@ class UserFactory extends Factory
 
     public function admin(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_admin' => true,
         ]);
     }
 
     public function customer(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'customer_id' => Customer::factory()->create()->id,
         ]);
     }
 
     public function withCustomer(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'customer_id' => Customer::factory()->create()->id,
         ]);
     }
 
     public function customerEmployee(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'customer_id' => Customer::factory()->create()->id,
             'is_admin' => false,
-            'role_id' => UserRole::factory()->customerEmployee()->create()->id,
+            'user_role_id' => UserRoleEnum::Employee->value,
+        ]);
+    }
+
+    public function customerAdmin(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'customer_id' => Customer::factory()->create()->id,
+            'is_admin' => false,
+            'user_role_id' => UserRoleEnum::Admin->value,
+        ]);
+    }
+
+    public function customerOwner(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'customer_id' => Customer::factory()->create()->id,
+            'is_admin' => false,
+            'user_role_id' => UserRoleEnum::Owner->value,
         ]);
     }
 }

@@ -12,7 +12,7 @@ use Tests\TestCase;
 
 class EmailVerificationTest extends TestCase
 {
-    // use RefreshDatabase;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {

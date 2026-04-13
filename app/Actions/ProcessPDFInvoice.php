@@ -9,14 +9,19 @@ use App\Models\Company;
 use Filament\Facades\Filament;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Ai\Files;
 
 class ProcessPDFInvoice
 {
-    public static function execute(UploadedFile $file, ?int $customerId = null)
+    public static function execute(string|UploadedFile $file, ?int $customerId = null)
     {
-        $content = $file->get();
+        if ($file instanceof UploadedFile) {
+            $attachment = $file->getContents();
+        } else {
+            $attachment = $file;
+        }
 
-        $agent = new InvoiceFileParser();
+        $agent = app(InvoiceFileParser::class);
         $prompt = 'Your are helping accountants in Argentina and LatAm. You have to extract the data from the invoice and return it in a JSON format.
                     Consider the following:
                     - The invoice is in Spanish.
@@ -59,7 +64,9 @@ class ProcessPDFInvoice
                         }
                     }';
 
-        $result = $agent->prompt($prompt, ['file_content' => $content]);
+        $result = $agent->prompt($prompt, [
+            Files\Document::fromStorage($attachment)
+        ]);
 
         //Find or Create FromCompany
         $fromCompany = Company::where('tax_id', $result['from_company']['tax_id'])->first();
@@ -83,8 +90,12 @@ class ProcessPDFInvoice
             ]);
         }
 
-        $data = CreateInvoiceData::from($result);
+        $arrayResult = is_array($result) ? $result : json_decode(json_encode($result), true);
+        $arrayResult = array_merge($arrayResult, $arrayResult['invoice'] ?? []);
+        $data = CreateInvoiceData::from($arrayResult);
 
-        return CreateInvoiceAction::execute($data);
+        $customerId = Filament::auth()->user()->customer_id ?? Auth::user()->customer_id;
+
+        return CreateInvoiceAction::execute($data, $fromCompany->id, $toCompany->id, $customerId);
     }
 }

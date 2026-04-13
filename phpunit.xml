@@ -19,6 +19,7 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_KEY" value="base64:q2e2S11U8A/mB++mD3G1kE2P/tKjQFVW0a6zV4O6Ew0="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="BROADCAST_CONNECTION" value="null"/>
@@ -29,7 +30,7 @@
         <env name="DB_CONNECTION" value="mysql"/>
         <env name="DB_HOST" value="127.0.0.1"/>
         <env name="DB_PORT" value="3306"/>
-        <env name="DB_DATABASE" value="accounting_app"/>
+        <env name="DB_DATABASE" value="accounting_app_test"/>
         <env name="DB_USERNAME" value="root"/>
         <env name="DB_PASSWORD" value="mysql"/>
         <env name="MAIL_MAILER" value="array"/>

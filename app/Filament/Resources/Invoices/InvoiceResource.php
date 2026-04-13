@@ -44,7 +44,9 @@ class InvoiceResource extends Resource
 
     protected static ?string $navigationLabel = 'Facturas';
 
-    protected static ?string $recordTitleAttribute = 'Facturas';
+    protected static ?string $modelLabel = 'Factura';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function canViewAny(): bool
     {
@@ -76,9 +78,9 @@ class InvoiceResource extends Resource
         return $schema
             ->components([
                 Select::make('customer_id')
-                    ->label('Customer')
+                    ->label('Cliente')
+                    ->relationship('customer', 'name')
                     ->searchable()
-                    ->options(Customer::all()->pluck('name', 'id'))
                     ->default(fn() => Filament::auth()->user()?->customer_id)
                     ->visible(fn() => Filament::auth()->user()?->is_admin),
                 Select::make('from_company_id')
@@ -157,63 +159,79 @@ class InvoiceResource extends Resource
         return $schema
             ->components([
                 TextEntry::make('customer.name')
-                    ->label('Customer')
-                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                    ->label('Cliente')
+                    ->visible(fn() => Filament::auth()->user()?->is_admin),
                 TextEntry::make('fromCompany.name')
-                    ->label('From'),
+                    ->label('De'),
                 TextEntry::make('toCompany.name')
-                    ->label('To'),
-                TextEntry::make('name'),
+                    ->label('Para'),
+                TextEntry::make('name')
+                    ->label('Nombre'),
                 TextEntry::make('invoice_number')
+                    ->label('Número de factura')
                     ->placeholder('-'),
                 TextEntry::make('description')
+                    ->label('Descripción')
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('date')
-                    ->date()
+                    ->label('Fecha')
+                    ->date('d/m/Y')
                     ->placeholder('-'),
                 TextEntry::make('total_amount')
+                    ->label('Monto total')
                     ->numeric()
                     ->placeholder('-'),
                 TextEntry::make('discount_percentage')
+                    ->label('Porcentaje de descuento')
                     ->numeric()
                     ->suffix('%')
                     ->placeholder('-'),
                 TextEntry::make('discount_amount')
+                    ->label('Monto de descuento')
                     ->numeric()
                     ->placeholder('-'),
                 TextEntry::make('tax_percentage')
+                    ->label('Porcentaje de impuesto')
                     ->numeric()
                     ->suffix('%')
                     ->placeholder('-'),
                 TextEntry::make('tax_amount')
+                    ->label('Monto de impuesto')
                     ->numeric()
                     ->placeholder('-'),
                 TextEntry::make('final_amount')
+                    ->label('Monto final')
                     ->numeric()
                     ->placeholder('-'),
                 TextEntry::make('payed_amount')
+                    ->label('Monto pagado')
                     ->numeric()
                     ->placeholder('-'),
                 IconEntry::make('payed')
+                    ->label('Pagado')
                     ->boolean(),
                 TextEntry::make('payment_due_date')
-                    ->date()
+                    ->label('Fecha de vencimiento')
+                    ->date('d/m/Y')
                     ->placeholder('-'),
                 TextEntry::make('created_at')
-                    ->dateTime()
+                    ->label('Fecha de creación')
+                    ->date('d/m/Y')
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
-                    ->dateTime()
+                    ->label('Fecha de actualización')
+                    ->date('d/m/Y')
                     ->placeholder('-'),
                 RepeatableEntry::make('items')
+                    ->label('Conceptos')
                     ->schema([
-                        TextEntry::make('name'),
-                        TextEntry::make('quantity')->numeric(),
-                        TextEntry::make('unit_price')->numeric(),
-                        TextEntry::make('discount_percentage')->numeric(),
-                        TextEntry::make('discount_amount')->numeric(),
-                        TextEntry::make('total_price')->numeric(),
+                        TextEntry::make('name')->label('Nombre'),
+                        TextEntry::make('quantity')->label('Cantidad')->numeric(),
+                        TextEntry::make('unit_price')->label('Precio unitario')->numeric(),
+                        TextEntry::make('discount_percentage')->label('Porcentaje de descuento')->numeric(),
+                        TextEntry::make('discount_amount')->label('Monto libre')->numeric(),
+                        TextEntry::make('total_price')->label('Precio total')->numeric(),
                     ])
                     ->columns(4)
                     ->columnSpanFull(),
@@ -226,70 +244,73 @@ class InvoiceResource extends Resource
             ->recordTitleAttribute('Invoice')
             ->columns([
                 TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label('Cliente')
                     ->sortable()
-                    ->visible(fn() => Filament::auth()->user()?->isAdmin()),
+                    ->visible(fn() => Filament::auth()->user()?->is_admin),
                 TextColumn::make('fromCompany.name')
-                    ->label('From')
+                    ->label('De')
                     ->sortable(),
                 TextColumn::make('toCompany.name')
-                    ->label('To')
+                    ->label('Para')
                     ->sortable(),
                 TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable(),
                 TextColumn::make('invoice_number')
+                    ->label('Número de factura')
                     ->searchable(),
                 TextColumn::make('date')
-                    ->date()
+                    ->label('Fecha')
+                    ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('total_amount')
-                    ->label('Total Amount')
+                    ->label('Monto total')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('discount_amount')
-                    ->label('Discount')
+                    ->label('Descuento')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('tax_amount')
-                    ->label('Tax')
+                    ->label('Impuesto')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('final_amount')
-                    ->label('Final Amount')
+                    ->label('Monto final')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('payed_amount')
-                    ->label('Payed Amount')
+                    ->label('Monto pagado')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('payed')
-                    ->label('Payed')
+                    ->label('Pagado')
                     ->boolean(),
                 TextColumn::make('payment_due_date')
-                    ->label('Payment Due Date')
-                    ->date()
+                    ->label('Fecha de vencimiento')
+                    ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('created_at')
-                    ->label('Created At')
-                    ->dateTime()
+                    ->label('Fecha de creación')
+                    ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Updated At')
-                    ->dateTime()
+                    ->label('Fecha de actualización')
+                    ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
-                    ->label('Deleted At')
-                    ->dateTime()
+                    ->label('Fecha de eliminación')
+                    ->date('d/m/Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('customer_id')
-                    ->label('Customer')
+                    ->label('Cliente')
+                    ->relationship('customer', 'name')
                     ->searchable()
-                    ->options(Customer::all()->pluck('name', 'id'))
                     ->hidden(fn() => ! Filament::auth()->user()?->is_admin),
                 SelectFilter::make('payed')
                     ->label('Pagado')

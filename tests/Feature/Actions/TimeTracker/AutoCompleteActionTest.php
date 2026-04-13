@@ -1,6 +1,6 @@
 <?php
 
-use App\Actions\TimeTracker\AutoCompleteAction;
+use App\Actions\TimeTracker\AutoCompleteTimeTrackerAction;
 use App\Enums\TimeTrackerItemTypeEnum;
 use App\Models\Company;
 use App\Models\Customer;
@@ -48,14 +48,13 @@ it('ignores time trackers that already have an amount', function (): void {
     $tracker = createTimeTrackerForAutoComplete($user, $customer, amount: 500);
 
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeHours->id,
         'hours' => 10,
         'amount' => null,
     ]);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $tracker->refresh();
     expect((float) $tracker->amount)->toBe(500.0);
@@ -76,14 +75,13 @@ it('fully completes amount for Horas items using hours times user rate', functio
     $tracker = createTimeTrackerForAutoComplete($user, $customer);
 
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeHours->id,
         'hours' => 8,
         'amount' => null,
     ]);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $tracker->refresh();
     expect((float) $tracker->amount)->toBe(400.0);
@@ -104,7 +102,6 @@ it('uses flat user rate for non Horas types when rate is positive', function ():
     $tracker = createTimeTrackerForAutoComplete($user, $customer);
 
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeTravel->id,
         'hours' => null,
@@ -113,7 +110,7 @@ it('uses flat user rate for non Horas types when rate is positive', function ():
         'amount' => 999,
     ]);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $tracker->refresh();
     expect((float) $tracker->amount)->toBe(75.5);
@@ -134,7 +131,6 @@ it('uses item amount when user rate is zero for non Horas types', function (): v
     $tracker = createTimeTrackerForAutoComplete($user, $customer);
 
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeExpenses->id,
         'hours' => null,
@@ -143,7 +139,7 @@ it('uses item amount when user rate is zero for non Horas types', function (): v
         'amount' => 42.25,
     ]);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $tracker->refresh();
     expect((float) $tracker->amount)->toBe(42.25);
@@ -152,12 +148,11 @@ it('uses item amount when user rate is zero for non Horas types', function (): v
 it('uses item amount when no user rate row exists for that item type', function (): void {
     $customer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeGeneral = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::GENERAL->label()]);
+    $typeGeneral = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::DAY->label()]);
 
     $tracker = createTimeTrackerForAutoComplete($user, $customer);
 
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeGeneral->id,
         'hours' => null,
@@ -166,7 +161,7 @@ it('uses item amount when no user rate row exists for that item type', function 
         'amount' => 30,
     ]);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $tracker->refresh();
     expect((float) $tracker->amount)->toBe(30.0);
@@ -187,7 +182,6 @@ it('derives hours from time_start and time_end when hours is empty', function ()
     $tracker = createTimeTrackerForAutoComplete($user, $customer);
 
     $item = TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeHours->id,
         'hours' => null,
@@ -196,7 +190,7 @@ it('derives hours from time_start and time_end when hours is empty', function ()
         'amount' => null,
     ]);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $item->refresh();
     $tracker->refresh();
@@ -220,7 +214,6 @@ it('does not overwrite hours when hours is already set', function (): void {
     $tracker = createTimeTrackerForAutoComplete($user, $customer);
 
     $item = TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeHours->id,
         'hours' => 3,
@@ -229,7 +222,7 @@ it('does not overwrite hours when hours is already set', function (): void {
         'amount' => null,
     ]);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $item->refresh();
     $tracker->refresh();
@@ -267,14 +260,12 @@ it('aggregates multiple heterogeneous items', function (): void {
     $tracker = createTimeTrackerForAutoComplete($user, $customer);
 
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeHours->id,
         'hours' => 2,
         'amount' => null,
     ]);
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeTravel->id,
         'hours' => null,
@@ -283,7 +274,6 @@ it('aggregates multiple heterogeneous items', function (): void {
         'amount' => 0,
     ]);
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $tracker->id,
         'time_tracker_item_type_id' => $typeExpenses->id,
         'hours' => null,
@@ -292,7 +282,7 @@ it('aggregates multiple heterogeneous items', function (): void {
         'amount' => 12.5,
     ]);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $tracker->refresh();
     expect((float) $tracker->amount)->toBe(152.5);
@@ -303,7 +293,7 @@ it('sets amount to zero when the time tracker has no line items', function (): v
     $user = User::factory()->create(['customer_id' => $customer->id]);
     $tracker = createTimeTrackerForAutoComplete($user, $customer);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $tracker->refresh();
     expect((float) $tracker->amount)->toBe(0.0);
@@ -325,21 +315,19 @@ it('processes every eligible time tracker in one run', function (): void {
     $b = createTimeTrackerForAutoComplete($user, $customer);
 
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $a->id,
         'time_tracker_item_type_id' => $typeHours->id,
         'hours' => 1,
         'amount' => null,
     ]);
     TimeTrackerItem::factory()->create([
-        'user_id' => $user->id,
         'time_tracker_id' => $b->id,
         'time_tracker_item_type_id' => $typeHours->id,
         'hours' => 2,
         'amount' => null,
     ]);
 
-    (new AutoCompleteAction)->execute();
+    (new AutoCompleteTimeTrackerAction)->execute();
 
     $a->refresh();
     $b->refresh();
