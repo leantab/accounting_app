@@ -79,6 +79,7 @@ class PaymentResource extends Resource
                 Select::make('invoice_id')
                     ->relationship('invoice', 'name')
                     ->label('Factura')
+                    ->options(fn() => Filament::auth()->user()->customer_id ? Invoice::where('customer_id', Filament::auth()->user()->customer_id)->pluck('name', 'id') : Invoice::all()->pluck('name', 'id'))
                     ->searchable()
                     ->nullable(),
                 TextInput::make('reference')

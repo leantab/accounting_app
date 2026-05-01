@@ -33,4 +33,14 @@ class Payment extends Model
     {
         return $this->belongsTo(Invoice::class);
     }
+
+    public function fromCompany()
+    {
+        return $this->belongsTo(Company::class, 'from_company_id');
+    }
+
+    public function toCompany()
+    {
+        return $this->belongsTo(Company::class, 'to_company_id');
+    }
 }

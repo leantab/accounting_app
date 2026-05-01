@@ -57,21 +57,29 @@ class InvoiceFileParser implements Agent, Conversational, HasStructuredOutput, H
                 'invoice_amount' => $schema->number()->required(),
                 'invoice_currency' => $schema->string()->required(),
                 'invoice_payment_due_date' => $schema->string()->required(),
-            ])->required(),
-            'invoice_items' => $schema->array()->required(),
+            ])->withoutAdditionalProperties()->required(),
+            'invoice_items' => $schema->array()->items(
+                $schema->object([
+                    'name' => $schema->string()->required(),
+                    'quantity' => $schema->number()->required(),
+                    'unit_price' => $schema->number()->required(),
+                    'discount_percentage' => $schema->number()->nullable()->required(),
+                    'discount_amount' => $schema->number()->nullable()->required(),
+                    'total_price' => $schema->number()->required(),
+                ])->withoutAdditionalProperties()->required()
+            )->required(),
             'from_company' => $schema->object([
                 'name' => $schema->string()->required(),
                 'social_reason' => $schema->string()->required(),
                 'address' => $schema->string()->required(),
                 'tax_id' => $schema->string()->required(),
-            ])->required(),
+            ])->withoutAdditionalProperties()->required(),
             'to_company' => $schema->object([
                 'name' => $schema->string()->required(),
                 'social_reason' => $schema->string()->required(),
                 'address' => $schema->string()->required(),
                 'tax_id' => $schema->string()->required(),
-            ])->required(),
-            'additionalProperties' => false,
+            ])->withoutAdditionalProperties()->required(),
         ];
     }
 }

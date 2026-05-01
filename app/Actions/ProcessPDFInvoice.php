@@ -16,9 +16,9 @@ class ProcessPDFInvoice
     public static function execute(string|UploadedFile $file, ?int $customerId = null)
     {
         if ($file instanceof UploadedFile) {
-            $attachment = $file->getContents();
+            $attachment = [$file];
         } else {
-            $attachment = $file;
+            $attachment = [Files\Document::fromStorage($file)];
         }
 
         $agent = app(InvoiceFileParser::class);
@@ -64,12 +64,11 @@ class ProcessPDFInvoice
                         }
                     }';
 
-        $result = $agent->prompt($prompt, [
-            Files\Document::fromStorage($attachment)
-        ]);
+        /** var $result array */
+        $result = $agent->prompt($prompt, attachments: $attachment);
 
         //Find or Create FromCompany
-        $fromCompany = Company::where('tax_id', $result['from_company']['tax_id'])->first();
+        $fromCompany = Company::where('tax_id', 'like', $result['from_company']['tax_id'])->first();
         if (!$fromCompany) {
             $fromCompany = Company::create([
                 'name' => $result['from_company']['name'],
@@ -90,12 +89,15 @@ class ProcessPDFInvoice
             ]);
         }
 
+        $customerId = $customerId ?? Filament::auth()->user()->customer_id ?? Auth::user()->customer_id;
         $arrayResult = is_array($result) ? $result : json_decode(json_encode($result), true);
         $arrayResult = array_merge($arrayResult, $arrayResult['invoice'] ?? []);
+        $arrayResult['customer_id'] = $customerId;
+        $arrayResult['from_company'] = $fromCompany;
+        $arrayResult['to_company'] = $toCompany;
+
         $data = CreateInvoiceData::from($arrayResult);
 
-        $customerId = Filament::auth()->user()->customer_id ?? Auth::user()->customer_id;
-
-        return CreateInvoiceAction::execute($data, $fromCompany->id, $toCompany->id, $customerId);
+        return CreateInvoiceAction::execute($data);
     }
 }
