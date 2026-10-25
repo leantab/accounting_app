@@ -4,18 +4,21 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Actions\Rates\ResolveEffectiveUserRate;
 use App\Enums\UserRoleEnum;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Filament\Panel;
 
 /**
  * Model User
@@ -30,14 +33,14 @@ use Filament\Panel;
  * @property int|null $user_role_id
  * @property bool $is_admin
  * @property bool $is_active
- * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Customer|null $customer
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TimeTracker> $timeTrackers
+ * @property Carbon|null $email_verified_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Customer|null $customer
+ * @property-read Collection<int, TimeTracker> $timeTrackers
  * @property-read int|null $time_trackers_count
- * @property-read \App\Models\UserRole|null $role
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserRate> $userRates
+ * @property-read UserRole|null $role
+ * @property-read Collection<int, UserRate> $userRates
  * @property-read int|null $user_rates_count
  */
 class User extends Authenticatable implements FilamentUser
@@ -98,16 +101,16 @@ class User extends Authenticatable implements FilamentUser
         $name = Str::of($this->name)
             ->explode(' ')
             ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
+            ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
 
         $lastname = Str::of($this->lastname)
             ->explode(' ')
             ->take(2)
-            ->map(fn($word) => Str::substr($word, 0, 1))
+            ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
 
-        return $name . $lastname;
+        return $name.$lastname;
     }
 
     public function canAccessPanel(Panel $panel): bool
@@ -139,6 +142,24 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(UserRate::class);
     }
 
+    /**
+     * Custom rates replace the customer default. An explicit zero stays zero.
+     *
+     * @return float|null Null when neither a custom rate nor a default exists.
+     */
+    public function effectiveRateFor(int $timeTrackerItemTypeId): ?float
+    {
+        $defaultRates = $this->customer_id === null
+            ? collect()
+            : DefaultRate::query()->where('customer_id', $this->customer_id)->get();
+
+        return ResolveEffectiveUserRate::execute(
+            $this->userRates,
+            $defaultRates,
+            $timeTrackerItemTypeId,
+        );
+    }
+
     public function timeTrackers(): HasMany
     {
         return $this->hasMany(TimeTracker::class);
@@ -147,7 +168,7 @@ class User extends Authenticatable implements FilamentUser
     protected function fullName(): Attribute
     {
         return Attribute::make(
-            get: fn() => "{$this->name} {$this->lastname}",
+            get: fn () => "{$this->name} {$this->lastname}",
         );
     }
 

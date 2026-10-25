@@ -2,10 +2,12 @@
 
 namespace App\Actions\TimeTracker;
 
+use App\Actions\Rates\ResolveEffectiveUserRate;
 use App\Enums\TimeTrackerItemTypeEnum;
+use App\Models\DefaultRate;
 use App\Models\TimeTracker;
-use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class AutoCompleteTimeTrackerAction
 {
@@ -13,22 +15,32 @@ class AutoCompleteTimeTrackerAction
     {
         $timeTrackers = TimeTracker::query()
             ->whereNull('amount')
-            ->with(['items.timeTrackerItemType'])
+            ->with(['items.timeTrackerItemType', 'user.userRates'])
             ->get();
 
+        $defaultRatesByCustomer = DefaultRate::query()
+            ->whereIn('customer_id', $timeTrackers->pluck('customer_id')->filter()->unique()->values())
+            ->get()
+            ->groupBy(fn (DefaultRate $defaultRate): int => (int) $defaultRate->customer_id);
+
         foreach ($timeTrackers as $timeTracker) {
-            $user = User::find($timeTracker->user_id);
+            $user = $timeTracker->user;
 
             if ($user === null) {
                 continue;
             }
 
-            $rates = $user->userRates;
+            /** @var Collection<int, DefaultRate> $defaultRates */
+            $defaultRates = $defaultRatesByCustomer->get((int) $user->customer_id, collect());
 
             $amount = 0.0;
 
             foreach ($timeTracker->items as $item) {
-                $rate = (float) ($rates->firstWhere('time_tracker_item_type_id', $item->time_tracker_item_type_id)?->rate ?? 0);
+                $rate = ResolveEffectiveUserRate::execute(
+                    $user->userRates,
+                    $defaultRates,
+                    (int) $item->time_tracker_item_type_id,
+                ) ?? 0.0;
 
                 if (empty($item->hours)) {
                     if ($item->time_start !== null && $item->time_end !== null) {

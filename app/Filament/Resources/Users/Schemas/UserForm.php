@@ -4,11 +4,8 @@ namespace App\Filament\Resources\Users\Schemas;
 
 use App\Models\UserRole;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
@@ -23,7 +20,7 @@ class UserForm
                 Select::make('customer_id')
                     ->label('Cliente')
                     ->relationship('customer', 'name')
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 TextInput::make('name')
                     ->label('Nombre')
                     ->required(),
@@ -49,9 +46,10 @@ class UserForm
                     ->required(),
                 Toggle::make('is_admin')
                     ->label('Es administrador')
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin)
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                     ->required(),
                 Section::make('Tarifas de Usuario')
+                    ->description('Reemplazan la tarifa por defecto de horas y jornada. Si no hay una tarifa para un tipo, se usa la tarifa por defecto.')
                     ->columnSpanFull()
                     ->schema([
                         Repeater::make('userRates')

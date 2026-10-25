@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
@@ -36,5 +37,10 @@ class Customer extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function defaultRates(): HasMany
+    {
+        return $this->hasMany(DefaultRate::class);
     }
 }
