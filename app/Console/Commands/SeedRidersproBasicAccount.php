@@ -29,7 +29,7 @@ class SeedRidersproBasicAccount extends Command
             'tax_id' => $tax_id,
         ]);
 
-        $this->info('Customer created successfully. ID: ' . $customer->id);
+        $this->info('Customer created successfully. ID: '.$customer->id);
 
         $company = Company::create([
             'name' => 'Riders Pro',
@@ -90,12 +90,23 @@ class SeedRidersproBasicAccount extends Command
             'companyable_type' => User::class,
         ]);
 
-        $this->info('Company created successfully. ID: ' . $company->id);
-        $this->info('User created successfully. ID: ' . $user->id);
-        $this->info('User created successfully. ID: ' . $user2->id);
-        $this->info('User created successfully. ID: ' . $user3->id);
-        $this->info('User created successfully. ID: ' . $user4->id);
-        $this->info('Company created successfully. ID: ' . $company4->id);
+        $this->info('Company created successfully. ID: '.$company->id);
+        $this->info('User created successfully. ID: '.$user->id);
+        $this->info('User created successfully. ID: '.$user2->id);
+        $this->info('User created successfully. ID: '.$user3->id);
+        $this->info('User created successfully. ID: '.$user4->id);
+        $this->info('Company created successfully. ID: '.$company4->id);
         $this->info('Riderspro basic account created successfully');
+
+        $superAdmin = User::create([
+            'name' => 'Super',
+            'lastname' => 'Admin',
+            'email' => 'admin@riderspro.com.ar',
+            'password' => Hash::make($password),
+            'email_verified_at' => now(),
+            'is_admin' => true,
+        ]);
+
+        $this->info('Super Admin created successfully. ID: '.$superAdmin->id);
     }
 }

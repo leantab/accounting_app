@@ -17,11 +17,11 @@ class UsersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => Filament::auth()->user()->is_admin ? $query : $query->where('customer_id', Filament::auth()->user()->customer_id))
+            ->modifyQueryUsing(fn (Builder $query) => Filament::auth()->user()->is_admin ? $query : $query->where('customer_id', Filament::auth()->user()->customer_id))
             ->columns([
                 TextColumn::make('customer.name')
                     ->label('Customer')
-                    ->visible(fn() => Filament::auth()->user()->is_admin)
+                    ->visible(fn () => Filament::auth()->user()->is_admin)
                     ->searchable(),
                 TextColumn::make('name')
                     ->label('Nombre')
@@ -44,13 +44,21 @@ class UsersTable
                 TextColumn::make('tax_id')
                     ->label('CUIL/CUIT')
                     ->searchable(),
+                TextColumn::make('fixed_daily_rate')
+                    ->label('Fijo por jornada')
+                    ->placeholder('-')
+                    ->toggleable(),
+                TextColumn::make('fixed_monthly_rate')
+                    ->label('Fijo mensual')
+                    ->placeholder('-')
+                    ->toggleable(),
                 IconColumn::make('is_active')
                     ->label('Activo')
                     ->boolean(),
                 IconColumn::make('is_admin')
                     ->label('Admin')
                     ->boolean()
-                    ->visible(fn() => Filament::auth()->user()->is_admin),
+                    ->visible(fn () => Filament::auth()->user()->is_admin),
                 TextColumn::make('created_at')
                     ->label('Creado')
                     ->dateTime()

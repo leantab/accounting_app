@@ -38,7 +38,7 @@ function createTimeTrackerForDefaultRate(User $user, Customer $customer): TimeTr
 it('uses the customer default hourly rate when the user has no custom rate', function (): void {
     $customer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::HOURS->label()]);
+    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label()]);
 
     DefaultRate::query()->create([
         'customer_id' => $customer->id,
@@ -94,7 +94,7 @@ it('uses the customer default daily rate as a flat amount', function (): void {
 it('keeps a custom user rate ahead of the default', function (): void {
     $customer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::HOURS->label()]);
+    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label()]);
 
     DefaultRate::query()->create([
         'customer_id' => $customer->id,
@@ -130,7 +130,7 @@ it('does not apply another customer default rate', function (): void {
     $customer = Customer::factory()->create();
     $otherCustomer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::HOURS->label()]);
+    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label()]);
 
     DefaultRate::query()->create([
         'customer_id' => $otherCustomer->id,

@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Soberano | Gestión Inteligente para tu Empresa</title>
+    <title>Riders Flow | Gestión Inteligente para tu Empresa</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
@@ -120,7 +120,7 @@
     <nav class="fixed top-0 w-full z-50 bg-[#060e20]/80 backdrop-blur-xl shadow-2xl shadow-black/20">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img class="h-8 w-8 object-contain" data-alt="Logotipo minimalista Soberano color ámbar"
+                <img class="h-8 w-8 object-contain" data-alt="Logotipo minimalista Riders Flow color ámbar"
                     src="{{ asset('icon3.png') }}" />
                 <span class="text-xl font-black text-[#dee5ff] tracking-tight">{{ config('app.name') }}</span>
             </div>
@@ -161,7 +161,7 @@
                         Nueva Era de Gestión
                     </div>
                     <h1 class="text-5xl md:text-7xl font-extrabold text-on-surface leading-[1.1] tracking-tight">
-                        Soberano: Gestión <span class="text-primary italic">Inteligente</span> para tu Empresa
+                        Riders Flow: Gestión <span class="text-primary italic">Inteligente</span> para tu Empresa
                     </h1>
                     <p class="text-lg text-on-surface-variant max-w-lg leading-relaxed font-body">
                         Contabilidad, Control de Tiempo y Gestión con IA en un solo lugar. Optimiza tus finanzas y
@@ -186,7 +186,7 @@
                     <div
                         class="relative bg-surface-container-low rounded-2xl border border-outline-variant/10 shadow-2xl overflow-hidden">
                         <img class="w-full h-auto opacity-90"
-                            data-alt="Dashboard administrativo moderno con analíticas financieras de Soberano"
+                            data-alt="Dashboard administrativo moderno con analíticas financieras de Riders Flow"
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx4Kq48zNoS-rGtPJtszHp_M1Ef9vh2ne1xVT5CtK62FN1VwtuwhTvgvxC9Sga5Af76IBMrvlNgibX3Yyskf-Kzx_o1mzzLsu6YcrUuf2uu2ELNP6lHFYAizCVrVL_sKyKYijqpn0zQEHcQvhkSVCu9pPzFyovETsugv1wP4o8tNpDrNASF3EytmZIdrWBH1wGm6d0BS93_eO033owk4tfl7PiU52ZkkV4sWK2ohchYgk9WbEAnlJuk1AbAa-O0OBc2-gVj2loeEM" />
                     </div>
                 </div>
@@ -368,7 +368,7 @@
     <footer class="bg-[#091328] py-12 px-6 border-t border-outline-variant/10">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="space-y-4">
-                <div class="text-lg font-bold text-[#dee5ff]">Soberano</div>
+                <div class="text-lg font-bold text-[#dee5ff]">Riders Flow</div>
                 <p class="text-sm text-[#a3aac4] font-body leading-relaxed">
                     Elevando la gestión empresarial en América Latina a través de tecnología precisa y diseño editorial.
                 </p>
@@ -408,7 +408,7 @@
         </div>
         <div
             class="max-w-7xl mx-auto mt-12 pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-sm text-[#a3aac4]">© 2024 Soberano SaaS. Todos los derechos reservados.</p>
+            <p class="text-sm text-[#a3aac4]">© 2024 Riders Flow. Todos los derechos reservados.</p>
             <div class="flex gap-6">
                 <span
                     class="material-symbols-outlined text-[#a3aac4] hover:text-primary cursor-pointer transition-colors">public</span>

@@ -7,7 +7,6 @@ use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class TimeTrackerInfolist
@@ -18,7 +17,7 @@ class TimeTrackerInfolist
             ->components([
                 TextEntry::make('customer.name')
                     ->label('Cuenta')
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 TextEntry::make('user.name')
                     ->label('Usuario'),
                 TextEntry::make('project.name')
@@ -52,7 +51,7 @@ class TimeTrackerInfolist
                     ->label('Pagado')
                     ->boolean(),
                 TextEntry::make('payment.id')
-                    ->label('Payment'),
+                    ->label('Pago'),
                 TextEntry::make('paid_date')
                     ->label('Fecha de pago')
                     ->date()
@@ -75,7 +74,7 @@ class TimeTrackerInfolist
                     ->dateTime('d/m/Y')
                     ->placeholder('-'),
                 RepeatableEntry::make('items')
-                    ->label('Items')
+                    ->label('Ítems')
                     ->columnSpanFull()
                     // ->columns(4)
                     ->table([

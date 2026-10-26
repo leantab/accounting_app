@@ -25,6 +25,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->boolean('is_admin')->default(false);
             $table->foreignId('user_role_id')->nullable();
+            $table->decimal('fixed_daily_rate', 10, 2)->nullable();
+            $table->decimal('fixed_monthly_rate', 10, 2)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

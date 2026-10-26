@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Soberano - Gestión Empresarial Inteligente</title>
+    <title>Riders Flow - Gestión Empresarial Inteligente</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
@@ -116,7 +116,7 @@
         class="fixed top-0 w-full z-50 bg-[#060e20] dark:bg-[#060e20] shadow-none h-16 flex items-center justify-between px-6 py-4">
         <div class="flex items-center gap-3">
             <span class="material-symbols-outlined text-[#ffad3a]" data-icon="menu">menu</span>
-            <h1 class="text-[#dee5ff] font-extrabold text-2xl tracking-tighter font-headline">Soberano</h1>
+            <h1 class="text-[#dee5ff] font-extrabold text-2xl tracking-tighter font-headline">Riders Flow</h1>
         </div>
         <div
             class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-outline-variant/15 overflow-hidden">
@@ -137,7 +137,7 @@
                     2.0</span>
             </div>
             <h2 class="text-4xl font-extrabold font-headline tracking-tight text-on-surface mb-6 leading-[1.1]">
-                Toma el control <span class="text-primary italic">Soberano</span> de tu empresa
+                Toma el control <span class="text-primary italic">Riders Flow</span> de tu empresa
             </h2>
             <p class="text-on-surface-variant text-base leading-relaxed mb-10 max-w-xs">
                 La plataforma de gestión integral diseñada para el empresario moderno en América Latina.
@@ -302,7 +302,7 @@
     <!-- Footer -->
     <footer
         class="w-full border-t border-[#40485d]/15 bg-[#060e20] flex flex-col items-center gap-6 py-12 px-8 text-center">
-        <div class="text-[#dee5ff] font-bold text-lg font-headline">Soberano</div>
+        <div class="text-[#dee5ff] font-bold text-lg font-headline">Riders Flow</div>
         <nav class="flex flex-wrap justify-center gap-x-6 gap-y-4">
             <a class="text-[#a3aac4] font-inter text-sm font-medium hover:text-[#f59e0a] transition-all cursor-pointer"
                 href="#">Facturación</a>
@@ -313,7 +313,7 @@
             <a class="text-[#a3aac4] font-inter text-sm font-medium hover:text-[#f59e0a] transition-all cursor-pointer"
                 href="#">Soporte</a>
         </nav>
-        <p class="text-[#a3aac4] font-inter text-xs opacity-60">© 2024 Soberano SaaS. Todos los derechos reservados.
+        <p class="text-[#a3aac4] font-inter text-xs opacity-60">© 2024 Riders Flow. Todos los derechos reservados.
         </p>
     </footer>
     <!-- Bottom Nav for Mobile Context -->

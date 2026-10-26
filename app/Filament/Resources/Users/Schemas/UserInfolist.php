@@ -54,11 +54,17 @@ class UserInfolist
                     ->dateTime('d/m/Y H:i')
                     ->placeholder('-'),
                 TextEntry::make('effective_hourly_rate')
-                    ->label('Tarifa por hora')
-                    ->state(fn (User $record): string => self::formatEffectiveRate($record, TimeTrackerItemTypeEnum::HOURS)),
+                    ->label('Tarifa por hora extra')
+                    ->state(fn (User $record): string => self::formatEffectiveRate($record, TimeTrackerItemTypeEnum::EXTRA_HOUR)),
                 TextEntry::make('effective_daily_rate')
-                    ->label('Tarifa por jornada')
+                    ->label('Tarifa por jornal')
                     ->state(fn (User $record): string => self::formatEffectiveRate($record, TimeTrackerItemTypeEnum::DAY)),
+                TextEntry::make('fixed_daily_rate')
+                    ->label('Tarifa fija por jornada')
+                    ->placeholder('-'),
+                TextEntry::make('fixed_monthly_rate')
+                    ->label('Tarifa fija mensual')
+                    ->placeholder('-'),
                 RepeatableEntry::make('userRates')
                     ->label('Tarifas de Usuario')
                     ->columns(3)

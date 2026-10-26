@@ -36,7 +36,7 @@ function createTimeTrackerForAutoComplete(User $user, Customer $customer, ?float
 it('ignores time trackers that already have an amount', function (): void {
     $customer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::HOURS->label()]);
+    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label()]);
 
     UserRate::query()->create([
         'customer_id' => $customer->id,
@@ -63,7 +63,7 @@ it('ignores time trackers that already have an amount', function (): void {
 it('fully completes amount for Horas items using hours times user rate', function (): void {
     $customer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::HOURS->label()]);
+    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label()]);
 
     UserRate::query()->create([
         'customer_id' => $customer->id,
@@ -170,7 +170,7 @@ it('uses item amount when no user rate row exists for that item type', function 
 it('derives hours from time_start and time_end when hours is empty', function (): void {
     $customer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::HOURS->label()]);
+    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label()]);
 
     UserRate::query()->create([
         'customer_id' => $customer->id,
@@ -202,7 +202,7 @@ it('derives hours from time_start and time_end when hours is empty', function ()
 it('does not overwrite hours when hours is already set', function (): void {
     $customer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::HOURS->label()]);
+    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label()]);
 
     UserRate::query()->create([
         'customer_id' => $customer->id,
@@ -234,7 +234,7 @@ it('does not overwrite hours when hours is already set', function (): void {
 it('aggregates multiple heterogeneous items', function (): void {
     $customer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::HOURS->label()]);
+    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label()]);
     $typeTravel = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::TRAVEL->label()]);
     $typeExpenses = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXPENSES->label()]);
 
@@ -302,7 +302,7 @@ it('sets amount to zero when the time tracker has no line items', function (): v
 it('processes every eligible time tracker in one run', function (): void {
     $customer = Customer::factory()->create();
     $user = User::factory()->create(['customer_id' => $customer->id]);
-    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::HOURS->label()]);
+    $typeHours = TimeTrackerItemType::query()->create(['name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label()]);
 
     UserRate::query()->create([
         'customer_id' => $customer->id,

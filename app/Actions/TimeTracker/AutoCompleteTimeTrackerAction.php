@@ -56,7 +56,7 @@ class AutoCompleteTimeTrackerAction
                 $itemHours = (float) ($item->hours ?? 0);
                 $itemAmount = (float) ($item->amount ?? 0);
 
-                if ($item->timeTrackerItemType->name === TimeTrackerItemTypeEnum::HOURS->label()) {
+                if (in_array($item->timeTrackerItemType->name, TimeTrackerItemTypeEnum::hourlyLabels(), true)) {
                     $itemAmount = $itemHours * $rate;
                 } elseif ($rate > 0) {
                     $itemAmount = $rate;

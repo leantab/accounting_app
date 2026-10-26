@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -49,10 +49,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('time_tracker_item_types')->insert([
-            ['name' => 'Horas'],
-            ['name' => 'Jornada'],
-            ['name' => 'Media Jornada'],
-            ['name' => 'Montaje'],
+            ['name' => 'Hora extra'],
+            ['name' => 'Hora extra Rigging'],
+            ['name' => 'Jornal'],
+            ['name' => 'Jornal + Rigging'],
+            ['name' => 'Jornal Armado/Desarme'],
+            ['name' => 'Doble Jornal'],
+            ['name' => 'Carga/Descarga'],
+            ['name' => 'Depósito'],
             ['name' => 'Guardia'],
             ['name' => 'Viáticos'],
             ['name' => 'Gastos'],

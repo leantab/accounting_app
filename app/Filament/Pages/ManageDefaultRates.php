@@ -21,6 +21,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Collection;
 
 /**
  * @property-read Schema $form
@@ -66,7 +67,7 @@ class ManageDefaultRates extends Page
 
         $this->form->fill([
             'customer_id' => $customerId,
-            ...$this->ratesForCustomer($customerId !== null ? (int) $customerId : null),
+            'rates' => $this->ratesForCustomer($customerId !== null ? (int) $customerId : null),
         ]);
     }
 
@@ -75,7 +76,7 @@ class ManageDefaultRates extends Page
         return $schema
             ->components([
                 Form::make([
-                    Section::make('Horas y jornada')
+                    Section::make('Tarifas por tipo')
                         ->description('Estos importes se usan al calcular planillas cuando el usuario no tiene una tarifa cargada para ese tipo.')
                         ->columns(2)
                         ->schema([
@@ -88,30 +89,9 @@ class ManageDefaultRates extends Page
                                 ->columnSpanFull()
                                 ->visible(fn (): bool => (bool) Filament::auth()->user()?->is_admin)
                                 ->afterStateUpdated(function (Set $set, mixed $state): void {
-                                    if (blank($state)) {
-                                        $set('hourly_rate', null);
-                                        $set('daily_rate', null);
-
-                                        return;
-                                    }
-
-                                    $rates = $this->ratesForCustomer((int) $state);
-
-                                    $set('hourly_rate', $rates['hourly_rate']);
-                                    $set('daily_rate', $rates['daily_rate']);
+                                    $set('rates', $this->ratesForCustomer(blank($state) ? null : (int) $state));
                                 }),
-                            TextInput::make('hourly_rate')
-                                ->label('Tarifa por hora')
-                                ->helperText('Precio de una hora de trabajo (Horas).')
-                                ->numeric()
-                                ->minValue(0)
-                                ->required(),
-                            TextInput::make('daily_rate')
-                                ->label('Tarifa por jornada')
-                                ->helperText('Precio de un día completo (Jornada).')
-                                ->numeric()
-                                ->minValue(0)
-                                ->required(),
+                            ...$this->rateInputs(),
                         ]),
                 ])
                     ->livewireSubmitHandler('save')
@@ -143,8 +123,31 @@ class ManageDefaultRates extends Page
             abort_unless($customerId === (int) $user->customer_id, 403);
         }
 
-        $this->storeRate($customerId, TimeTrackerItemTypeEnum::HOURS, (float) $data['hourly_rate']);
-        $this->storeRate($customerId, TimeTrackerItemTypeEnum::DAY, (float) $data['daily_rate']);
+        /** @var array<int|string, mixed> $rates */
+        $rates = $data['rates'] ?? [];
+
+        foreach ($this->displayedItemTypes() as $type) {
+            $value = $rates[$type->id] ?? $rates[(string) $type->id] ?? null;
+
+            if (blank($value)) {
+                DefaultRate::query()
+                    ->where('customer_id', $customerId)
+                    ->where('time_tracker_item_type_id', $type->id)
+                    ->delete();
+
+                continue;
+            }
+
+            DefaultRate::query()->updateOrCreate(
+                [
+                    'customer_id' => $customerId,
+                    'time_tracker_item_type_id' => $type->id,
+                ],
+                [
+                    'rate' => $value,
+                ],
+            );
+        }
 
         Notification::make()
             ->success()
@@ -153,47 +156,54 @@ class ManageDefaultRates extends Page
     }
 
     /**
-     * @return array{hourly_rate: mixed, daily_rate: mixed}
+     * @return array<int, mixed>
      */
     private function ratesForCustomer(?int $customerId): array
     {
-        if ($customerId === null) {
-            return [
-                'hourly_rate' => null,
-                'daily_rate' => null,
-            ];
+        $storedRates = $customerId === null
+            ? collect()
+            : DefaultRate::query()
+                ->where('customer_id', $customerId)
+                ->get()
+                ->mapWithKeys(fn (DefaultRate $defaultRate): array => [
+                    (int) $defaultRate->time_tracker_item_type_id => $defaultRate->rate,
+                ]);
+
+        $rates = [];
+
+        foreach ($this->displayedItemTypes() as $type) {
+            $rates[$type->id] = $storedRates->get($type->id);
         }
 
-        return [
-            'hourly_rate' => $this->rateValue($customerId, TimeTrackerItemTypeEnum::HOURS),
-            'daily_rate' => $this->rateValue($customerId, TimeTrackerItemTypeEnum::DAY),
-        ];
+        return $rates;
     }
 
-    private function rateValue(int $customerId, TimeTrackerItemTypeEnum $type): mixed
+    /**
+     * @return array<int, TextInput>
+     */
+    private function rateInputs(): array
     {
-        $typeId = TimeTrackerItemType::findIdFor($type);
+        return $this->displayedItemTypes()
+            ->map(fn (TimeTrackerItemType $type): TextInput => TextInput::make('rates.'.$type->id)
+                ->label($type->name)
+                ->numeric()
+                ->minValue(0))
+            ->all();
+    }
 
-        if ($typeId === null) {
-            return null;
+    /**
+     * @return Collection<int, TimeTrackerItemType>
+     */
+    private function displayedItemTypes(): Collection
+    {
+        foreach (TimeTrackerItemTypeEnum::cases() as $type) {
+            TimeTrackerItemType::ensureIdFor($type);
         }
 
-        return DefaultRate::query()
-            ->where('customer_id', $customerId)
-            ->where('time_tracker_item_type_id', $typeId)
-            ->value('rate');
-    }
-
-    private function storeRate(int $customerId, TimeTrackerItemTypeEnum $type, float $rate): void
-    {
-        DefaultRate::query()->updateOrCreate(
-            [
-                'customer_id' => $customerId,
-                'time_tracker_item_type_id' => TimeTrackerItemType::ensureIdFor($type),
-            ],
-            [
-                'rate' => $rate,
-            ],
-        );
+        return TimeTrackerItemType::query()
+            ->orderBy('id')
+            ->get()
+            ->unique('name')
+            ->values();
     }
 }

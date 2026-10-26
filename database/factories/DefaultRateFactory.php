@@ -23,7 +23,7 @@ class DefaultRateFactory extends Factory
         return [
             'customer_id' => Customer::factory(),
             'time_tracker_item_type_id' => TimeTrackerItemType::query()->firstOrCreate([
-                'name' => TimeTrackerItemTypeEnum::HOURS->label(),
+                'name' => TimeTrackerItemTypeEnum::EXTRA_HOUR->label(),
             ])->id,
             'rate' => fake()->randomFloat(2, 10, 500),
         ];

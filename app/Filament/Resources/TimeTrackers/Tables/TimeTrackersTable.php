@@ -29,13 +29,14 @@ class TimeTrackersTable
                 if ($user->user_role_id == UserRoleEnum::Employee->value) {
                     return $query->where('user_id', $user->id);
                 }
+
                 return $query->where('customer_id', $user->customer_id);
             })
             ->columns([
                 TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label('Cliente')
                     ->searchable()
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 TextColumn::make('user.fullName')
                     ->label('Usuario')
                     ->searchable(),
@@ -75,7 +76,7 @@ class TimeTrackersTable
                     ->label('Factura')
                     ->searchable(),
                 TextColumn::make('payment.id')
-                    ->label('Payment')
+                    ->label('Pago')
                     ->searchable(),
                 TextColumn::make('paid_date')
                     ->label('Fecha de pago')
@@ -86,6 +87,7 @@ class TimeTrackersTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Fecha de actualización')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -94,7 +96,7 @@ class TimeTrackersTable
                 SelectFilter::make('customer_id')
                     ->label('Cliente')
                     ->relationship('customer', 'name')
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 SelectFilter::make('user_id')
                     ->label('Usuario')
                     ->relationship('user', 'lastname'),

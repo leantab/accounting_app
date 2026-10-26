@@ -18,6 +18,20 @@ use function Pest\Livewire\livewire;
 uses(TestCase::class, RefreshDatabase::class);
 
 /**
+ * @return array<int, int>
+ */
+function itemTypeIds(): array
+{
+    $ids = [];
+
+    foreach (TimeTrackerItemTypeEnum::cases() as $type) {
+        $ids[$type->value] = TimeTrackerItemType::ensureIdFor($type);
+    }
+
+    return $ids;
+}
+
+/**
  * @param  array<string, mixed>  $state
  */
 function fillDefaultRateForm(array $state): Testable
@@ -31,74 +45,112 @@ function fillDefaultRateForm(array $state): Testable
     return $component;
 }
 
-it('lets platform admins save hourly and daily defaults for a customer', function (): void {
+it('lets platform admins save a default for every item type', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
+    $typeIds = itemTypeIds();
 
     actingAs($admin);
 
     fillDefaultRateForm([
         'customer_id' => $customer->id,
-        'hourly_rate' => 120.5,
-        'daily_rate' => 800,
+        'rates' => [
+            $typeIds[TimeTrackerItemTypeEnum::EXTRA_HOUR->value] => 120.5,
+            $typeIds[TimeTrackerItemTypeEnum::DAY->value] => 800,
+            $typeIds[TimeTrackerItemTypeEnum::DAY_RIGGING->value] => 400,
+            $typeIds[TimeTrackerItemTypeEnum::EXTRA_HOUR_RIGGING->value] => 90,
+            $typeIds[TimeTrackerItemTypeEnum::DAY_SETUP_TEARDOWN->value] => 500,
+            $typeIds[TimeTrackerItemTypeEnum::DOUBLE_DAY->value] => 1600,
+            $typeIds[TimeTrackerItemTypeEnum::LOAD_UNLOAD->value] => 60,
+            $typeIds[TimeTrackerItemTypeEnum::WAREHOUSE->value] => 45,
+            $typeIds[TimeTrackerItemTypeEnum::GUARD->value] => 70,
+            $typeIds[TimeTrackerItemTypeEnum::TRAVEL->value] => 30,
+            $typeIds[TimeTrackerItemTypeEnum::EXPENSES->value] => 15,
+        ],
     ])
         ->call('save')
         ->assertHasNoFormErrors()
         ->assertNotified();
 
-    $hourlyTypeId = TimeTrackerItemType::findIdFor(TimeTrackerItemTypeEnum::HOURS);
-    $dailyTypeId = TimeTrackerItemType::findIdFor(TimeTrackerItemTypeEnum::DAY);
-
-    expect($hourlyTypeId)->not->toBeNull()
-        ->and($dailyTypeId)->not->toBeNull()
-        ->and(DefaultRate::query()->where('customer_id', $customer->id)->count())->toBe(2)
-        ->and((float) DefaultRate::query()->where('customer_id', $customer->id)->where('time_tracker_item_type_id', $hourlyTypeId)->value('rate'))->toBe(120.5)
-        ->and((float) DefaultRate::query()->where('customer_id', $customer->id)->where('time_tracker_item_type_id', $dailyTypeId)->value('rate'))->toBe(800.0);
+    expect(DefaultRate::query()->where('customer_id', $customer->id)->count())->toBe(11)
+        ->and((float) DefaultRate::query()->where('customer_id', $customer->id)->where('time_tracker_item_type_id', $typeIds[TimeTrackerItemTypeEnum::EXTRA_HOUR->value])->value('rate'))->toBe(120.5)
+        ->and((float) DefaultRate::query()->where('customer_id', $customer->id)->where('time_tracker_item_type_id', $typeIds[TimeTrackerItemTypeEnum::EXPENSES->value])->value('rate'))->toBe(15.0);
 });
 
 it('updates existing defaults instead of creating duplicates', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
+    $typeIds = itemTypeIds();
+    $hoursId = $typeIds[TimeTrackerItemTypeEnum::EXTRA_HOUR->value];
 
     actingAs($admin);
 
     fillDefaultRateForm([
         'customer_id' => $customer->id,
-        'hourly_rate' => 100,
-        'daily_rate' => 700,
+        'rates' => [
+            $hoursId => 100,
+        ],
     ])
         ->call('save')
         ->assertHasNoFormErrors();
 
     fillDefaultRateForm([
         'customer_id' => $customer->id,
-        'hourly_rate' => 110,
-        'daily_rate' => 750,
+        'rates' => [
+            $hoursId => 110,
+        ],
     ])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    $hourlyTypeId = TimeTrackerItemType::findIdFor(TimeTrackerItemTypeEnum::HOURS);
-
-    expect(DefaultRate::query()->where('customer_id', $customer->id)->count())->toBe(2)
-        ->and((float) DefaultRate::query()->where('customer_id', $customer->id)->where('time_tracker_item_type_id', $hourlyTypeId)->value('rate'))->toBe(110.0);
+    expect(DefaultRate::query()->where('customer_id', $customer->id)->count())->toBe(1)
+        ->and((float) DefaultRate::query()->where('customer_id', $customer->id)->where('time_tracker_item_type_id', $hoursId)->value('rate'))->toBe(110.0);
 });
 
-it('requires both rates', function (): void {
+it('removes a default when its rate is cleared', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
+    $typeIds = itemTypeIds();
+    $hoursId = $typeIds[TimeTrackerItemTypeEnum::EXTRA_HOUR->value];
+
+    DefaultRate::query()->create([
+        'customer_id' => $customer->id,
+        'time_tracker_item_type_id' => $hoursId,
+        'rate' => 100,
+    ]);
 
     actingAs($admin);
 
     fillDefaultRateForm([
         'customer_id' => $customer->id,
-        'hourly_rate' => null,
-        'daily_rate' => null,
+        'rates' => [
+            $hoursId => null,
+        ],
+    ])
+        ->call('save')
+        ->assertHasNoFormErrors()
+        ->assertNotified();
+
+    expect(DefaultRate::query()->where('customer_id', $customer->id)->exists())->toBeFalse();
+});
+
+it('rejects a negative rate', function (): void {
+    $admin = User::factory()->admin()->create();
+    $customer = Customer::factory()->create();
+    $typeIds = itemTypeIds();
+    $hoursId = $typeIds[TimeTrackerItemTypeEnum::EXTRA_HOUR->value];
+
+    actingAs($admin);
+
+    fillDefaultRateForm([
+        'customer_id' => $customer->id,
+        'rates' => [
+            $hoursId => -1,
+        ],
     ])
         ->call('save')
         ->assertHasFormErrors([
-            'hourly_rate' => 'required',
-            'daily_rate' => 'required',
+            "rates.{$hoursId}" => 'min',
         ])
         ->assertNotNotified();
 });
@@ -112,12 +164,17 @@ it('lets a customer admin save defaults for their own customer', function (): vo
         'user_role_id' => UserRoleEnum::Admin->value,
     ]);
 
+    $typeIds = itemTypeIds();
+    $hoursId = $typeIds[TimeTrackerItemTypeEnum::EXTRA_HOUR->value];
+
     actingAs($user);
 
     fillDefaultRateForm([
         'customer_id' => $otherCustomer->id,
-        'hourly_rate' => 40,
-        'daily_rate' => 300,
+        'rates' => [
+            $hoursId => 40,
+            $typeIds[TimeTrackerItemTypeEnum::DAY->value] => 300,
+        ],
     ])
         ->call('save')
         ->assertHasNoFormErrors()
@@ -135,7 +192,7 @@ it('loads the saved defaults for the signed-in customer', function (): void {
         'user_role_id' => UserRoleEnum::Owner->value,
     ]);
 
-    $hourlyTypeId = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::HOURS);
+    $hourlyTypeId = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::EXTRA_HOUR);
     $dailyTypeId = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::DAY);
 
     DefaultRate::query()->create([
@@ -151,12 +208,12 @@ it('loads the saved defaults for the signed-in customer', function (): void {
 
     actingAs($user);
 
-    livewire(ManageDefaultRates::class)
+    $rates = livewire(ManageDefaultRates::class)
         ->assertOk()
-        ->assertFormSet([
-            'hourly_rate' => '55.00',
-            'daily_rate' => '440.00',
-        ]);
+        ->get('data.rates');
+
+    expect((float) $rates[$hourlyTypeId])->toBe(55.0)
+        ->and((float) $rates[$dailyTypeId])->toBe(440.0);
 });
 
 it('allows owners and customer admins to open the page', function (UserRoleEnum $role): void {
@@ -194,7 +251,7 @@ it('shows the default hourly rate on the user until a custom rate exists', funct
 
     DefaultRate::query()->create([
         'customer_id' => $customer->id,
-        'time_tracker_item_type_id' => TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::HOURS),
+        'time_tracker_item_type_id' => TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::EXTRA_HOUR),
         'rate' => 50,
     ]);
 

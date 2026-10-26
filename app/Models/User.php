@@ -33,6 +33,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property int|null $user_role_id
  * @property bool $is_admin
  * @property bool $is_active
+ * @property string|null $fixed_daily_rate
+ * @property string|null $fixed_monthly_rate
  * @property Carbon|null $email_verified_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -64,6 +66,8 @@ class User extends Authenticatable implements FilamentUser
         'tax_id',
         'is_admin',
         'is_active',
+        'fixed_daily_rate',
+        'fixed_monthly_rate',
     ];
 
     /**
@@ -90,6 +94,8 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'is_admin' => 'boolean',
             'is_active' => 'boolean',
+            'fixed_daily_rate' => 'decimal:2',
+            'fixed_monthly_rate' => 'decimal:2',
         ];
     }
 
@@ -170,6 +176,11 @@ class User extends Authenticatable implements FilamentUser
         return Attribute::make(
             get: fn () => "{$this->name} {$this->lastname}",
         );
+    }
+
+    public function hasFixedRate(): bool
+    {
+        return $this->fixed_daily_rate !== null || $this->fixed_monthly_rate !== null;
     }
 
     public function isAdmin(): bool

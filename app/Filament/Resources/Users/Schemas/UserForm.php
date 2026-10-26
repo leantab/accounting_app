@@ -48,8 +48,24 @@ class UserForm
                     ->label('Es administrador')
                     ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                     ->required(),
+                Section::make('Tarifa fija')
+                    ->description('Opcional. Para usuarios con sueldo fijo: por jornada, por mes, o ambas.')
+                    ->columnSpanFull()
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('fixed_daily_rate')
+                            ->label('Tarifa fija por jornada')
+                            ->numeric()
+                            ->minValue(0)
+                            ->nullable(),
+                        TextInput::make('fixed_monthly_rate')
+                            ->label('Tarifa fija mensual')
+                            ->numeric()
+                            ->minValue(0)
+                            ->nullable(),
+                    ]),
                 Section::make('Tarifas de Usuario')
-                    ->description('Reemplazan la tarifa por defecto de horas y jornada. Si no hay una tarifa para un tipo, se usa la tarifa por defecto.')
+                    ->description('Reemplazan la tarifa por defecto del mismo tipo. Si no hay una tarifa, se usa la tarifa por defecto.')
                     ->columnSpanFull()
                     ->schema([
                         Repeater::make('userRates')
