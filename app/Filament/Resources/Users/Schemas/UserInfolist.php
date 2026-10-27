@@ -2,14 +2,12 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
-use App\Enums\TimeTrackerItemTypeEnum;
 use App\Models\TimeTrackerItemType;
 use App\Models\User;
-use App\Models\UserRate;
 use Filament\Facades\Filament;
 use Filament\Infolists\Components\IconEntry;
-use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class UserInfolist
@@ -53,52 +51,44 @@ class UserInfolist
                     ->label('Actualizado')
                     ->dateTime('d/m/Y H:i')
                     ->placeholder('-'),
-                TextEntry::make('effective_hourly_rate')
-                    ->label('Tarifa por hora extra')
-                    ->state(fn (User $record): string => self::formatEffectiveRate($record, TimeTrackerItemTypeEnum::EXTRA_HOUR)),
-                TextEntry::make('effective_daily_rate')
-                    ->label('Tarifa por jornal')
-                    ->state(fn (User $record): string => self::formatEffectiveRate($record, TimeTrackerItemTypeEnum::DAY)),
                 TextEntry::make('fixed_daily_rate')
                     ->label('Tarifa fija por jornada')
                     ->placeholder('-'),
                 TextEntry::make('fixed_monthly_rate')
                     ->label('Tarifa fija mensual')
                     ->placeholder('-'),
-                RepeatableEntry::make('userRates')
-                    ->label('Tarifas de Usuario')
+                Section::make('Tarifas individuales')
+                    ->description('Si no hay una tarifa individual, se usa la tarifa por defecto.')
+                    ->columnSpanFull()
                     ->columns(3)
-                    ->schema([
-                        TextEntry::make('description')
-                            ->label('Descripción'),
-                        TextEntry::make('rate')
-                            ->label('Tarifa'),
-                        TextEntry::make('timeTrackerItemType.name')
-                            ->label('Tipo de item'),
-                    ]),
+                    ->schema(self::individualRateEntries()),
             ]);
     }
 
-    private static function formatEffectiveRate(User $record, TimeTrackerItemTypeEnum $type): string
+    /**
+     * @return array<int, TextEntry>
+     */
+    private static function individualRateEntries(): array
     {
-        $typeId = TimeTrackerItemType::findIdFor($type);
+        return TimeTrackerItemType::withRates()
+            ->map(fn (TimeTrackerItemType $type): TextEntry => TextEntry::make('individual_rate_'.$type->id)
+                ->label($type->name)
+                ->state(fn (User $record): string => self::formatIndividualRate($record, $type->id)))
+            ->all();
+    }
 
-        if ($typeId === null) {
-            return 'Sin definir';
+    private static function formatIndividualRate(User $record, int $typeId): string
+    {
+        $custom = $record->userRates->firstWhere('time_tracker_item_type_id', $typeId);
+
+        if ($custom !== null) {
+            return number_format((float) $custom->rate, 2, '.', '');
         }
 
-        $rate = $record->effectiveRateFor($typeId);
+        $default = $record->effectiveRateFor($typeId);
 
-        if ($rate === null) {
-            return 'Sin definir';
-        }
-
-        $formatted = number_format($rate, 2, '.', '');
-
-        $isCustom = $record->userRates->contains(
-            fn (UserRate $userRate): bool => (int) $userRate->time_tracker_item_type_id === $typeId,
-        );
-
-        return $isCustom ? $formatted : "{$formatted} (por defecto)";
+        return $default === null
+            ? 'Por defecto'
+            : 'Por defecto ('.number_format($default, 2, '.', '').')';
     }
 }

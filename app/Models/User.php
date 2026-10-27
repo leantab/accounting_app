@@ -213,7 +213,7 @@ class User extends Authenticatable implements FilamentUser
         return $this->customer_id === $customer->id || $this->isAdmin();
     }
 
-    public function currentCustomerId(): int
+    public function currentCustomerId(): ?int
     {
         return $this->customer_id;
     }

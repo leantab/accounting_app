@@ -2,12 +2,15 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Models\TimeTrackerItemType;
+use App\Models\User;
+use App\Models\UserRate;
 use App\Models\UserRole;
 use Filament\Facades\Filament;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -64,31 +67,65 @@ class UserForm
                             ->minValue(0)
                             ->nullable(),
                     ]),
-                Section::make('Tarifas de Usuario')
-                    ->description('Reemplazan la tarifa por defecto del mismo tipo. Si no hay una tarifa, se usa la tarifa por defecto.')
+                Section::make('Tarifas individuales')
+                    ->description('Reemplazan la tarifa por defecto del mismo tipo. Si se deja vacío, se usa la tarifa por defecto.')
                     ->columnSpanFull()
+                    ->columns(3)
                     ->schema([
-                        Repeater::make('userRates')
-                            ->label('Tarifas de Usuario')
-                            ->collapsible()
+                        Group::make(self::individualRateInputs())
+                            ->statePath('individualRates')
                             ->columnSpanFull()
-                            ->relationship()
-                            ->schema([
-                                Select::make('time_tracker_item_type_id')
-                                    ->label('Tipo de item')
-                                    ->relationship('timeTrackerItemType', 'name')
-                                    ->required(),
-                                TextInput::make('description')
-                                    ->label('Descripción'),
-                                TextInput::make('rate')
-                                    ->label('Tarifa')
-                                    ->numeric()
-                                    ->required(),
-                            ])
-                            ->defaultItems(0)
-                            ->addActionLabel('Agregar tarifa')
-                            ->columns(3),
+                            ->columns(3)
+                            ->saveRelationshipsUsing(fn (Group $component, User $record) => self::saveIndividualRates($record, $component->getState())),
                     ]),
             ]);
+    }
+
+    /**
+     * @return array<int, TextInput>
+     */
+    private static function individualRateInputs(): array
+    {
+        return TimeTrackerItemType::withRates()
+            ->map(fn (TimeTrackerItemType $type): TextInput => TextInput::make((string) $type->id)
+                ->label($type->name)
+                ->numeric()
+                ->minValue(0)
+                ->placeholder('Por defecto')
+                ->afterStateHydrated(function (TextInput $component, ?User $record) use ($type): void {
+                    $rate = $record?->userRates->firstWhere('time_tracker_item_type_id', $type->id)?->rate;
+
+                    $component->state($rate === null ? null : (float) $rate);
+                }))
+            ->all();
+    }
+
+    /**
+     * Blank inputs fall back to the default rate, so they remove any custom rate.
+     *
+     * @param  array<string, mixed>  $rates
+     */
+    private static function saveIndividualRates(User $user, array $rates): void
+    {
+        foreach ($rates as $typeId => $rate) {
+            $query = UserRate::query()
+                ->where('user_id', $user->id)
+                ->where('time_tracker_item_type_id', (int) $typeId);
+
+            if (! filled($rate)) {
+                $query->delete();
+
+                continue;
+            }
+
+            $query->exists()
+                ? $query->update(['rate' => $rate])
+                : UserRate::query()->create([
+                    'customer_id' => $user->customer_id,
+                    'user_id' => $user->id,
+                    'time_tracker_item_type_id' => (int) $typeId,
+                    'rate' => $rate,
+                ]);
+        }
     }
 }

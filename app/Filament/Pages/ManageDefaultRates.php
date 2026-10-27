@@ -2,7 +2,6 @@
 
 namespace App\Filament\Pages;
 
-use App\Enums\TimeTrackerItemTypeEnum;
 use App\Enums\UserRoleEnum;
 use App\Models\Customer;
 use App\Models\DefaultRate;
@@ -196,14 +195,6 @@ class ManageDefaultRates extends Page
      */
     private function displayedItemTypes(): Collection
     {
-        foreach (TimeTrackerItemTypeEnum::cases() as $type) {
-            TimeTrackerItemType::ensureIdFor($type);
-        }
-
-        return TimeTrackerItemType::query()
-            ->orderBy('id')
-            ->get()
-            ->unique('name')
-            ->values();
+        return TimeTrackerItemType::withRates();
     }
 }

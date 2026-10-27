@@ -45,7 +45,7 @@ function fillDefaultRateForm(array $state): Testable
     return $component;
 }
 
-it('lets platform admins save a default for every item type', function (): void {
+it('lets platform admins save a default for every item type that has one', function (): void {
     $admin = User::factory()->admin()->create();
     $customer = Customer::factory()->create();
     $typeIds = itemTypeIds();
@@ -72,9 +72,26 @@ it('lets platform admins save a default for every item type', function (): void 
         ->assertHasNoFormErrors()
         ->assertNotified();
 
-    expect(DefaultRate::query()->where('customer_id', $customer->id)->count())->toBe(11)
+    expect(DefaultRate::query()->where('customer_id', $customer->id)->count())->toBe(9)
         ->and((float) DefaultRate::query()->where('customer_id', $customer->id)->where('time_tracker_item_type_id', $typeIds[TimeTrackerItemTypeEnum::EXTRA_HOUR->value])->value('rate'))->toBe(120.5)
-        ->and((float) DefaultRate::query()->where('customer_id', $customer->id)->where('time_tracker_item_type_id', $typeIds[TimeTrackerItemTypeEnum::EXPENSES->value])->value('rate'))->toBe(15.0);
+        ->and(DefaultRate::query()->whereIn('time_tracker_item_type_id', [
+            $typeIds[TimeTrackerItemTypeEnum::TRAVEL->value],
+            $typeIds[TimeTrackerItemTypeEnum::EXPENSES->value],
+        ])->exists())->toBeFalse();
+});
+
+it('does not offer default rates for expenses and travel', function (): void {
+    $admin = User::factory()->admin()->create();
+    $typeIds = itemTypeIds();
+
+    actingAs($admin);
+
+    livewire(ManageDefaultRates::class)
+        ->assertFormFieldExists('rates.'.$typeIds[TimeTrackerItemTypeEnum::DAY->value])
+        ->assertFormFieldDoesNotExist('rates.'.$typeIds[TimeTrackerItemTypeEnum::TRAVEL->value])
+        ->assertFormFieldDoesNotExist('rates.'.$typeIds[TimeTrackerItemTypeEnum::EXPENSES->value])
+        ->assertDontSee('Gastos')
+        ->assertDontSee('Viáticos');
 });
 
 it('updates existing defaults instead of creating duplicates', function (): void {
@@ -259,6 +276,6 @@ it('shows the default hourly rate on the user until a custom rate exists', funct
 
     livewire(ViewUser::class, ['record' => $worker->id])
         ->assertOk()
-        ->assertSee('50.00 (por defecto)')
-        ->assertSee('Sin definir');
+        ->assertSee('Por defecto (50.00)')
+        ->assertSee('Por defecto');
 });

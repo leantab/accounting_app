@@ -34,6 +34,14 @@ enum TimeTrackerItemTypeEnum: int
     }
 
     /**
+     * Expenses and travel allowances are reimbursed as entered, so they have no individual rate.
+     */
+    public function hasRate(): bool
+    {
+        return ! in_array($this, [self::TRAVEL, self::EXPENSES], true);
+    }
+
+    /**
      * Types that are charged per worked hour.
      */
     public function isHourly(): bool
