@@ -11,10 +11,17 @@ use Illuminate\Support\Collection;
 
 class AutoCompleteTimeTrackerAction
 {
-    public static function execute(): void
+    /**
+     * Trackers without a total, or with a zero total from an earlier run before rates existed, are calculated again.
+     *
+     * @return array{trackers: int, missing_rates: list<string>}
+     */
+    public static function execute(): array
     {
+        $missingRates = [];
+
         $timeTrackers = TimeTracker::query()
-            ->whereNull('amount')
+            ->where(fn ($query) => $query->whereNull('amount')->orWhere('amount', 0))
             ->with(['items.timeTrackerItemType', 'user.userRates'])
             ->get();
 
@@ -42,7 +49,9 @@ class AutoCompleteTimeTrackerAction
                     (int) $item->time_tracker_item_type_id,
                 ) ?? 0.0;
 
-                if (empty($item->hours)) {
+                $isHourly = in_array($item->timeTrackerItemType->name, TimeTrackerItemTypeEnum::hourlyLabels(), true);
+
+                if ($isHourly && empty($item->hours)) {
                     if ($item->time_start !== null && $item->time_end !== null) {
                         $hours = (int) Carbon::parse($item->time_start)->diffInHours(Carbon::parse($item->time_end));
                         $item->update([
@@ -56,10 +65,14 @@ class AutoCompleteTimeTrackerAction
                 $itemHours = (float) ($item->hours ?? 0);
                 $itemAmount = (float) ($item->amount ?? 0);
 
-                if (in_array($item->timeTrackerItemType->name, TimeTrackerItemTypeEnum::hourlyLabels(), true)) {
+                if ($isHourly) {
                     $itemAmount = $itemHours * $rate;
                 } elseif ($rate > 0) {
                     $itemAmount = $rate;
+                }
+
+                if ($rate <= 0 && $itemAmount <= 0) {
+                    $missingRates[$item->timeTrackerItemType->name] = $item->timeTrackerItemType->name;
                 }
 
                 $item->update([
@@ -73,5 +86,10 @@ class AutoCompleteTimeTrackerAction
                 'amount' => $amount,
             ]);
         }
+
+        return [
+            'trackers' => $timeTrackers->count(),
+            'missing_rates' => array_values($missingRates),
+        ];
     }
 }

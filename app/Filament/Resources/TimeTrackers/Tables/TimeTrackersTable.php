@@ -10,6 +10,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -133,9 +134,33 @@ class TimeTrackersTable
                 Action::make('auto_complete')
                     ->label('Auto-Completar')
                     ->icon('heroicon-o-document-text')
-                    ->action(function () {
-                        // TODO: Add export action
-                        AutoCompleteTimeTrackerAction::execute();
+                    ->action(function (): void {
+                        $result = AutoCompleteTimeTrackerAction::execute();
+
+                        if ($result['trackers'] === 0) {
+                            Notification::make()
+                                ->title('No hay planillas pendientes de calcular')
+                                ->info()
+                                ->send();
+
+                            return;
+                        }
+
+                        if ($result['missing_rates'] !== []) {
+                            Notification::make()
+                                ->title('Planillas calculadas, pero faltan tarifas')
+                                ->body('Cargue una tarifa por defecto o individual para: '.implode(', ', $result['missing_rates']).'.')
+                                ->warning()
+                                ->persistent()
+                                ->send();
+
+                            return;
+                        }
+
+                        Notification::make()
+                            ->title('Planillas calculadas')
+                            ->success()
+                            ->send();
                     }),
             ]);
     }
