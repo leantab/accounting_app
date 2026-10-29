@@ -46,10 +46,12 @@ class UsersTable
                     ->searchable(),
                 TextColumn::make('fixed_daily_rate')
                     ->label('Fijo por jornada')
+                    ->numeric(2, ',', '.')
                     ->placeholder('-')
                     ->toggleable(),
                 TextColumn::make('fixed_monthly_rate')
                     ->label('Fijo mensual')
+                    ->numeric(2, ',', '.')
                     ->placeholder('-')
                     ->toggleable(),
                 IconColumn::make('is_active')

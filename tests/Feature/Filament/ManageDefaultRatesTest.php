@@ -167,7 +167,7 @@ it('rejects a negative rate', function (): void {
     ])
         ->call('save')
         ->assertHasFormErrors([
-            "rates.{$hoursId}" => 'min',
+            "rates.{$hoursId}",
         ])
         ->assertNotNotified();
 });
@@ -229,8 +229,8 @@ it('loads the saved defaults for the signed-in customer', function (): void {
         ->assertOk()
         ->get('data.rates');
 
-    expect((float) $rates[$hourlyTypeId])->toBe(55.0)
-        ->and((float) $rates[$dailyTypeId])->toBe(440.0);
+    expect($rates[$hourlyTypeId])->toBe('55,00')
+        ->and($rates[$dailyTypeId])->toBe('440,00');
 });
 
 it('allows owners and customer admins to open the page', function (UserRoleEnum $role): void {
@@ -276,6 +276,30 @@ it('shows the default hourly rate on the user until a custom rate exists', funct
 
     livewire(ViewUser::class, ['record' => $worker->id])
         ->assertOk()
-        ->assertSee('Por defecto (50.00)')
+        ->assertSee('Por defecto (50,00)')
         ->assertSee('Por defecto');
+});
+
+it('shows and saves default rates with the Argentine number format', function (): void {
+    $admin = User::factory()->admin()->create();
+    $customer = Customer::factory()->create();
+    $dayId = itemTypeIds()[TimeTrackerItemTypeEnum::DAY->value];
+
+    DefaultRate::query()->create([
+        'customer_id' => $customer->id,
+        'time_tracker_item_type_id' => $dayId,
+        'rate' => 12345.6,
+    ]);
+
+    actingAs($admin);
+
+    $component = fillDefaultRateForm(['customer_id' => $customer->id])
+        ->assertSet("data.rates.{$dayId}", '12.345,60');
+
+    $component
+        ->set("data.rates.{$dayId}", '1.500.000,25')
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect((float) DefaultRate::query()->where('time_tracker_item_type_id', $dayId)->value('rate'))->toBe(1500000.25);
 });

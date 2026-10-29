@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Enums\UserRoleEnum;
+use App\Filament\Money;
 use App\Models\Customer;
 use App\Models\DefaultRate;
 use App\Models\TimeTrackerItemType;
@@ -171,7 +172,7 @@ class ManageDefaultRates extends Page
         $rates = [];
 
         foreach ($this->displayedItemTypes() as $type) {
-            $rates[$type->id] = $storedRates->get($type->id);
+            $rates[$type->id] = Money::format($storedRates->get($type->id));
         }
 
         return $rates;
@@ -183,10 +184,8 @@ class ManageDefaultRates extends Page
     private function rateInputs(): array
     {
         return $this->displayedItemTypes()
-            ->map(fn (TimeTrackerItemType $type): TextInput => TextInput::make('rates.'.$type->id)
-                ->label($type->name)
-                ->numeric()
-                ->minValue(0))
+            ->map(fn (TimeTrackerItemType $type): TextInput => Money::input('rates.'.$type->id)
+                ->label($type->name))
             ->all();
     }
 

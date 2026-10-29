@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TimeTrackers\Schemas;
 
 use App\Enums\TimeTrackerItemTypeEnum;
 use App\Enums\UserRoleEnum;
+use App\Filament\Money;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Project;
@@ -127,9 +128,8 @@ class TimeTrackerForm
                         TextInput::make('description')
                             ->label('Descripción')
                             ->visible(fn (Get $get) => in_array($get('time_tracker_item_type_id'), [TimeTrackerItemTypeEnum::EXPENSES->value, TimeTrackerItemTypeEnum::TRAVEL->value, TimeTrackerItemTypeEnum::GUARD->value])),
-                        TextInput::make('amount')
+                        Money::input('amount')
                             ->label('Monto')
-                            ->numeric()
                             ->visible(fn (Get $get) => in_array($get('time_tracker_item_type_id'), [TimeTrackerItemTypeEnum::EXPENSES->value, TimeTrackerItemTypeEnum::TRAVEL->value]))
                             ->live(onBlur: true),
                     ])

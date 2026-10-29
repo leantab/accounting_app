@@ -57,7 +57,7 @@ class TimeTrackersTable
                     ->sortable(),
                 TextColumn::make('amount')
                     ->label('Monto')
-                    ->numeric()
+                    ->numeric(2, ',', '.')
                     ->sortable(),
                 IconColumn::make('approved')
                     ->label('Aprobado')

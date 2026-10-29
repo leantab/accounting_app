@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Users\Schemas;
 
+use App\Filament\Money;
 use App\Models\TimeTrackerItemType;
 use App\Models\User;
 use Filament\Facades\Filament;
@@ -53,9 +54,11 @@ class UserInfolist
                     ->placeholder('-'),
                 TextEntry::make('fixed_daily_rate')
                     ->label('Tarifa fija por jornada')
+                    ->numeric(2, ',', '.')
                     ->placeholder('-'),
                 TextEntry::make('fixed_monthly_rate')
                     ->label('Tarifa fija mensual')
+                    ->numeric(2, ',', '.')
                     ->placeholder('-'),
                 Section::make('Tarifas individuales')
                     ->description('Si no hay una tarifa individual, se usa la tarifa por defecto.')
@@ -82,13 +85,13 @@ class UserInfolist
         $custom = $record->userRates->firstWhere('time_tracker_item_type_id', $typeId);
 
         if ($custom !== null) {
-            return number_format((float) $custom->rate, 2, '.', '');
+            return Money::format($custom->rate);
         }
 
         $default = $record->effectiveRateFor($typeId);
 
         return $default === null
             ? 'Por defecto'
-            : 'Por defecto ('.number_format($default, 2, '.', '').')';
+            : 'Por defecto ('.Money::format($default).')';
     }
 }

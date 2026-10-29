@@ -19,7 +19,7 @@ uses(TestCase::class, RefreshDatabase::class);
 function seedItemTypes(): void
 {
     foreach (TimeTrackerItemTypeEnum::cases() as $type) {
-        TimeTrackerItemType::ensureIdFor($type);
+        TimeTrackerItemType::query()->insertOrIgnore(['id' => $type->value, 'name' => $type->label()]);
     }
 }
 
@@ -194,4 +194,35 @@ it('does not let an employee assign the tracker to another user', function (): v
         ->assertHasNoFormErrors();
 
     expect(TimeTracker::query()->where('name', 'Planilla ajena')->firstOrFail()->user_id)->toBe($employee->id);
+});
+
+it('saves and shows item amounts with the Argentine number format', function (): void {
+    seedItemTypes();
+    $admin = User::factory()->admin()->create();
+    $travelId = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::TRAVEL);
+
+    actingAs($admin);
+
+    livewire(CreateTimeTracker::class)
+        ->fillForm([
+            'customer_id' => Customer::factory()->create()->id,
+            'user_id' => $admin->id,
+            'name' => 'Con viáticos',
+            'date_start' => '2026-10-01',
+            'date_end' => '2026-10-02',
+            'items' => [
+                ['date' => '2026-10-01', 'time_tracker_item_type_id' => $travelId, 'amount' => '12.345,50'],
+            ],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $tracker = TimeTracker::query()->where('name', 'Con viáticos')->firstOrFail();
+
+    expect((float) $tracker->items()->firstOrFail()->amount)->toBe(12345.5);
+
+    $component = livewire(EditTimeTracker::class, ['record' => $tracker->id]);
+    $itemKey = array_key_first($component->get('data.items'));
+
+    $component->assertSet("data.items.{$itemKey}.amount", '12.345,50');
 });

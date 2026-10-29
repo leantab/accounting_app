@@ -50,8 +50,8 @@ it('shows every individual rate on the user view page, falling back to default',
     livewire(ViewUser::class, ['record' => $worker->id])
         ->assertOk()
         ->assertSee('Tarifas individuales')
-        ->assertSee('77.50')
-        ->assertSee('Por defecto (800.00)')
+        ->assertSee('77,50')
+        ->assertSee('Por defecto (800,00)')
         ->assertSee('Doble Jornal')
         ->assertDontSee('Gastos');
 });
@@ -96,7 +96,7 @@ it('loads, saves and clears individual rates from the edit form', function (): v
     actingAs(User::factory()->admin()->create());
 
     livewire(EditUser::class, ['record' => $worker->id])
-        ->assertFormSet(["individualRates.{$hourId}" => 50.0])
+        ->assertFormSet(["individualRates.{$hourId}" => '50,00'])
         ->fillForm([
             "individualRates.{$hourId}" => null,
             "individualRates.{$dayId}" => 900,
@@ -126,4 +126,28 @@ it('updates an existing individual rate without duplicating it', function (): vo
 
     expect(UserRate::query()->where('user_id', $worker->id)->count())->toBe(1)
         ->and((float) UserRate::query()->where('user_id', $worker->id)->value('rate'))->toBe(750.0);
+});
+
+it('shows and saves individual rates with the Argentine number format', function (): void {
+    $worker = User::factory()->create();
+    $dayId = individualRateTypeId(TimeTrackerItemTypeEnum::DAY);
+
+    UserRate::query()->create([
+        'customer_id' => $worker->customer_id,
+        'user_id' => $worker->id,
+        'time_tracker_item_type_id' => $dayId,
+        'rate' => 12345.6,
+    ]);
+
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ViewUser::class, ['record' => $worker->id])->assertSee('12.345,60');
+
+    livewire(EditUser::class, ['record' => $worker->id])
+        ->assertFormSet(["individualRates.{$dayId}" => '12.345,60'])
+        ->fillForm(["individualRates.{$dayId}" => '2.000,50'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect((float) UserRate::query()->where('user_id', $worker->id)->value('rate'))->toBe(2000.5);
 });

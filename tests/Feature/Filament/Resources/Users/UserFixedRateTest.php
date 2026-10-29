@@ -118,8 +118,8 @@ it('edits and clears fixed rates', function (): void {
 
     livewire(EditUser::class, ['record' => $worker->id])
         ->assertFormSet([
-            'fixed_daily_rate' => '100.00',
-            'fixed_monthly_rate' => '2000.00',
+            'fixed_daily_rate' => '100,00',
+            'fixed_monthly_rate' => '2.000,00',
         ])
         ->fillForm([
             'fixed_daily_rate' => null,
@@ -144,7 +144,7 @@ it('shows fixed rates on the user view page', function (): void {
     livewire(ViewUser::class, ['record' => $worker->id])
         ->assertOk()
         ->assertSee('Tarifa fija por jornada')
-        ->assertSee('123.45')
+        ->assertSee('123,45')
         ->assertSee('Tarifa fija mensual');
 });
 
@@ -160,3 +160,47 @@ it('lists the fixed rate columns in the users table', function (): void {
         ->assertTableColumnExists('fixed_monthly_rate')
         ->assertTableColumnStateSet('fixed_monthly_rate', '3210.00', $worker);
 });
+
+it('shows fixed rates with dots for thousands and a comma for cents', function (): void {
+    $admin = User::factory()->admin()->create();
+    $worker = User::factory()->create(['fixed_daily_rate' => 1234.5, 'fixed_monthly_rate' => 1234567.89]);
+
+    actingAs($admin);
+
+    livewire(ViewUser::class, ['record' => $worker->id])
+        ->assertSee('1.234,50')
+        ->assertSee('1.234.567,89');
+
+    livewire(EditUser::class, ['record' => $worker->id])
+        ->assertFormSet([
+            'fixed_daily_rate' => '1.234,50',
+            'fixed_monthly_rate' => '1.234.567,89',
+        ]);
+});
+
+it('saves fixed rates typed with the Argentine format', function (): void {
+    $admin = User::factory()->admin()->create();
+    $worker = User::factory()->create();
+
+    actingAs($admin);
+
+    livewire(EditUser::class, ['record' => $worker->id])
+        ->fillForm(['fixed_daily_rate' => '1.234,56', 'fixed_monthly_rate' => '150.000,5'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($worker->fresh()->fixed_daily_rate)->toBe('1234.56')
+        ->and($worker->fresh()->fixed_monthly_rate)->toBe('150000.50');
+});
+
+it('rejects fixed rates that are not valid amounts', function (string $value): void {
+    $admin = User::factory()->admin()->create();
+    $worker = User::factory()->create();
+
+    actingAs($admin);
+
+    livewire(EditUser::class, ['record' => $worker->id])
+        ->fillForm(['fixed_daily_rate' => $value])
+        ->call('save')
+        ->assertHasFormErrors(['fixed_daily_rate']);
+})->with(['letters' => 'abc', 'negative' => '-5,00', 'two commas' => '1,2,3']);

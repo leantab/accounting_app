@@ -43,7 +43,7 @@ class TimeTrackerInfolist
                     ->boolean(),
                 TextEntry::make('amount')
                     ->label('Monto')
-                    ->numeric()
+                    ->numeric(2, ',', '.')
                     ->placeholder('-'),
                 TextEntry::make('invoice.name')
                     ->label('Factura'),
@@ -102,7 +102,7 @@ class TimeTrackerInfolist
                         TextEntry::make('description')
                             ->placeholder('-'),
                         TextEntry::make('amount')
-                            ->numeric()
+                            ->numeric(2, ',', '.')
                             ->placeholder('-'),
                     ]),
             ]);
