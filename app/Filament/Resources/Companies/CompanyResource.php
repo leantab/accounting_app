@@ -74,7 +74,7 @@ class CompanyResource extends Resource
                     ->required()
                     ->default(fn () => Filament::auth()->user()?->currentCustomerId())
                     ->visible(fn () => Filament::auth()->user()?->isAdmin()),
-                MorphToSelect::make('companyable')
+                /*MorphToSelect::make('companyable')
                     ->label('Relacionado con')
                     ->types([
                         MorphToSelect\Type::make(Customer::class)
@@ -85,7 +85,7 @@ class CompanyResource extends Resource
                             ->titleAttribute('email'),
                     ])
                     ->searchable()
-                    ->preload(),
+                    ->preload(),*/
                 TextInput::make('name')
                     ->label('Nombre')
                     ->required(),
@@ -112,11 +112,11 @@ class CompanyResource extends Resource
     {
         return $schema
             ->components([
-                TextEntry::make('companyable_type')
+                /*TextEntry::make('companyable_type')
                     ->label('Tipo relacionado')
                     ->formatStateUsing(fn ($state) => class_basename($state)),
                 TextEntry::make('companyable.name')
-                    ->label('Entidad relacionada'),
+                    ->label('Entidad relacionada'),*/
                 TextEntry::make('name'),
                 TextEntry::make('description')
                     ->label('Descripción')
@@ -157,14 +157,14 @@ class CompanyResource extends Resource
                     ->label('Cliente')
                     ->sortable()
                     ->visible(fn () => Filament::auth()->user()?->isAdmin()),
-                TextColumn::make('companyable_type')
+                /*TextColumn::make('companyable_type')
                     ->label('Tipo relacionado')
                     ->formatStateUsing(fn ($state) => class_basename($state))
                     ->sortable(),
                 TextColumn::make('companyable.name')
                     ->label('Entidad relacionada')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable(),*/
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),

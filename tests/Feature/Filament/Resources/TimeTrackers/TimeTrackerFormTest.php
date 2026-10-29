@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\TimeTrackerItemTypeEnum;
+use App\Enums\UserRoleEnum;
 use App\Filament\Resources\TimeTrackers\Pages\CreateTimeTracker;
 use App\Filament\Resources\TimeTrackers\Pages\EditTimeTracker;
 use App\Models\Customer;
@@ -134,4 +135,63 @@ it('loads saved times into the 30 minute select options', function (): void {
     $component
         ->assertSet("data.items.{$itemKey}.time_start", '08:30')
         ->assertSet("data.items.{$itemKey}.time_end", '17:30');
+});
+
+it('assigns the signed in employee as the tracker user when the user select is hidden', function (): void {
+    seedItemTypes();
+    $customer = Customer::factory()->create();
+    $employee = User::factory()->create([
+        'customer_id' => $customer->id,
+        'user_role_id' => UserRoleEnum::Employee->value,
+    ]);
+    $other = User::factory()->create(['customer_id' => $customer->id]);
+    $dayTypeId = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::DAY);
+
+    actingAs($employee);
+
+    livewire(CreateTimeTracker::class)
+        ->assertFormFieldIsHidden('user_id')
+        ->fillForm([
+            'name' => 'Mi planilla',
+            'date_start' => '2026-10-01',
+            'date_end' => '2026-10-02',
+            'items' => [
+                ['date' => '2026-10-01', 'time_tracker_item_type_id' => $dayTypeId],
+            ],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $tracker = TimeTracker::query()->where('name', 'Mi planilla')->firstOrFail();
+
+    expect($tracker->user_id)->toBe($employee->id)
+        ->and($tracker->customer_id)->toBe($customer->id);
+});
+
+it('does not let an employee assign the tracker to another user', function (): void {
+    seedItemTypes();
+    $customer = Customer::factory()->create();
+    $employee = User::factory()->create([
+        'customer_id' => $customer->id,
+        'user_role_id' => UserRoleEnum::Employee->value,
+    ]);
+    $other = User::factory()->create(['customer_id' => $customer->id]);
+    $dayTypeId = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::DAY);
+
+    actingAs($employee);
+
+    livewire(CreateTimeTracker::class)
+        ->fillForm([
+            'user_id' => $other->id,
+            'name' => 'Planilla ajena',
+            'date_start' => '2026-10-01',
+            'date_end' => '2026-10-02',
+            'items' => [
+                ['date' => '2026-10-01', 'time_tracker_item_type_id' => $dayTypeId],
+            ],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(TimeTracker::query()->where('name', 'Planilla ajena')->firstOrFail()->user_id)->toBe($employee->id);
 });

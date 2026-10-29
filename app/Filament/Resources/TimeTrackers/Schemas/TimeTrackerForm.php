@@ -37,6 +37,10 @@ class TimeTrackerForm
                     ->options(fn () => Filament::auth()->user()->is_admin ? User::all()->pluck('name', 'id') : User::where('customer_id', Filament::auth()->user()->customer_id)->get()->pluck('name', 'id'))
                     ->default(Filament::auth()->user()->id)
                     ->hidden(fn () => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value)
+                    ->dehydratedWhenHidden()
+                    ->dehydrateStateUsing(fn ($state) => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value
+                        ? Filament::auth()->id()
+                        : $state)
                     ->required(),
                 Select::make('project_id')
                     ->label('Proyecto')
