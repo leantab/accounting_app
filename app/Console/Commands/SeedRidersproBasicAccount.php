@@ -62,7 +62,7 @@ class SeedRidersproBasicAccount extends Command
 
         $user3 = User::create([
             'name' => 'Maro',
-            'lastname' => 'Papardopulos',
+            'lastname' => 'Maropulos',
             'email' => 'maro@riderspro.com.ar',
             'customer_id' => $customer->id,
             'password' => Hash::make($password),
@@ -70,24 +70,42 @@ class SeedRidersproBasicAccount extends Command
             'email_verified_at' => now(),
         ]);
 
-        $user4 = User::create([
-            'name' => 'Maria',
+        $user5 = User::create([
+            'name' => 'Carlitos',
             'lastname' => 'Perez',
-            'email' => 'empleado@riderspro.com.ar',
+            'email' => 'Carlitos@riderspro.com.ar',
             'customer_id' => $customer->id,
             'password' => Hash::make($password),
             'user_role_id' => UserRoleEnum::Employee->value,
+            'tax_id' => '27-11223344-9',
+            'email_verified_at' => now(),
+        ]);
+
+        $user4 = User::create([
+            'name' => 'Clarisa',
+            'lastname' => 'Perez',
+            'email' => 'clarisa@riderspro.com.ar',
+            'customer_id' => $customer->id,
+            'password' => Hash::make($password),
+            'user_role_id' => UserRoleEnum::Admin->value,
             'tax_id' => '1234567890',
             'email_verified_at' => now(),
         ]);
 
-        $company4 = Company::create([
-            'name' => $user4->fullName,
-            'social_reason' => $user4->fullName,
-            'tax_id' => $user4->tax_id,
+        $company5 = Company::create([
+            'name' => $user5->fullName,
+            'social_reason' => $user5->fullName,
+            'tax_id' => $user5->tax_id,
             'customer_id' => $customer->id,
-            'companyable_id' => $user4->id,
+            'companyable_id' => $user5->id,
             'companyable_type' => User::class,
+        ]);
+
+        $company1 = Company::create([
+            'name' => 'DC Entertainment',
+            'social_reason' => 'DC Entertainment',
+            'tax_id' => '30-55443322-1',
+            'customer_id' => $customer->id,
         ]);
 
         $this->info('Company created successfully. ID: '.$company->id);
@@ -95,18 +113,7 @@ class SeedRidersproBasicAccount extends Command
         $this->info('User created successfully. ID: '.$user2->id);
         $this->info('User created successfully. ID: '.$user3->id);
         $this->info('User created successfully. ID: '.$user4->id);
-        $this->info('Company created successfully. ID: '.$company4->id);
+        $this->info('Company created successfully. ID: '.$company5->id);
         $this->info('Riderspro basic account created successfully');
-
-        $superAdmin = User::create([
-            'name' => 'Super',
-            'lastname' => 'Admin',
-            'email' => 'admin@riderspro.com.ar',
-            'password' => Hash::make($password),
-            'email_verified_at' => now(),
-            'is_admin' => true,
-        ]);
-
-        $this->info('Super Admin created successfully. ID: '.$superAdmin->id);
     }
 }

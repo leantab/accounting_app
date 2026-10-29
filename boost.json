@@ -2,14 +2,21 @@
     "agents": [
         "claude_code"
     ],
+    "cloud": true,
     "packages": [
         "filament/filament"
     ],
     "skills": [
+        "infer-conventions",
+        "deploying-to-cloud",
+        "ai-sdk-development",
+        "fortify-development",
         "laravel-best-practices",
+        "testing-best-practices",
+        "configure-nightwatch",
         "fluxui-development",
         "livewire-development",
-        "pest-testing",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "filament-development"
     ]
 }
