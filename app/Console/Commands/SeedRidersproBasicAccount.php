@@ -60,27 +60,6 @@ class SeedRidersproBasicAccount extends Command
             'email_verified_at' => now(),
         ]);
 
-        $user3 = User::create([
-            'name' => 'Maro',
-            'lastname' => 'Maropulos',
-            'email' => 'maro@riderspro.com.ar',
-            'customer_id' => $customer->id,
-            'password' => Hash::make($password),
-            'user_role_id' => UserRoleEnum::Manager->value,
-            'email_verified_at' => now(),
-        ]);
-
-        $user5 = User::create([
-            'name' => 'Carlitos',
-            'lastname' => 'Perez',
-            'email' => 'carlitos@riderspro.com.ar',
-            'customer_id' => $customer->id,
-            'password' => Hash::make($password),
-            'user_role_id' => UserRoleEnum::Employee->value,
-            'tax_id' => '27-11223344-9',
-            'email_verified_at' => now(),
-        ]);
-
         $user4 = User::create([
             'name' => 'Clarisa',
             'lastname' => 'Perez',
@@ -90,15 +69,6 @@ class SeedRidersproBasicAccount extends Command
             'user_role_id' => UserRoleEnum::Admin->value,
             'tax_id' => '1234567890',
             'email_verified_at' => now(),
-        ]);
-
-        $company5 = Company::create([
-            'name' => $user5->fullName,
-            'social_reason' => $user5->fullName,
-            'tax_id' => $user5->tax_id,
-            'customer_id' => $customer->id,
-            'companyable_id' => $user5->id,
-            'companyable_type' => User::class,
         ]);
 
         $company1 = Company::create([
@@ -111,9 +81,7 @@ class SeedRidersproBasicAccount extends Command
         $this->info('Company created successfully. ID: '.$company->id);
         $this->info('User created successfully. ID: '.$user->id);
         $this->info('User created successfully. ID: '.$user2->id);
-        $this->info('User created successfully. ID: '.$user3->id);
         $this->info('User created successfully. ID: '.$user4->id);
-        $this->info('Company created successfully. ID: '.$company5->id);
         $this->info('Riderspro basic account created successfully');
     }
 }

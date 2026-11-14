@@ -76,7 +76,7 @@ Limits and rules:
 
 ## Testing
 
-Never hit Resend in tests: use `Mail::fake()` or `Queue::fake()` (see `tests/Feature/Actions/TimeTracker/TimeTrackerApprovedMailTest.php`).
+Never hit Resend in tests: `tests/TestCase.php` fakes the Resend facade by default and `phpunit.xml` sets a dummy `RESEND_API_KEY` (the queue is `sync`, so jobs send inline). A test that checks an email uses `Resend::shouldReceive('emails')` (see `tests/Feature/Actions/TimeTracker/TimeTrackerApprovedMailTest.php`).
 
 ## Tools and further docs
 

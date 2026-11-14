@@ -5,29 +5,43 @@ namespace App\Enums;
 enum TimeTrackerItemTypeEnum: int
 {
     case EXTRA_HOUR = 1;
-    case EXTRA_HOUR_RIGGING = 2;
-    case DAY = 3;
-    case DAY_RIGGING = 4;
-    case DAY_SETUP_TEARDOWN = 5;
-    case DOUBLE_DAY = 6;
-    case LOAD_UNLOAD = 7;
-    case WAREHOUSE = 8;
-    case GUARD = 9;
-    case TRAVEL = 10;
-    case EXPENSES = 11;
+    case EXTRA_HOUR_MAIN = 2;
+    case EXTRA_HOUR_RIGGING = 3;
+    case EXTRA_HOUR_RIGGING_MAIN = 4;
+    case DAY = 5;
+    case DAY_MAIN = 6;
+    case DAY_RIGGING = 7;
+    case DAY_RIGGING_MAIN = 8;
+    case DAY_SETUP_TEARDOWN = 9;
+    case DOUBLE_DAY = 10;
+    case DOUBLE_DAY_MAIN = 11;
+    case LOAD_UNLOAD = 12;
+    case LOAD_UNLOAD_MAIN = 13;
+    case WAREHOUSE = 14;
+    case GUARD = 15;
+    case CONSOLE = 16;
+    case TRAVEL = 17;
+    case EXPENSES = 18;
 
     public function label(): string
     {
         return match ($this) {
             self::EXTRA_HOUR => 'Hora extra',
+            self::EXTRA_HOUR_MAIN => 'Hora extra MAIN',
             self::EXTRA_HOUR_RIGGING => 'Hora extra Rigging',
+            self::EXTRA_HOUR_RIGGING_MAIN => 'Hora extra Rigging MAIN',
             self::DAY => 'Jornal',
+            self::DAY_MAIN => 'Jornal MAIN',
             self::DAY_RIGGING => 'Jornal + Rigging',
+            self::DAY_RIGGING_MAIN => 'Jornal + Rigging MAIN',
             self::DAY_SETUP_TEARDOWN => 'Jornal Armado/Desarme',
             self::DOUBLE_DAY => 'Doble Jornal',
+            self::DOUBLE_DAY_MAIN => 'Doble Jornal MAIN',
             self::LOAD_UNLOAD => 'Carga/Descarga',
+            self::LOAD_UNLOAD_MAIN => 'Carga/Descarga MAIN',
             self::WAREHOUSE => 'Depósito',
             self::GUARD => 'Guardia',
+            self::CONSOLE => 'Consola',
             self::TRAVEL => 'Viáticos',
             self::EXPENSES => 'Gastos',
         };
@@ -46,7 +60,12 @@ enum TimeTrackerItemTypeEnum: int
      */
     public function isHourly(): bool
     {
-        return in_array($this, [self::EXTRA_HOUR, self::EXTRA_HOUR_RIGGING], true);
+        return in_array($this, [
+            self::EXTRA_HOUR,
+            self::EXTRA_HOUR_MAIN,
+            self::EXTRA_HOUR_RIGGING,
+            self::EXTRA_HOUR_RIGGING_MAIN,
+        ], true);
     }
 
     /**

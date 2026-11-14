@@ -24,9 +24,9 @@ function individualRateTypeId(TimeTrackerItemTypeEnum $type): int
 it('lists every item type except expenses and travel as individual rates', function (): void {
     $names = TimeTrackerItemType::withRates()->pluck('name')->all();
 
-    expect($names)->toHaveCount(9)
+    expect($names)->toHaveCount(16)
         ->and($names)->not->toContain('Gastos', 'Viáticos')
-        ->and($names)->toContain('Hora extra', 'Jornal', 'Guardia', 'Depósito');
+        ->and($names)->toContain('Hora extra', 'Hora extra MAIN', 'Jornal MAIN', 'Consola', 'Guardia', 'Depósito');
 });
 
 it('shows every individual rate on the user view page, falling back to default', function (): void {

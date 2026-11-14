@@ -35,6 +35,7 @@
         <env name="DB_PASSWORD" value="mysql"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="RESEND_API_KEY" value="re_fake_key_for_tests"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>

@@ -50,14 +50,21 @@ class DatabaseSeeder extends Seeder
 
         DB::table('time_tracker_item_types')->insert([
             ['name' => 'Hora extra'],
+            ['name' => 'Hora extra MAIN'],
             ['name' => 'Hora extra Rigging'],
+            ['name' => 'Hora extra Rigging MAIN'],
             ['name' => 'Jornal'],
+            ['name' => 'Jornal MAIN'],
             ['name' => 'Jornal + Rigging'],
+            ['name' => 'Jornal + Rigging MAIN'],
             ['name' => 'Jornal Armado/Desarme'],
             ['name' => 'Doble Jornal'],
+            ['name' => 'Doble Jornal MAIN'],
             ['name' => 'Carga/Descarga'],
+            ['name' => 'Carga/Descarga MAIN'],
             ['name' => 'Depósito'],
             ['name' => 'Guardia'],
+            ['name' => 'Consola'],
             ['name' => 'Viáticos'],
             ['name' => 'Gastos'],
         ]);
