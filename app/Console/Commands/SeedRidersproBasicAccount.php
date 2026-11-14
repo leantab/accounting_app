@@ -73,7 +73,7 @@ class SeedRidersproBasicAccount extends Command
         $user5 = User::create([
             'name' => 'Carlitos',
             'lastname' => 'Perez',
-            'email' => 'Carlitos@riderspro.com.ar',
+            'email' => 'carlitos@riderspro.com.ar',
             'customer_id' => $customer->id,
             'password' => Hash::make($password),
             'user_role_id' => UserRoleEnum::Employee->value,

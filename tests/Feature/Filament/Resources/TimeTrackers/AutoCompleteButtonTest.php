@@ -29,7 +29,7 @@ it('fills item amounts and the tracker total from the auto complete button', fun
     DefaultRate::query()->create(['customer_id' => $customer->id, 'time_tracker_item_type_id' => $hourId, 'rate' => 10]);
     DefaultRate::query()->create(['customer_id' => $customer->id, 'time_tracker_item_type_id' => $dayId, 'rate' => 100]);
 
-    $tracker = TimeTracker::factory()->create(['customer_id' => $customer->id, 'user_id' => $worker->id, 'amount' => null]);
+    $tracker = TimeTracker::factory()->approved()->create(['customer_id' => $customer->id, 'user_id' => $worker->id, 'amount' => null]);
     $hourItem = $tracker->items()->create(['date' => '2026-10-01', 'time_tracker_item_type_id' => $hourId, 'hours' => 3]);
     $dayItem = $tracker->items()->create(['date' => '2026-10-02', 'time_tracker_item_type_id' => $dayId, 'time_start' => '08:00', 'time_end' => '17:00']);
 
@@ -71,6 +71,7 @@ it('works end to end for a customer owner after creating the tracker from the fo
         ->assertHasNoFormErrors();
 
     $tracker = TimeTracker::query()->where('name', 'Planilla')->firstOrFail();
+    $tracker->update(['approved' => true]);
 
     livewire(ListTimeTrackers::class)->callAction(TestAction::make('auto_complete')->table());
 
@@ -82,7 +83,7 @@ it('calculates a tracker again after rates were added following an earlier run w
     $customer = Customer::factory()->create();
     $worker = User::factory()->create(['customer_id' => $customer->id]);
     $dayId = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::DAY);
-    $tracker = TimeTracker::factory()->create(['customer_id' => $customer->id, 'user_id' => $worker->id, 'amount' => null]);
+    $tracker = TimeTracker::factory()->approved()->create(['customer_id' => $customer->id, 'user_id' => $worker->id, 'amount' => null]);
     $item = $tracker->items()->create(['date' => '2026-10-01', 'time_tracker_item_type_id' => $dayId]);
 
     actingAs(User::factory()->admin()->create());
@@ -108,7 +109,7 @@ it('does not set hours on daily items when times are present', function (): void
     $worker = User::factory()->create(['customer_id' => $customer->id]);
     $dayId = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::DAY);
     DefaultRate::query()->create(['customer_id' => $customer->id, 'time_tracker_item_type_id' => $dayId, 'rate' => 100]);
-    $tracker = TimeTracker::factory()->create(['customer_id' => $customer->id, 'user_id' => $worker->id, 'amount' => null]);
+    $tracker = TimeTracker::factory()->approved()->create(['customer_id' => $customer->id, 'user_id' => $worker->id, 'amount' => null]);
     $item = $tracker->items()->create(['date' => '2026-10-01', 'time_tracker_item_type_id' => $dayId, 'time_start' => '08:00', 'time_end' => '17:00']);
 
     actingAs(User::factory()->admin()->create());

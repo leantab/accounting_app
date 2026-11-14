@@ -24,7 +24,7 @@ function createTimeTrackerForDefaultRate(User $user, Customer $customer): TimeTr
         'company_id' => $company->id,
     ]);
 
-    return TimeTracker::factory()->create([
+    return TimeTracker::factory()->approved()->create([
         'customer_id' => $customer->id,
         'user_id' => $user->id,
         'project_id' => $project->id,

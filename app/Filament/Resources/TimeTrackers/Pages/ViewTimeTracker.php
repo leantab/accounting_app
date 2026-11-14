@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TimeTrackers\Pages;
 
+use App\Actions\TimeTracker\AutoCompleteTimeTrackerAction;
 use App\Enums\UserRoleEnum;
 use App\Filament\Resources\TimeTrackers\TimeTrackerResource;
 use App\Models\User;
@@ -19,6 +20,39 @@ class ViewTimeTracker extends ViewRecord
     {
         return [
             EditAction::make(),
+            Action::make('recalculate')
+                ->label('Recalcular monto')
+                ->icon('heroicon-o-calculator')
+                ->color('gray')
+                ->visible(fn (): bool => self::canManageAmounts())
+                ->requiresConfirmation()
+                ->modalHeading('Recalcular monto')
+                ->modalDescription('Se volverán a calcular los montos de cada ítem y el monto final con las tarifas actuales. Los montos actuales se reemplazarán.')
+                ->modalSubmitActionLabel('Recalcular')
+                ->action(function ($record): void {
+                    abort_unless(self::canManageAmounts(), 403);
+
+                    $result = AutoCompleteTimeTrackerAction::recalculate($record);
+
+                    $this->record->refresh()->load('items');
+                    $this->refreshFormData(['amount']);
+
+                    if ($result['missing_rates'] !== []) {
+                        Notification::make()
+                            ->title('Monto recalculado, pero faltan tarifas')
+                            ->body('Cargue una tarifa por defecto o individual para: '.implode(', ', $result['missing_rates']).'.')
+                            ->warning()
+                            ->persistent()
+                            ->send();
+
+                        return;
+                    }
+
+                    Notification::make()
+                        ->title('Monto recalculado')
+                        ->success()
+                        ->send();
+                }),
             Action::make('approve')
                 ->label('Aprobar')
                 ->icon('heroicon-o-check-circle')
@@ -41,5 +75,13 @@ class ViewTimeTracker extends ViewRecord
                         ->sendToDatabase($user);
                 }),
         ];
+    }
+
+    private static function canManageAmounts(): bool
+    {
+        $user = Filament::auth()->user();
+
+        return (bool) $user->is_admin
+            || in_array($user->user_role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value], true);
     }
 }

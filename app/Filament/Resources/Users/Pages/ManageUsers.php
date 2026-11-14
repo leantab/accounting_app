@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Pages;
 
 use App\Filament\Resources\Users\UserResource;
+use App\Mail\ResendSender;
 use App\Mail\UserInviteMail;
 use App\Models\Customer;
 use Filament\Actions\Action;
@@ -10,8 +11,9 @@ use Filament\Actions\CreateAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ManageRecords;
-use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 class ManageUsers extends ManageRecords
 {
@@ -33,7 +35,7 @@ class ManageUsers extends ManageRecords
                         ->label('Customer')
                         ->options(Customer::all()->pluck('name', 'id'))
                         ->default(Filament::auth()->user()->customer_id)
-                        ->hidden(fn() => ! Filament::auth()->user()->is_admin)
+                        ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                         ->required(),
                     TextInput::make('email')
                         ->label('Email')
@@ -43,8 +45,24 @@ class ManageUsers extends ManageRecords
                 ->action(function (array $data) {
                     $mail = $data['email'];
                     $customer = $data['customer_id'];
-                    // Enviar un main de invitacion
-                    Mail::to($mail)->send(new UserInviteMail($mail, $customer));
+                    try {
+                        ResendSender::send(new UserInviteMail($mail, $customer), $mail);
+                    } catch (Throwable $exception) {
+                        report($exception);
+
+                        Notification::make()
+                            ->title('No se pudo enviar la invitación')
+                            ->body('Intente nuevamente en unos minutos.')
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
+
+                    Notification::make()
+                        ->title('Invitación enviada')
+                        ->success()
+                        ->send();
                 }),
         ];
     }

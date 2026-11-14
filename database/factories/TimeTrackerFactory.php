@@ -30,4 +30,12 @@ class TimeTrackerFactory extends Factory
             'approved_by' => User::factory(),
         ];
     }
+
+    public function approved(): static
+    {
+        return $this->state(fn (): array => [
+            'approved' => true,
+            'approved_at' => now(),
+        ]);
+    }
 }
