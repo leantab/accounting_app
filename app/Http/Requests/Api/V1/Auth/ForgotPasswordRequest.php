@@ -27,8 +27,8 @@ class ForgotPasswordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'Ingresá tu email.',
-            'email.email' => 'Ingresá un email válido.',
+            'email.required' => __('api.enter_your_email'),
+            'email.email' => __('api.enter_valid_email'),
         ];
     }
 }

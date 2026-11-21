@@ -44,7 +44,7 @@ class CustomerController extends CrudController
         /** @var Customer $record */
         $inUse = $record->users()->exists() || Company::query()->where('customer_id', $record->id)->exists();
 
-        abort_if($inUse, 409, 'No se puede eliminar un cliente que todavía tiene usuarios o empresas.');
+        abort_if($inUse, 409, __('api.cannot_delete_customer'));
     }
 
     public function store(CustomerRequest $request): JsonResponse

@@ -54,7 +54,7 @@ class DefaultRateController extends Controller
         }
 
         return response()->json([
-            'message' => 'Tarifas por defecto guardadas',
+            'message' => __('rates.default_rates_saved'),
             'data' => $this->payload($customerId),
         ]);
     }

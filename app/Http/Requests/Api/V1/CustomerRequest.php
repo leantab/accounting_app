@@ -35,8 +35,8 @@ class CustomerRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Ingresá un nombre.',
-            'email.email' => 'Ingresá un email válido.',
+            'name.required' => __('api.enter_a_name'),
+            'email.email' => __('api.enter_valid_email'),
         ];
     }
 }

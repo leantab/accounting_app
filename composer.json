@@ -22,7 +22,8 @@
         "livewire/flux": "^2.9.0",
         "livewire/livewire": "^4.0",
         "resend/resend-laravel": "^1.7",
-        "spatie/laravel-data": "^4.21"
+        "spatie/laravel-data": "^4.21",
+        "tomatophp/filament-pwa": "^5.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -30,6 +30,33 @@ class TimeTrackerItemType extends Model
     }
 
     /**
+     * Shows the name of a stored item type in the current language; unknown names are returned as they are.
+     */
+    public static function translate(string $name): string
+    {
+        foreach (TimeTrackerItemTypeEnum::cases() as $type) {
+            if ($type->label() === $name) {
+                return $type->translatedLabel();
+            }
+        }
+
+        return $name;
+    }
+
+    /**
+     * @param  list<string>  $names
+     */
+    public static function translateMany(array $names): string
+    {
+        return implode(', ', array_map(static::translate(...), $names));
+    }
+
+    public function displayName(): string
+    {
+        return static::translate($this->name);
+    }
+
+    /**
      * @return Collection<int, TimeTrackerItemType>
      */
     public static function withRates(): Collection

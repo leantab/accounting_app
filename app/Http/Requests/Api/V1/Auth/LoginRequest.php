@@ -32,9 +32,9 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => 'Ingresá tu email.',
-            'email.email' => 'Ingresá un email válido.',
-            'password.required' => 'Ingresá tu contraseña.',
+            'email.required' => __('api.enter_your_email'),
+            'email.email' => __('api.enter_valid_email'),
+            'password.required' => __('api.enter_your_password'),
             'device_name.required' => 'Falta el nombre del dispositivo.',
         ];
     }

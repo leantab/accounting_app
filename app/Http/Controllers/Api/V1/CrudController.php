@@ -106,7 +106,7 @@ abstract class CrudController extends Controller
             $record->delete();
         } catch (QueryException) {
             return response()->json([
-                'message' => 'No se puede eliminar porque tiene registros asociados.',
+                'message' => __('api.cannot_delete_with_records'),
             ], 409);
         }
 

@@ -8,6 +8,7 @@ use App\Filament\Money;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Project;
+use App\Models\TimeTrackerItemType;
 use App\Models\User;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
@@ -28,13 +29,13 @@ class TimeTrackerForm
         return $schema
             ->components([
                 Select::make('customer_id')
-                    ->label('Cliente')
+                    ->label(__('common.customer'))
                     ->relationship('customer', 'name')
                     ->default(Filament::auth()->user()->customer_id)
                     ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                     ->required(),
                 Select::make('user_id')
-                    ->label('Usuario')
+                    ->label(__('common.user'))
                     ->options(fn () => Filament::auth()->user()->is_admin ? User::all()->pluck('name', 'id') : User::where('customer_id', Filament::auth()->user()->customer_id)->get()->pluck('name', 'id'))
                     ->default(Filament::auth()->user()->id)
                     ->hidden(fn () => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value)
@@ -44,7 +45,7 @@ class TimeTrackerForm
                         : $state)
                     ->required(),
                 Select::make('project_id')
-                    ->label('Proyecto')
+                    ->label(__('common.project'))
                     ->options(function () {
                         $user = Filament::auth()->user();
                         if ($user->is_admin) {
@@ -54,31 +55,31 @@ class TimeTrackerForm
                         return Project::where('customer_id', $user->customer_id)->get()->pluck('name', 'id');
                     }),
                 TextInput::make('name')
-                    ->label('Nombre')
+                    ->label(__('common.name'))
                     ->required(),
                 DatePicker::make('date_start')
-                    ->label('Fecha de inicio')
+                    ->label(__('common.start_date'))
                     ->native(false)
                     ->format('Y-m-d')
                     ->displayFormat('d/m/Y')
                     ->closeOnDateSelection()
                     ->required(),
                 DatePicker::make('date_end')
-                    ->label('Fecha de fin')
+                    ->label(__('common.end_date'))
                     ->native(false)
                     ->format('Y-m-d')
                     ->displayFormat('d/m/Y')
                     ->closeOnDateSelection()
                     ->required(),
                 Textarea::make('description')
-                    ->label('Descripción')
+                    ->label(__('common.description'))
                     ->columnSpanFull(),
                 Toggle::make('billed')
-                    ->label('Facturado')
+                    ->label(__('common.billed'))
                     ->default(false)
                     ->hidden(fn () => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value),
                 Select::make('invoice_id')
-                    ->label('Factura')
+                    ->label(__('common.invoice'))
                     ->options(function () {
                         $user = Filament::auth()->user();
                         if ($user->is_admin) {
@@ -89,28 +90,36 @@ class TimeTrackerForm
                     })
                     ->hidden(fn () => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value),
                 Toggle::make('paid')
-                    ->label('Pagado')
+                    ->label(__('common.paid'))
                     ->default(false)
                     ->hidden(fn () => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value),
                 Select::make('payment_id')
-                    ->label('Pago')
+                    ->label(__('common.payment'))
                     ->options(fn () => Filament::auth()->user()->is_admin ? Payment::all()->pluck('reference', 'id') : Payment::where('customer_id', Filament::auth()->user()->customer_id)->get()->pluck('reference', 'id'))
                     ->hidden(fn () => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value),
+                DatePicker::make('expected_payment_date')
+                    ->label(__('time_trackers.expected_payment_date'))
+                    ->native(false)
+                    ->format('Y-m-d')
+                    ->displayFormat('d/m/Y')
+                    ->closeOnDateSelection()
+                    ->hidden(fn () => Filament::auth()->user()->user_role_id == UserRoleEnum::Employee->value),
                 Repeater::make('items')
-                    ->label('Ítems')
-                    ->addActionLabel('Agregar ítem')
+                    ->label(__('time_trackers.items'))
+                    ->addActionLabel(__('time_trackers.add_item'))
                     ->relationship('items')
                     ->schema([
                         DatePicker::make('date')
-                            ->label('Fecha')
+                            ->label(__('common.date'))
                             ->format('Y-m-d')
                             ->native(false)
                             ->displayFormat('d/m/Y')
                             ->closeOnDateSelection()
                             ->required(),
                         Select::make('time_tracker_item_type_id')
-                            ->label('Tipo')
+                            ->label(__('common.type'))
                             ->relationship('timeTrackerItemType', 'name')
+                            ->getOptionLabelFromRecordUsing(fn (TimeTrackerItemType $record): string => $record->displayName())
                             ->required()
                             ->live()
                             ->afterStateUpdated(function (Get $get, Set $set): void {
@@ -119,17 +128,17 @@ class TimeTrackerForm
                                 }
                             }),
                         TextInput::make('hours')
-                            ->label('Horas')
+                            ->label(__('common.hours'))
                             ->numeric()
                             ->visible(fn (Get $get) => in_array($get('time_tracker_item_type_id'), TimeTrackerItemTypeEnum::hourlyValues()))
                             ->required(fn (Get $get) => in_array($get('time_tracker_item_type_id'), TimeTrackerItemTypeEnum::hourlyValues())),
-                        self::timeSelect('time_start', 'Hora de inicio'),
-                        self::timeSelect('time_end', 'Hora de fin'),
+                        self::timeSelect('time_start', __('time_trackers.start_time')),
+                        self::timeSelect('time_end', __('time_trackers.end_time')),
                         TextInput::make('description')
-                            ->label('Descripción')
+                            ->label(__('common.description'))
                             ->visible(fn (Get $get) => in_array($get('time_tracker_item_type_id'), [TimeTrackerItemTypeEnum::EXPENSES->value, TimeTrackerItemTypeEnum::TRAVEL->value, TimeTrackerItemTypeEnum::GUARD->value])),
                         Money::input('amount')
-                            ->label('Monto')
+                            ->label(__('common.amount'))
                             ->visible(fn (Get $get) => in_array($get('time_tracker_item_type_id'), [TimeTrackerItemTypeEnum::EXPENSES->value, TimeTrackerItemTypeEnum::TRAVEL->value]))
                             ->live(onBlur: true),
                     ])

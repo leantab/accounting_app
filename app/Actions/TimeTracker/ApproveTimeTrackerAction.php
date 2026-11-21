@@ -25,7 +25,7 @@ class ApproveTimeTrackerAction
 
         if ($owner !== null) {
             Notification::make()
-                ->title('Planilla aprobada')
+                ->title(__('time_trackers.approved_notification'))
                 ->body($timeTracker->name)
                 ->success()
                 ->viewData(['time_tracker_id' => $timeTracker->id])

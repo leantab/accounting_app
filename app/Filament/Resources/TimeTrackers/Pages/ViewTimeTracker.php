@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TimeTrackers\Pages;
 use App\Actions\TimeTracker\AutoCompleteTimeTrackerAction;
 use App\Enums\UserRoleEnum;
 use App\Filament\Resources\TimeTrackers\TimeTrackerResource;
+use App\Models\TimeTrackerItemType;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -21,14 +22,14 @@ class ViewTimeTracker extends ViewRecord
         return [
             EditAction::make(),
             Action::make('recalculate')
-                ->label('Recalcular monto')
+                ->label(__('time_trackers.recalculate'))
                 ->icon('heroicon-o-calculator')
                 ->color('gray')
                 ->visible(fn (): bool => self::canManageAmounts())
                 ->requiresConfirmation()
-                ->modalHeading('Recalcular monto')
-                ->modalDescription('Se volverán a calcular los montos de cada ítem y el monto final con las tarifas actuales. Los montos actuales se reemplazarán.')
-                ->modalSubmitActionLabel('Recalcular')
+                ->modalHeading(__('time_trackers.recalculate'))
+                ->modalDescription(__('time_trackers.recalculate_description'))
+                ->modalSubmitActionLabel(__('time_trackers.recalculate_submit'))
                 ->action(function ($record): void {
                     abort_unless(self::canManageAmounts(), 403);
 
@@ -39,8 +40,8 @@ class ViewTimeTracker extends ViewRecord
 
                     if ($result['missing_rates'] !== []) {
                         Notification::make()
-                            ->title('Monto recalculado, pero faltan tarifas')
-                            ->body('Cargue una tarifa por defecto o individual para: '.implode(', ', $result['missing_rates']).'.')
+                            ->title(__('time_trackers.recalculated_missing_rates'))
+                            ->body(__('rates.missing_body', ['types' => TimeTrackerItemType::translateMany($result['missing_rates'])]))
                             ->warning()
                             ->persistent()
                             ->send();
@@ -49,12 +50,12 @@ class ViewTimeTracker extends ViewRecord
                     }
 
                     Notification::make()
-                        ->title('Monto recalculado')
+                        ->title(__('time_trackers.recalculated'))
                         ->success()
                         ->send();
                 }),
             Action::make('approve')
-                ->label('Aprobar')
+                ->label(__('time_trackers.approve'))
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
                 ->visible(fn ($record): bool => ! $record->approved
@@ -70,7 +71,7 @@ class ViewTimeTracker extends ViewRecord
                     /** @var User $user */
                     $user = User::find($record->user_id);
                     Notification::make()
-                        ->title('Planilla aprobada')
+                        ->title(__('time_trackers.approved_notification'))
                         ->success()
                         ->sendToDatabase($user);
                 }),

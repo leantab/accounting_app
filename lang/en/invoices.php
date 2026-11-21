@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'plural' => 'Invoices',
+    'file' => 'File to process',
+    'processed' => 'File processed successfully',
+    'quantity' => 'Quantity',
+    'line_items' => 'Line items',
+    'from' => 'From',
+    'to' => 'To',
+    'discount' => 'Discount',
+    'due_date' => 'Due date',
+    'payment_due_date' => 'Payment due date',
+    'tax' => 'Tax',
+    'discount_amount' => 'Discount amount',
+    'tax_amount' => 'Tax amount',
+    'final_amount' => 'Final amount',
+    'free_amount' => 'Free amount',
+    'paid_amount' => 'Paid amount',
+    'total_amount' => 'Total amount',
+    'number' => 'Invoice number',
+    'discount_percentage' => 'Discount percentage',
+    'tax_percentage' => 'Tax percentage',
+    'total_price' => 'Total price',
+    'unit_price' => 'Unit price',
+    'reference' => 'Reference',
+    'upload_and_process' => 'Upload & process',
+];

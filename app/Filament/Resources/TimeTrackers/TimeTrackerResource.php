@@ -23,12 +23,6 @@ class TimeTrackerResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
 
-    protected static ?string $navigationLabel = 'Planillas de horas';
-
-    protected static ?string $modelLabel = 'Planilla de horas';
-
-    protected static ?string $pluralModelLabel = 'Planillas de horas';
-
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function getNavigationBadge(): ?string
@@ -71,5 +65,20 @@ class TimeTrackerResource extends Resource
             'view' => ViewTimeTracker::route('/{record}'),
             'edit' => EditTimeTracker::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('time_trackers.plural');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('time_trackers.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('time_trackers.plural');
     }
 }

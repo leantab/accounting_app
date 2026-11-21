@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 
-<html class="dark" lang="es">
+<html class="dark" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Riders Flow | Gestión Inteligente para tu Empresa</title>
+    <title>{{ config('app.name') }} | {{ __('landing.title') }}</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
@@ -120,25 +120,25 @@
     <nav class="fixed top-0 w-full z-50 bg-[#060e20]/80 backdrop-blur-xl shadow-2xl shadow-black/20">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img class="h-8 w-8 object-contain" data-alt="Logotipo minimalista Riders Flow color ámbar"
+                <img class="h-8 w-8 object-contain" data-alt="{{ __('landing.logo_alt', ['app' => config('app.name')]) }}"
                     src="{{ asset('icon3.png') }}" />
                 <span class="text-xl font-black text-[#dee5ff] tracking-tight">{{ config('app.name') }}</span>
             </div>
             <div class="hidden md:flex items-center space-gap-8 gap-8">
                 <a class="font-['Manrope'] font-bold text-sm tracking-wide text-[#ffad3a] border-b-2 border-[#f59e0a] pb-1"
-                    href="#">Inicio</a>
+                    href="#">{{ __('landing.nav_home') }}</a>
                 <a class="font-['Manrope'] font-bold text-sm tracking-wide text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-                    href="#features">Funciones</a>
+                    href="#features">{{ __('landing.nav_features') }}</a>
                 <a class="font-['Manrope'] font-bold text-sm tracking-wide text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-                    href="#pricing">Precios</a>
+                    href="#pricing">{{ __('landing.nav_pricing') }}</a>
                 <a class="font-['Manrope'] font-bold text-sm tracking-wide text-[#a3aac4] hover:text-[#dee5ff] transition-colors"
-                    href="#contact">Contacto</a>
+                    href="#contact">{{ __('landing.nav_contact') }}</a>
             </div>
             <div class="flex items-center gap-4">
                 <button
                     class="bg-amber-gradient text-on-primary-fixed px-5 py-2 rounded-lg font-bold text-sm transition-transform active:scale-95 duration-150"
                     onclick="window.location.href = '/app/login'">
-                    Ingresar
+                    {{ __('landing.nav_login') }}
                 </button>
                 <button class="md:hidden text-on-surface">
                     <span class="material-symbols-outlined">menu</span>
@@ -158,23 +158,25 @@
                         class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/20 text-xs font-semibold text-primary tracking-widest uppercase">
                         <span class="material-symbols-outlined text-sm"
                             style="font-variation-settings: 'FILL' 1;">bolt</span>
-                        Nueva Era de Gestión
+                        {{ __('landing.badge') }}
                     </div>
                     <h1 class="text-5xl md:text-7xl font-extrabold text-on-surface leading-[1.1] tracking-tight">
-                        Riders Flow: Gestión <span class="text-primary italic">Inteligente</span> para tu Empresa
+                        {!! __('landing.hero_title', [
+                            'app' => e(config('app.name')),
+                            'highlight' => '<span class="text-primary italic">'.e(__('landing.hero_highlight')).'</span>',
+                        ]) !!}
                     </h1>
                     <p class="text-lg text-on-surface-variant max-w-lg leading-relaxed font-body">
-                        Contabilidad, Control de Tiempo y Gestión con IA en un solo lugar. Optimiza tus finanzas y
-                        ahorra tiempo cada día con tecnología editorial de alta gama.
+                        {{ __('landing.hero_text') }}
                     </p>
                     <div class="flex flex-wrap gap-4 pt-4">
                         <button
                             class="bg-amber-gradient text-on-primary-fixed px-8 py-4 rounded-xl font-bold text-base shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-95">
-                            Prueba Gratis
+                            {{ __('landing.try_free') }}
                         </button>
                         <button
                             class="bg-surface-container-high text-on-surface px-8 py-4 rounded-xl font-bold text-base border border-outline-variant/30 hover:bg-surface-variant transition-all flex items-center gap-2">
-                            Ver Demo
+                            {{ __('landing.view_demo') }}
                             <span class="material-symbols-outlined">play_circle</span>
                         </button>
                     </div>
@@ -186,7 +188,7 @@
                     <div
                         class="relative bg-surface-container-low rounded-2xl border border-outline-variant/10 shadow-2xl overflow-hidden">
                         <img class="w-full h-auto opacity-90"
-                            data-alt="Dashboard administrativo moderno con analíticas financieras de Riders Flow"
+                            data-alt="{{ __('landing.dashboard_alt', ['app' => config('app.name')]) }}"
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx4Kq48zNoS-rGtPJtszHp_M1Ef9vh2ne1xVT5CtK62FN1VwtuwhTvgvxC9Sga5Af76IBMrvlNgibX3Yyskf-Kzx_o1mzzLsu6YcrUuf2uu2ELNP6lHFYAizCVrVL_sKyKYijqpn0zQEHcQvhkSVCu9pPzFyovETsugv1wP4o8tNpDrNASF3EytmZIdrWBH1wGm6d0BS93_eO033owk4tfl7PiU52ZkkV4sWK2ohchYgk9WbEAnlJuk1AbAa-O0OBc2-gVj2loeEM" />
                     </div>
                 </div>
@@ -196,10 +198,8 @@
         <section class="py-24 px-6 bg-surface-container-low" id="features">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16 space-y-4">
-                    <h2 class="text-3xl md:text-5xl font-bold text-on-surface tracking-tight">Potencia tu flujo de
-                        trabajo</h2>
-                    <p class="text-on-surface-variant max-w-2xl mx-auto">Diseñado para la precisión empresarial. Sin
-                        líneas distractoras, solo datos puros y control total.</p>
+                    <h2 class="text-3xl md:text-5xl font-bold text-on-surface tracking-tight">{{ __('landing.features_title') }}</h2>
+                    <p class="text-on-surface-variant max-w-2xl mx-auto">{{ __('landing.features_subtitle') }}</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Feature 1 -->
@@ -209,10 +209,9 @@
                             class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
                         </div>
-                        <h3 class="text-xl font-bold text-on-surface mb-3">Contabilidad simplificada</h3>
+                        <h3 class="text-xl font-bold text-on-surface mb-3">{{ __('landing.feature_accounting_title') }}</h3>
                         <p class="text-on-surface-variant leading-relaxed font-body">
-                            Automatiza tus facturas y mantén tus cuentas claras sin complicaciones. Reportes fiscales
-                            generados en segundos.
+                            {{ __('landing.feature_accounting_text') }}
                         </p>
                     </div>
                     <!-- Feature 2 -->
@@ -222,10 +221,9 @@
                             class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-6 text-secondary group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-3xl">schedule</span>
                         </div>
-                        <h3 class="text-xl font-bold text-on-surface mb-3">Seguimiento de tiempo</h3>
+                        <h3 class="text-xl font-bold text-on-surface mb-3">{{ __('landing.feature_time_title') }}</h3>
                         <p class="text-on-surface-variant leading-relaxed font-body">
-                            Controla las horas de tu equipo en tiempo real y gestiona nóminas fácilmente con integración
-                            directa.
+                            {{ __('landing.feature_time_text') }}
                         </p>
                     </div>
                     <!-- Feature 3 -->
@@ -235,10 +233,9 @@
                             class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 text-primary group-hover:scale-110 transition-transform">
                             <span class="material-symbols-outlined text-3xl">psychology</span>
                         </div>
-                        <h3 class="text-xl font-bold text-on-surface mb-3">Inteligencia Artificial</h3>
+                        <h3 class="text-xl font-bold text-on-surface mb-3">{{ __('landing.feature_ai_title') }}</h3>
                         <p class="text-on-surface-variant leading-relaxed font-body">
-                            Nuestra IA analiza tus pagos y facturas para darte consejos inteligentes y predicciones de
-                            flujo de caja.
+                            {{ __('landing.feature_ai_text') }}
                         </p>
                     </div>
                 </div>
@@ -248,34 +245,34 @@
         <section class="py-24 px-6 bg-surface" id="pricing">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center mb-16">
-                    <h2 class="text-4xl font-extrabold text-on-surface mb-4">Planes para cada etapa</h2>
-                    <p class="text-on-surface-variant">Escala tu negocio con la infraestructura soberana definitiva.</p>
+                    <h2 class="text-4xl font-extrabold text-on-surface mb-4">{{ __('landing.pricing_title') }}</h2>
+                    <p class="text-on-surface-variant">{{ __('landing.pricing_subtitle') }}</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Plan Basic -->
                     <div class="bg-surface-container p-10 rounded-2xl border border-outline-variant/10 flex flex-col">
-                        <h4 class="text-lg font-bold text-on-surface-variant mb-2">Profesional</h4>
+                        <h4 class="text-lg font-bold text-on-surface-variant mb-2">{{ __('landing.plan_professional') }}</h4>
                         <div class="flex items-baseline gap-1 mb-6">
-                            <span class="text-4xl font-black text-on-surface">U$D 29</span>
-                            <span class="text-on-surface-variant">/mes</span>
+                            <span class="text-4xl font-black text-on-surface">{{ __('landing.price', ['amount' => 29]) }}</span>
+                            <span class="text-on-surface-variant">{{ __('landing.per_month') }}</span>
                         </div>
                         <ul class="space-y-4 mb-10 flex-grow">
                             <li class="flex items-center gap-3 text-sm text-on-surface-variant">
                                 <span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
-                                Hasta 5 usuarios
+                                {{ __('landing.plan_professional_users') }}
                             </li>
                             <li class="flex items-center gap-3 text-sm text-on-surface-variant">
                                 <span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
-                                Contabilidad básica
+                                {{ __('landing.plan_professional_accounting') }}
                             </li>
                             <li class="flex items-center gap-3 text-sm text-on-surface-variant">
                                 <span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
-                                Reportes mensuales
+                                {{ __('landing.plan_professional_reports') }}
                             </li>
                         </ul>
                         <button
                             class="w-full py-3 rounded-lg border border-outline-variant/40 font-bold text-on-surface hover:bg-surface-variant transition-colors">
-                            Seleccionar Plan
+                            {{ __('landing.select_plan') }}
                         </button>
                     </div>
                     <!-- Plan Professional (Featured) -->
@@ -283,64 +280,64 @@
                         class="bg-surface-container-high p-10 rounded-2xl border-2 border-primary ring-4 ring-primary/5 flex flex-col relative scale-105 shadow-2xl z-10">
                         <div
                             class="absolute top-0 right-10 -translate-y-1/2 bg-amber-gradient text-on-primary-fixed px-4 py-1 rounded-full text-xs font-black uppercase tracking-wider">
-                            Popular
+                            {{ __('landing.popular') }}
                         </div>
-                        <h4 class="text-lg font-bold text-primary mb-2">PyME</h4>
+                        <h4 class="text-lg font-bold text-primary mb-2">{{ __('landing.plan_sme') }}</h4>
                         <div class="flex items-baseline gap-1 mb-6">
-                            <span class="text-4xl font-black text-on-surface">U$D 79</span>
-                            <span class="text-on-surface-variant">/mes</span>
+                            <span class="text-4xl font-black text-on-surface">{{ __('landing.price', ['amount' => 79]) }}</span>
+                            <span class="text-on-surface-variant">{{ __('landing.per_month') }}</span>
                         </div>
                         <ul class="space-y-4 mb-10 flex-grow">
                             <li class="flex items-center gap-3 text-sm text-on-surface">
                                 <span class="material-symbols-outlined text-primary text-sm"
                                     style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                Usuarios ilimitados
+                                {{ __('landing.plan_sme_users') }}
                             </li>
                             <li class="flex items-center gap-3 text-sm text-on-surface">
                                 <span class="material-symbols-outlined text-primary text-sm"
                                     style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                IA de análisis financiero
+                                {{ __('landing.plan_sme_ai') }}
                             </li>
                             <li class="flex items-center gap-3 text-sm text-on-surface">
                                 <span class="material-symbols-outlined text-primary text-sm"
                                     style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                Gestión de nóminas Pro
+                                {{ __('landing.plan_sme_payroll') }}
                             </li>
                             <li class="flex items-center gap-3 text-sm text-on-surface">
                                 <span class="material-symbols-outlined text-primary text-sm"
                                     style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                Soporte prioritario 24/7
+                                {{ __('landing.plan_sme_support') }}
                             </li>
                         </ul>
                         <button
                             class="w-full py-3 rounded-lg bg-amber-gradient text-on-primary-fixed font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
-                            Comenzar ahora
+                            {{ __('landing.start_now') }}
                         </button>
                     </div>
                     <!-- Plan Enterprise -->
                     <div class="bg-surface-container p-10 rounded-2xl border border-outline-variant/10 flex flex-col">
-                        <h4 class="text-lg font-bold text-on-surface-variant mb-2">Empresa</h4>
+                        <h4 class="text-lg font-bold text-on-surface-variant mb-2">{{ __('landing.plan_enterprise') }}</h4>
                         <div class="flex items-baseline gap-1 mb-6">
-                            <span class="text-4xl font-black text-on-surface">U$D 199</span>
-                            <span class="text-on-surface-variant">/mes</span>
+                            <span class="text-4xl font-black text-on-surface">{{ __('landing.price', ['amount' => 199]) }}</span>
+                            <span class="text-on-surface-variant">{{ __('landing.per_month') }}</span>
                         </div>
                         <ul class="space-y-4 mb-10 flex-grow">
                             <li class="flex items-center gap-3 text-sm text-on-surface-variant">
                                 <span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
-                                Todo en Profesional
+                                {{ __('landing.plan_enterprise_all') }}
                             </li>
                             <li class="flex items-center gap-3 text-sm text-on-surface-variant">
                                 <span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
-                                API de acceso total
+                                {{ __('landing.plan_enterprise_api') }}
                             </li>
                             <li class="flex items-center gap-3 text-sm text-on-surface-variant">
                                 <span class="material-symbols-outlined text-secondary text-sm">check_circle</span>
-                                Servidores dedicados
+                                {{ __('landing.plan_enterprise_servers') }}
                             </li>
                         </ul>
                         <button
                             class="w-full py-3 rounded-lg border border-outline-variant/40 font-bold text-on-surface hover:bg-surface-variant transition-colors">
-                            Contactar Ventas
+                            {{ __('landing.contact_sales') }}
                         </button>
                     </div>
                 </div>
@@ -351,14 +348,12 @@
             <div
                 class="max-w-4xl mx-auto bg-amber-gradient rounded-3xl p-12 text-center text-on-primary-container relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32"></div>
-                <h2 class="text-3xl md:text-5xl font-extrabold mb-6 relative z-10">¿Listo para tomar el control
-                    soberano?</h2>
-                <p class="text-lg font-medium mb-10 opacity-90 relative z-10">Únete a más de 5,000 empresas que
-                    optimizan sus finanzas con nosotros.</p>
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-6 relative z-10">{{ __('landing.cta_title') }}</h2>
+                <p class="text-lg font-medium mb-10 opacity-90 relative z-10">{{ __('landing.cta_text') }}</p>
                 <div class="flex flex-wrap justify-center gap-4 relative z-10">
                     <button
                         class="bg-[#2a1700] text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-black transition-colors">
-                        Empieza Gratis hoy
+                        {{ __('landing.cta_button') }}
                     </button>
                 </div>
             </div>
@@ -368,38 +363,38 @@
     <footer class="bg-[#091328] py-12 px-6 border-t border-outline-variant/10">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
             <div class="space-y-4">
-                <div class="text-lg font-bold text-[#dee5ff]">Riders Flow</div>
+                <div class="text-lg font-bold text-[#dee5ff]">{{ config('app.name') }}</div>
                 <p class="text-sm text-[#a3aac4] font-body leading-relaxed">
-                    Elevando la gestión empresarial en América Latina a través de tecnología precisa y diseño editorial.
+                    {{ __('landing.footer_tagline') }}
                 </p>
             </div>
             <div>
-                <h5 class="text-on-surface font-bold mb-4">Producto</h5>
+                <h5 class="text-on-surface font-bold mb-4">{{ __('landing.footer_product') }}</h5>
                 <ul class="space-y-2 text-sm text-[#a3aac4]">
                     <li><a class="hover:text-[#dee5ff] hover:underline decoration-[#f59e0a]"
-                            href="#">Funciones</a></li>
+                            href="#">{{ __('landing.nav_features') }}</a></li>
                     <li><a class="hover:text-[#dee5ff] hover:underline decoration-[#f59e0a]"
-                            href="#">Integraciones</a></li>
+                            href="#">{{ __('landing.footer_integrations') }}</a></li>
                     <li><a class="hover:text-[#dee5ff] hover:underline decoration-[#f59e0a]" href="#">API</a>
                     </li>
                 </ul>
             </div>
             <div>
-                <h5 class="text-on-surface font-bold mb-4">Compañía</h5>
+                <h5 class="text-on-surface font-bold mb-4">{{ __('landing.footer_company') }}</h5>
                 <ul class="space-y-2 text-sm text-[#a3aac4]">
                     <li><a class="hover:text-[#dee5ff] hover:underline decoration-[#f59e0a]"
-                            href="#">Privacidad</a></li>
+                            href="#">{{ __('landing.footer_privacy') }}</a></li>
                     <li><a class="hover:text-[#dee5ff] hover:underline decoration-[#f59e0a]"
-                            href="#">Términos</a></li>
+                            href="#">{{ __('landing.footer_terms') }}</a></li>
                     <li><a class="hover:text-[#dee5ff] hover:underline decoration-[#f59e0a]"
-                            href="#">Soporte</a></li>
+                            href="#">{{ __('landing.footer_support') }}</a></li>
                 </ul>
             </div>
             <div>
                 <h5 class="text-on-surface font-bold mb-4">Newsletter</h5>
                 <div class="flex gap-2">
                     <input class="bg-surface-container border-none rounded-lg text-sm w-full focus:ring-primary"
-                        placeholder="Tu email" type="email" />
+                        placeholder="{{ __('landing.email_placeholder') }}" type="email" />
                     <button class="bg-primary text-on-primary-fixed p-2 rounded-lg">
                         <span class="material-symbols-outlined">send</span>
                     </button>
@@ -408,7 +403,7 @@
         </div>
         <div
             class="max-w-7xl mx-auto mt-12 pt-8 border-t border-outline-variant/10 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-sm text-[#a3aac4]">© 2024 Riders Flow. Todos los derechos reservados.</p>
+            <p class="text-sm text-[#a3aac4]">{{ __('landing.rights', ['year' => now()->year, 'app' => config('app.name')]) }}</p>
             <div class="flex gap-6">
                 <span
                     class="material-symbols-outlined text-[#a3aac4] hover:text-primary cursor-pointer transition-colors">public</span>

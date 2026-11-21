@@ -3,13 +3,14 @@
 namespace App\Filament\Resources\Users\RelationManagers;
 
 use App\Filament\Resources\Users\UserResource;
+use App\Models\TimeTrackerItemType;
 use Filament\Actions\CreateAction;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
-use Filament\Tables\Table;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
 
 class UserRatesRelationManager extends RelationManager
 {
@@ -25,11 +26,12 @@ class UserRatesRelationManager extends RelationManager
             ])
             ->columns([
                 TextColumn::make('timeTrackerItemType.name')
-                    ->label('Tipo de item Planilla'),
+                    ->label(__('rates.item_type_tracker'))
+                    ->formatStateUsing(fn (string $state): string => TimeTrackerItemType::translate($state)),
                 TextColumn::make('description')
-                    ->label('Descripción'),
+                    ->label(__('common.description')),
                 TextColumn::make('rate')
-                    ->label('Tarifa'),
+                    ->label(__('rates.rate')),
             ]);
     }
 
@@ -38,14 +40,15 @@ class UserRatesRelationManager extends RelationManager
         return $schema
             ->components([
                 Select::make('time_tracker_item_type_id')
-                    ->label('Tipo de item')
+                    ->label(__('rates.item_type'))
                     ->relationship('timeTrackerItemType', 'name')
+                    ->getOptionLabelFromRecordUsing(fn (TimeTrackerItemType $record): string => $record->displayName())
                     ->required(),
                 TextInput::make('description')
-                    ->label('Descripción')
+                    ->label(__('common.description'))
                     ->required(),
                 TextInput::make('rate')
-                    ->label('Tarifa')
+                    ->label(__('rates.rate'))
                     ->required(),
             ]);
     }

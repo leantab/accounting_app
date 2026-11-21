@@ -18,50 +18,50 @@ class UserInfolist
         return $schema
             ->components([
                 TextEntry::make('customer.name')
-                    ->label('Cliente')
+                    ->label(__('common.customer'))
                     ->visible(fn () => Filament::auth()->user()->is_admin),
                 TextEntry::make('name')
-                    ->label('Nombre'),
+                    ->label(__('common.name')),
                 TextEntry::make('lastname')
-                    ->label('Apellido'),
+                    ->label(__('common.last_name')),
                 TextEntry::make('role.name')
-                    ->label('Rol'),
+                    ->label(__('common.role')),
                 TextEntry::make('email')
-                    ->label('Email'),
+                    ->label(__('common.email')),
                 TextEntry::make('phone')
-                    ->label('Teléfono')
+                    ->label(__('common.phone'))
                     ->placeholder('-'),
                 TextEntry::make('address')
-                    ->label('Dirección')
+                    ->label(__('common.address'))
                     ->placeholder('-'),
                 TextEntry::make('tax_id')
-                    ->label('CUIL/CUIT')
+                    ->label(__('common.cuil_cuit'))
                     ->placeholder('-'),
                 IconEntry::make('is_active')
-                    ->label('Activo')
+                    ->label(__('common.active'))
                     ->boolean(),
                 IconEntry::make('is_admin')
-                    ->label('Admin')
+                    ->label(__('common.admin'))
                     ->visible(fn () => Filament::auth()->user()->is_admin)
                     ->boolean(),
                 TextEntry::make('created_at')
-                    ->label('Creado')
+                    ->label(__('common.created'))
                     ->dateTime('d/m/Y H:i')
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
-                    ->label('Actualizado')
+                    ->label(__('common.updated'))
                     ->dateTime('d/m/Y H:i')
                     ->placeholder('-'),
                 TextEntry::make('fixed_daily_rate')
-                    ->label('Tarifa fija por jornada')
+                    ->label(__('users.fixed_daily_rate'))
                     ->numeric(2, ',', '.')
                     ->placeholder('-'),
                 TextEntry::make('fixed_monthly_rate')
-                    ->label('Tarifa fija mensual')
+                    ->label(__('users.fixed_monthly_rate'))
                     ->numeric(2, ',', '.')
                     ->placeholder('-'),
-                Section::make('Tarifas individuales')
-                    ->description('Si no hay una tarifa individual, se usa la tarifa por defecto.')
+                Section::make(__('users.individual_rates'))
+                    ->description(__('users.individual_rates_fallback'))
                     ->columnSpanFull()
                     ->columns(3)
                     ->schema(self::individualRateEntries()),
@@ -75,7 +75,7 @@ class UserInfolist
     {
         return TimeTrackerItemType::withRates()
             ->map(fn (TimeTrackerItemType $type): TextEntry => TextEntry::make('individual_rate_'.$type->id)
-                ->label($type->name)
+                ->label($type->displayName())
                 ->state(fn (User $record): string => self::formatIndividualRate($record, $type->id)))
             ->all();
     }

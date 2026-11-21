@@ -10,8 +10,6 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class TimeTrackerStats extends StatsOverviewWidget
 {
-    protected ?string $heading = 'Mis planillas de horas';
-
     public static function canView(): bool
     {
         $user = Filament::auth()->user();
@@ -26,14 +24,19 @@ class TimeTrackerStats extends StatsOverviewWidget
         $ownTrackers = fn () => TimeTracker::query()->where('user_id', Filament::auth()->id());
 
         return [
-            Stat::make('Pendientes de aprobación', $ownTrackers()->where('approved', false)->count())
-                ->description('Planillas esperando aprobación')
+            Stat::make(__('dashboard.pending_approval'), $ownTrackers()->where('approved', false)->count())
+                ->description(__('dashboard.awaiting_approval'))
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning'),
-            Stat::make('Aprobadas sin pagar', $ownTrackers()->where('approved', true)->where('paid', false)->count())
-                ->description('Planillas aprobadas pendientes de pago')
+            Stat::make(__('dashboard.approved_unpaid'), $ownTrackers()->where('approved', true)->where('paid', false)->count())
+                ->description(__('dashboard.approved_pending_payment'))
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('info'),
         ];
+    }
+
+    protected function getHeading(): ?string
+    {
+        return __('dashboard.my_time_trackers');
     }
 }

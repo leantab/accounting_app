@@ -28,7 +28,7 @@ class UserInviteMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Te invitaron a unirte a '.config('app.name'),
+            subject: __('mail.invite_subject', ['app' => config('app.name')]),
         );
     }
 

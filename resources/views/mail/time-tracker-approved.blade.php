@@ -1,10 +1,10 @@
 <x-mail::message>
-# ¡Tu planilla fue aprobada!
+# {{ __('mail.approved_title') }}
 
-Hola {{ $userName }},
+{{ __('mail.approved_greeting', ['name' => $userName]) }}
 
-Ya fue aprobada tu planilla **{{ $trackerName }}**. Ya podés armar tu factura por un total de **{{ $amount }}** y enviarla por email.
+{{ __('mail.approved_body', ['tracker' => $trackerName, 'amount' => $amount]) }}
 
-¡Gracias por tu trabajo!<br>
+{{ __('mail.approved_thanks') }}<br>
 {{ config('app.name') }}
 </x-mail::message>

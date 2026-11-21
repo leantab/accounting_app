@@ -21,7 +21,7 @@ class CustomersTable
                 TextColumn::make('phone')
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email address')
+                    ->label(__('common.email'))
                     ->searchable(),
                 TextColumn::make('address')
                     ->searchable(),

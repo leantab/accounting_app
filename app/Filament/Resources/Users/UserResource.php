@@ -24,8 +24,6 @@ class UserResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
-    protected static ?string $navigationLabel = 'Usuarios';
-
     protected static ?string $recordTitleAttribute = 'Usuario';
 
     public static function canViewAny(): bool
@@ -70,5 +68,10 @@ class UserResource extends Resource
             'edit' => EditUser::route('/{record}/edit'),
             'view' => ViewUser::route('/{record}'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('users.navigation');
     }
 }

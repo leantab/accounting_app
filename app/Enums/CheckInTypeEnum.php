@@ -10,8 +10,8 @@ enum CheckInTypeEnum: int
     public function label(): string
     {
         return match ($this) {
-            self::In => 'Entrada',
-            self::Out => 'Salida',
+            self::In => __('check_ins.type_in'),
+            self::Out => __('check_ins.type_out'),
         };
     }
 

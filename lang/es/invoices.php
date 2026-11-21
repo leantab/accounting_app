@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'plural' => 'Facturas',
+    'file' => 'Archivo a procesar',
+    'processed' => 'Archivo procesado correctamente',
+    'quantity' => 'Cantidad',
+    'line_items' => 'Conceptos',
+    'from' => 'De',
+    'to' => 'Para',
+    'discount' => 'Descuento',
+    'due_date' => 'Fecha de vencimiento',
+    'payment_due_date' => 'Fecha de vencimiento de pago',
+    'tax' => 'Impuesto',
+    'discount_amount' => 'Monto de descuento',
+    'tax_amount' => 'Monto de impuesto',
+    'final_amount' => 'Monto final',
+    'free_amount' => 'Monto libre',
+    'paid_amount' => 'Monto pagado',
+    'total_amount' => 'Monto total',
+    'number' => 'Número de factura',
+    'discount_percentage' => 'Porcentaje de descuento',
+    'tax_percentage' => 'Porcentaje de impuesto',
+    'total_price' => 'Precio total',
+    'unit_price' => 'Precio unitario',
+    'reference' => 'Referencia',
+    'upload_and_process' => 'Upload & Process',
+];

@@ -12,8 +12,6 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsOverview extends StatsOverviewWidget
 {
-    protected ?string $heading = 'Resumen';
-
     public static function canView(): bool
     {
         $user = Filament::auth()->user();
@@ -33,18 +31,23 @@ class StatsOverview extends StatsOverviewWidget
         $customer = $user->customer_id;
 
         return [
-            Stat::make('Usuarios', $isAdmin ? User::count() : User::where('customer_id', $customer)->count())
-                ->description('Usuarios registrados')
+            Stat::make(__('users.navigation'), $isAdmin ? User::count() : User::where('customer_id', $customer)->count())
+                ->description(__('dashboard.registered_users'))
                 ->descriptionIcon('heroicon-o-users')
                 ->color('primary'),
-            Stat::make('Empresas', $isAdmin ? Company::count() : Company::where('customer_id', $customer)->count())
-                ->description('Empresas registradas')
+            Stat::make(__('companies.plural'), $isAdmin ? Company::count() : Company::where('customer_id', $customer)->count())
+                ->description(__('dashboard.registered_companies'))
                 ->descriptionIcon('heroicon-o-building-office')
                 ->color('gray'),
-            Stat::make('Proyectos', $isAdmin ? Project::count() : Project::where('customer_id', $customer)->count())
-                ->description('Proyectos registrados')
+            Stat::make(__('projects.plural'), $isAdmin ? Project::count() : Project::where('customer_id', $customer)->count())
+                ->description(__('dashboard.registered_projects'))
                 ->descriptionIcon('heroicon-o-briefcase')
                 ->color('info'),
         ];
+    }
+
+    protected function getHeading(): ?string
+    {
+        return __('dashboard.summary');
     }
 }

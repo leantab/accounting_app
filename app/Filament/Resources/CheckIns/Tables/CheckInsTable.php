@@ -17,46 +17,46 @@ class CheckInsTable
             ->defaultSort('recorded_at', 'desc')
             ->columns([
                 TextColumn::make('customer.name')
-                    ->label('Cliente')
+                    ->label(__('common.customer'))
                     ->hidden(fn (): bool => ! Filament::auth()->user()->is_admin),
                 TextColumn::make('user.fullName')
-                    ->label('Usuario')
+                    ->label(__('common.user'))
                     ->searchable(['name', 'lastname']),
                 TextColumn::make('type')
-                    ->label('Tipo')
+                    ->label(__('common.type'))
                     ->badge()
                     ->formatStateUsing(fn (CheckInTypeEnum $state): string => $state->label())
                     ->color(fn (CheckInTypeEnum $state): string => $state === CheckInTypeEnum::In ? 'success' : 'warning'),
                 TextColumn::make('recorded_at')
-                    ->label('Fecha y hora')
+                    ->label(__('check_ins.date_time'))
                     ->dateTime('d/m/Y H:i')
                     ->sortable(),
                 TextColumn::make('project.name')
-                    ->label('Proyecto')
+                    ->label(__('common.project'))
                     ->placeholder('-'),
                 TextColumn::make('accuracy_m')
-                    ->label('Precisión')
+                    ->label(__('check_ins.accuracy'))
                     ->suffix(' m')
                     ->placeholder('-'),
                 TextColumn::make('location')
-                    ->label('Ubicación')
-                    ->state('Ver en mapa')
+                    ->label(__('check_ins.location'))
+                    ->state(__('check_ins.view_on_map'))
                     ->url(fn (CheckIn $record): string => $record->mapsUrl(), shouldOpenInNewTab: true)
                     ->color('primary'),
                 TextColumn::make('notes')
-                    ->label('Notas')
+                    ->label(__('common.notes'))
                     ->placeholder('-')
                     ->limit(40),
             ])
             ->filters([
                 SelectFilter::make('user_id')
-                    ->label('Usuario')
+                    ->label(__('common.user'))
                     ->relationship('user', 'lastname'),
                 SelectFilter::make('project_id')
-                    ->label('Proyecto')
+                    ->label(__('common.project'))
                     ->relationship('project', 'name'),
                 SelectFilter::make('type')
-                    ->label('Tipo')
+                    ->label(__('common.type'))
                     ->options([
                         CheckInTypeEnum::In->value => CheckInTypeEnum::In->label(),
                         CheckInTypeEnum::Out->value => CheckInTypeEnum::Out->label(),

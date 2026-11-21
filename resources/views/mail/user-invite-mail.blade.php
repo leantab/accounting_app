@@ -1,13 +1,12 @@
 <x-mail::message>
-# Invitación a usar la plataforma
+# {{ __('mail.invite_title') }}
 
-Te invitaron a unirte a {{ $customerName }}
-en {{ strtoupper(config('app.name')) }}.
+{{ __('mail.invite_body', ['customer' => $customerName, 'app' => strtoupper(config('app.name'))]) }}
 
 <x-mail::button :url="$url">
-Aceptar invitación
+{{ __('mail.invite_button') }}
 </x-mail::button>
 
-Gracias,<br>
+{{ __('mail.thanks') }}<br>
 {{ config('app.name') }}
 </x-mail::message>

@@ -29,7 +29,7 @@ class InviteUserRequest extends TenantRequest
     {
         return [
             ...parent::messages(),
-            'email.required' => 'Ingresá el email.',
+            'email.required' => __('api.enter_the_email'),
         ];
     }
 }

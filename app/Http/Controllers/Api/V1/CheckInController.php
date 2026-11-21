@@ -89,7 +89,7 @@ class CheckInController extends Controller
         ]);
 
         return response()->json([
-            'message' => $type === CheckInTypeEnum::In ? 'Entrada registrada' : 'Salida registrada',
+            'message' => $type === CheckInTypeEnum::In ? __('check_ins.recorded_in') : __('check_ins.recorded_out'),
             ...$this->ownState($user),
         ], 201);
     }

@@ -28,7 +28,7 @@ class AuthController extends Controller
             $seconds = RateLimiter::availableIn($throttleKey);
 
             return response()->json([
-                'message' => "Demasiados intentos. Probá de nuevo en {$seconds} segundos.",
+                'message' => __('api.too_many_attempts', ['seconds' => $seconds]),
             ], 429);
         }
 
@@ -38,19 +38,19 @@ class AuthController extends Controller
             RateLimiter::hit($throttleKey);
 
             throw ValidationException::withMessages([
-                'email' => 'El email o la contraseña no son correctos.',
+                'email' => __('api.invalid_credentials'),
             ]);
         }
 
         if (! $user->is_active) {
             throw ValidationException::withMessages([
-                'email' => 'Tu cuenta está desactivada.',
+                'email' => __('api.account_disabled'),
             ]);
         }
 
         if (! MobileAccess::canUseApp($user)) {
             throw ValidationException::withMessages([
-                'email' => 'Tu cuenta todavía no está asociada a una organización.',
+                'email' => __('api.account_without_organization'),
             ]);
         }
 
@@ -60,7 +60,7 @@ class AuthController extends Controller
 
             if ($code === '' && $recoveryCode === '') {
                 return response()->json([
-                    'message' => 'Ingresá el código de verificación.',
+                    'message' => __('api.enter_verification_code'),
                     'two_factor_required' => true,
                 ], 422);
             }
@@ -69,9 +69,9 @@ class AuthController extends Controller
                 RateLimiter::hit($throttleKey);
 
                 return response()->json([
-                    'message' => 'El código de verificación no es válido.',
+                    'message' => __('api.invalid_verification_code'),
                     'two_factor_required' => true,
-                    'errors' => ['code' => ['El código de verificación no es válido.']],
+                    'errors' => ['code' => [__('api.invalid_verification_code')]],
                 ], 422);
             }
         }
@@ -95,7 +95,7 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Sesión cerrada.']);
+        return response()->json(['message' => __('api.logged_out')]);
     }
 
     /**
@@ -106,7 +106,7 @@ class AuthController extends Controller
         Password::sendResetLink(['email' => mb_strtolower($request->string('email')->toString())]);
 
         return response()->json([
-            'message' => 'Si el email está registrado, te enviamos un enlace para restablecer tu contraseña.',
+            'message' => __('api.password_reset_link'),
         ]);
     }
 

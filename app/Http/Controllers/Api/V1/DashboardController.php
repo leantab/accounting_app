@@ -27,11 +27,11 @@ class DashboardController extends Controller
 
             $sections[] = [
                 'key' => 'stats_overview',
-                'heading' => 'Resumen',
+                'heading' => __('dashboard.summary'),
                 'stats' => [
-                    $this->stat('users', 'Usuarios', $users->count(), 'Usuarios registrados', 'primary'),
-                    $this->stat('companies', 'Empresas', Company::query()->count(), 'Empresas registradas', 'gray'),
-                    $this->stat('projects', 'Proyectos', Project::query()->count(), 'Proyectos registrados', 'info'),
+                    $this->stat('users', __('users.navigation'), $users->count(), __('dashboard.registered_users'), 'primary'),
+                    $this->stat('companies', __('companies.plural'), Company::query()->count(), __('dashboard.registered_companies'), 'gray'),
+                    $this->stat('projects', __('projects.plural'), Project::query()->count(), __('dashboard.registered_projects'), 'info'),
                 ],
             ];
         }
@@ -41,20 +41,20 @@ class DashboardController extends Controller
 
             $sections[] = [
                 'key' => 'time_tracker_stats',
-                'heading' => 'Mis planillas de horas',
+                'heading' => __('dashboard.my_time_trackers'),
                 'stats' => [
                     $this->stat(
                         'pending_approval',
-                        'Pendientes de aprobación',
+                        __('dashboard.pending_approval'),
                         $ownTrackers()->where('approved', false)->count(),
-                        'Planillas esperando aprobación',
+                        __('dashboard.awaiting_approval'),
                         'warning',
                     ),
                     $this->stat(
                         'approved_unpaid',
-                        'Aprobadas sin pagar',
+                        __('dashboard.approved_unpaid'),
                         $ownTrackers()->where('approved', true)->where('paid', false)->count(),
-                        'Planillas aprobadas pendientes de pago',
+                        __('dashboard.approved_pending_payment'),
                         'info',
                     ),
                 ],

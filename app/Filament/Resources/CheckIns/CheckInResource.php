@@ -18,12 +18,6 @@ class CheckInResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
 
-    protected static ?string $navigationLabel = 'Asistencia';
-
-    protected static ?string $modelLabel = 'Registro de asistencia';
-
-    protected static ?string $pluralModelLabel = 'Registros de asistencia';
-
     public static function canAccess(): bool
     {
         $user = Filament::auth()->user();
@@ -46,5 +40,20 @@ class CheckInResource extends Resource
         return [
             'index' => ListCheckIns::route('/'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('check_ins.navigation');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('check_ins.model');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('check_ins.plural');
     }
 }

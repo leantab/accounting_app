@@ -23,22 +23,22 @@ class ManageUsers extends ManageRecords
     {
         return [
             CreateAction::make()
-                ->label('Crear usuario')
+                ->label(__('users.create'))
                 ->icon('heroicon-o-plus')
                 ->color('primary'),
             Action::make('invite')
-                ->label('Invitar usuario')
+                ->label(__('users.invite'))
                 ->icon('heroicon-o-envelope')
                 ->color('info')
                 ->schema([
                     Select::make('customer_id')
-                        ->label('Customer')
+                        ->label(__('common.customer'))
                         ->options(Customer::all()->pluck('name', 'id'))
                         ->default(Filament::auth()->user()->customer_id)
                         ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                         ->required(),
                     TextInput::make('email')
-                        ->label('Email')
+                        ->label(__('common.email'))
                         ->email()
                         ->required(),
                 ])
@@ -51,8 +51,8 @@ class ManageUsers extends ManageRecords
                         report($exception);
 
                         Notification::make()
-                            ->title('No se pudo enviar la invitación')
-                            ->body('Intente nuevamente en unos minutos.')
+                            ->title(__('users.invite_failed'))
+                            ->body(__('users.try_again_later'))
                             ->danger()
                             ->send();
 
@@ -60,7 +60,7 @@ class ManageUsers extends ManageRecords
                     }
 
                     Notification::make()
-                        ->title('Invitación enviada')
+                        ->title(__('users.invite_sent'))
                         ->success()
                         ->send();
                 }),

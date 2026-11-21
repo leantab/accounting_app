@@ -31,6 +31,7 @@ class TimeTrackerResource extends JsonResource
             'billed' => (bool) $this->billed,
             'paid' => (bool) $this->paid,
             'paid_date' => $this->paid_date?->format('Y-m-d'),
+            'expected_payment_date' => $this->expected_payment_date?->format('Y-m-d'),
             'customer_id' => $this->customer_id,
             'user_id' => $this->user_id,
             'project_id' => $this->project_id,

@@ -30,7 +30,7 @@ class DefaultRatesRequest extends TenantRequest
     {
         return [
             ...parent::messages(),
-            'rates.*.numeric' => 'Ingresá un número.',
+            'rates.*.numeric' => __('api.enter_a_number'),
             'rates.*.min' => 'La tarifa no puede ser negativa.',
         ];
     }

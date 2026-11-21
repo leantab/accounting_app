@@ -22,48 +22,48 @@ class UserForm
         return $schema
             ->components([
                 Select::make('customer_id')
-                    ->label('Cliente')
+                    ->label(__('common.customer'))
                     ->relationship('customer', 'name')
                     ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 TextInput::make('name')
-                    ->label('Nombre')
+                    ->label(__('common.name'))
                     ->required(),
                 TextInput::make('lastname')
-                    ->label('Apellido')
+                    ->label(__('common.last_name'))
                     ->required(),
                 TextInput::make('email')
-                    ->label('Email')
+                    ->label(__('common.email'))
                     ->email()
                     ->required(),
                 TextInput::make('phone')
-                    ->label('Teléfono')
+                    ->label(__('common.phone'))
                     ->tel(),
                 TextInput::make('address')
-                    ->label('Dirección'),
+                    ->label(__('common.address')),
                 TextInput::make('tax_id')
-                    ->label('ID fiscal'),
+                    ->label(__('common.tax_id')),
                 Select::make('role_id')
-                    ->label('Rol')
+                    ->label(__('common.role'))
                     ->options(UserRole::all()->pluck('name', 'id')),
                 Toggle::make('is_active')
-                    ->label('Está activo')
+                    ->label(__('common.is_active'))
                     ->required(),
                 Toggle::make('is_admin')
-                    ->label('Es administrador')
+                    ->label(__('common.is_admin'))
                     ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                     ->required(),
-                Section::make('Tarifa fija')
-                    ->description('Opcional. Para usuarios con sueldo fijo: por jornada, por mes, o ambas.')
+                Section::make(__('users.fixed_rate'))
+                    ->description(__('users.fixed_rate_help'))
                     ->columnSpanFull()
                     ->columns(2)
                     ->schema([
                         Money::input('fixed_daily_rate')
-                            ->label('Tarifa fija por jornada'),
+                            ->label(__('users.fixed_daily_rate')),
                         Money::input('fixed_monthly_rate')
-                            ->label('Tarifa fija mensual'),
+                            ->label(__('users.fixed_monthly_rate')),
                     ]),
-                Section::make('Tarifas individuales')
-                    ->description('Reemplazan la tarifa por defecto del mismo tipo. Si se deja vacío, se usa la tarifa por defecto.')
+                Section::make(__('users.individual_rates'))
+                    ->description(__('users.individual_rates_help'))
                     ->columnSpanFull()
                     ->columns(3)
                     ->schema([
@@ -83,8 +83,8 @@ class UserForm
     {
         return TimeTrackerItemType::withRates()
             ->map(fn (TimeTrackerItemType $type): TextInput => Money::input((string) $type->id)
-                ->label($type->name)
-                ->placeholder('Por defecto')
+                ->label($type->displayName())
+                ->placeholder(__('common.default'))
                 ->afterStateHydrated(function (TextInput $component, ?User $record) use ($type): void {
                     $rate = $record?->userRates->firstWhere('time_tracker_item_type_id', $type->id)?->rate;
 

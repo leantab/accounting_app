@@ -21,6 +21,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
 
 /**
@@ -30,13 +31,7 @@ class ManageDefaultRates extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static ?string $navigationLabel = 'Tarifas por defecto';
-
-    protected static ?string $title = 'Tarifas por defecto';
-
     protected string $view = 'filament.pages.manage-default-rates';
-
-    protected ?string $subheading = 'Se aplican a todos los usuarios del cliente, salvo que el usuario tenga una tarifa propia.';
 
     /**
      * @var array<string, mixed>|null
@@ -76,12 +71,12 @@ class ManageDefaultRates extends Page
         return $schema
             ->components([
                 Form::make([
-                    Section::make('Tarifas por tipo')
-                        ->description('Estos importes se usan al calcular planillas cuando el usuario no tiene una tarifa cargada para ese tipo.')
+                    Section::make(__('rates.by_type'))
+                        ->description(__('rates.by_type_description'))
                         ->columns(2)
                         ->schema([
                             Select::make('customer_id')
-                                ->label('Cliente')
+                                ->label(__('common.customer'))
                                 ->options(fn (): array => Customer::query()->orderBy('name')->pluck('name', 'id')->all())
                                 ->searchable()
                                 ->required()
@@ -98,7 +93,7 @@ class ManageDefaultRates extends Page
                     ->footer([
                         Actions::make([
                             Action::make('save')
-                                ->label('Guardar')
+                                ->label(__('common.save'))
                                 ->submit('save'),
                         ]),
                     ]),
@@ -151,7 +146,7 @@ class ManageDefaultRates extends Page
 
         Notification::make()
             ->success()
-            ->title('Tarifas por defecto guardadas')
+            ->title(__('rates.default_rates_saved'))
             ->send();
     }
 
@@ -185,7 +180,7 @@ class ManageDefaultRates extends Page
     {
         return $this->displayedItemTypes()
             ->map(fn (TimeTrackerItemType $type): TextInput => Money::input('rates.'.$type->id)
-                ->label($type->name))
+                ->label($type->displayName()))
             ->all();
     }
 
@@ -195,5 +190,20 @@ class ManageDefaultRates extends Page
     private function displayedItemTypes(): Collection
     {
         return TimeTrackerItemType::withRates();
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('rates.default_rates');
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return __('rates.default_rates');
+    }
+
+    public function getSubheading(): string|Htmlable|null
+    {
+        return __('rates.default_rates_subheading');
     }
 }

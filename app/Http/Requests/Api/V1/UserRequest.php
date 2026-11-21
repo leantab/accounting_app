@@ -58,14 +58,14 @@ class UserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Ingresá el nombre.',
-            'lastname.required' => 'Ingresá el apellido.',
-            'email.required' => 'Ingresá el email.',
-            'email.email' => 'Ingresá un email válido.',
+            'name.required' => __('api.enter_the_name'),
+            'lastname.required' => __('api.enter_the_last_name'),
+            'email.required' => __('api.enter_the_email'),
+            'email.email' => __('api.enter_valid_email'),
             'email.unique' => 'Ya existe un usuario con ese email.',
-            'password.required' => 'Ingresá una contraseña.',
-            'password.min' => 'La contraseña es demasiado corta.',
-            'numeric' => 'Ingresá un número.',
+            'password.required' => __('api.enter_a_password'),
+            'password.min' => __('api.password_too_short'),
+            'numeric' => __('api.enter_a_number'),
             'min' => 'El valor no puede ser negativo.',
         ];
     }

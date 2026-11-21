@@ -18,7 +18,7 @@ class InvoiceRequest extends TenantRequest
      */
     public function rules(): array
     {
-        $company = new InTenant(Company::class, $this->customerId(), 'La empresa seleccionada no es válida.');
+        $company = new InTenant(Company::class, $this->customerId(), __('api.invalid_company'));
         $money = ['nullable', 'numeric', 'min:0', 'max:999999999999999999.99'];
         $smallMoney = ['nullable', 'numeric', 'min:0', 'max:99999999.99'];
         $percentage = ['nullable', 'numeric', 'min:0', 'max:100'];
@@ -58,12 +58,12 @@ class InvoiceRequest extends TenantRequest
     {
         return [
             ...parent::messages(),
-            'from_company_id.required' => 'Elegí la empresa emisora.',
-            'to_company_id.required' => 'Elegí la empresa receptora.',
-            'items.*.name.required' => 'Ingresá el nombre del concepto.',
-            'items.*.quantity.required' => 'Ingresá la cantidad.',
-            'items.*.unit_price.required' => 'Ingresá el precio unitario.',
-            'items.*.total_price.required' => 'Ingresá el precio total.',
+            'from_company_id.required' => __('api.choose_issuing_company'),
+            'to_company_id.required' => __('api.choose_receiving_company'),
+            'items.*.name.required' => __('api.enter_item_name'),
+            'items.*.quantity.required' => __('api.enter_quantity'),
+            'items.*.unit_price.required' => __('api.enter_unit_price'),
+            'items.*.total_price.required' => __('api.enter_total_price'),
         ];
     }
 

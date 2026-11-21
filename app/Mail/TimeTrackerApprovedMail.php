@@ -19,7 +19,7 @@ class TimeTrackerApprovedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Tu planilla "'.$this->timeTracker->name.'" fue aprobada',
+            subject: __('mail.approved_subject', ['name' => $this->timeTracker->name]),
         );
     }
 

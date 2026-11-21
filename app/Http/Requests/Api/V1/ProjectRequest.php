@@ -20,7 +20,7 @@ class ProjectRequest extends TenantRequest
     {
         return [
             'customer_id' => $this->customerRule(),
-            'company_id' => ['nullable', 'integer', new InTenant(Company::class, $this->customerId(), 'La empresa seleccionada no es válida.')],
+            'company_id' => ['nullable', 'integer', new InTenant(Company::class, $this->customerId(), __('api.invalid_company'))],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:255'],
             'start_date' => ['required', 'date_format:Y-m-d'],
@@ -36,9 +36,9 @@ class ProjectRequest extends TenantRequest
     {
         return [
             ...parent::messages(),
-            'start_date.required' => 'Ingresá la fecha de inicio.',
+            'start_date.required' => __('api.enter_start_date'),
             'end_date.after_or_equal' => 'La fecha de fin no puede ser anterior a la de inicio.',
-            'project_status_id.required' => 'Elegí un estado.',
+            'project_status_id.required' => __('api.choose_status'),
         ];
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\TimeTrackerRequest;
 use App\Http\Resources\V1\TimeTrackerResource;
 use App\Models\TimeTracker;
+use App\Models\TimeTrackerItemType;
 use App\Models\User;
 use App\Support\Api\MobileAccess;
 use Illuminate\Database\Eloquent\Builder;
@@ -103,25 +104,25 @@ class TimeTrackerController extends Controller
         $record->items()->delete();
         $record->delete();
 
-        return response()->json(['message' => 'Planilla eliminada.']);
+        return response()->json(['message' => __('api.time_tracker_deleted')]);
     }
 
     public function approve(Request $request, int $timeTracker): JsonResponse
     {
         $user = $this->authorizedUser($request);
 
-        abort_unless(MobileAccess::approvesTimeTrackers($user), 403, 'No tenés permiso para aprobar planillas.');
+        abort_unless(MobileAccess::approvesTimeTrackers($user), 403, __('api.no_permission_approve'));
 
         $record = $this->find($request, $timeTracker);
 
         if ($record->approved) {
-            return response()->json(['message' => 'La planilla ya estaba aprobada.'], 422);
+            return response()->json(['message' => __('api.already_approved')], 422);
         }
 
         ApproveTimeTrackerAction::execute($record, $user);
 
         return response()->json([
-            'message' => 'Planilla aprobada.',
+            'message' => __('api.time_tracker_approved'),
             'data' => new TimeTrackerResource($record->refresh()->load(self::DETAIL_RELATIONS)),
         ]);
     }
@@ -130,16 +131,15 @@ class TimeTrackerController extends Controller
     {
         $user = $this->authorizedUser($request);
 
-        abort_unless(MobileAccess::approvesTimeTrackers($user), 403, 'No tenés permiso para recalcular montos.');
+        abort_unless(MobileAccess::approvesTimeTrackers($user), 403, __('api.no_permission_recalculate'));
 
         $record = $this->find($request, $timeTracker);
         $result = AutoCompleteTimeTrackerAction::recalculate($record);
 
         return response()->json([
             'message' => $result['missing_rates'] === []
-                ? 'Monto recalculado.'
-                : 'Monto recalculado, pero faltan tarifas. Cargue una tarifa por defecto o individual para: '
-                    .implode(', ', $result['missing_rates']).'.',
+                ? __('api.recalculated')
+                : __('api.recalculated_missing_rates', ['types' => TimeTrackerItemType::translateMany($result['missing_rates'])]),
             'missing_rates' => $result['missing_rates'],
             'data' => new TimeTrackerResource($record->refresh()->load(self::DETAIL_RELATIONS)),
         ]);
@@ -152,10 +152,9 @@ class TimeTrackerController extends Controller
         $result = AutoCompleteTimeTrackerAction::execute();
 
         $message = match (true) {
-            $result['trackers'] === 0 => 'No hay planillas pendientes de calcular.',
-            $result['missing_rates'] !== [] => 'Planillas calculadas, pero faltan tarifas. Cargue una tarifa por defecto o individual para: '
-                .implode(', ', $result['missing_rates']).'.',
-            default => 'Planillas calculadas.',
+            $result['trackers'] === 0 => __('api.nothing_to_calculate'),
+            $result['missing_rates'] !== [] => __('api.calculated_missing_rates', ['types' => TimeTrackerItemType::translateMany($result['missing_rates'])]),
+            default => __('api.calculated'),
         };
 
         return response()->json([

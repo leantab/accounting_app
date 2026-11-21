@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $paid
  * @property int|null $payment_id
  * @property string|null $paid_date
+ * @property Carbon|null $expected_payment_date
  * @property bool $approved
  * @property string|null $approved_at
  * @property int|null $approved_by
@@ -43,6 +44,7 @@ class TimeTracker extends Model
         'hours' => 'decimal:2',
         'amount' => 'decimal:2',
         'paid_date' => 'date',
+        'expected_payment_date' => 'date',
         'approved_at' => 'datetime',
     ];
 

@@ -48,6 +48,14 @@ enum TimeTrackerItemTypeEnum: int
     }
 
     /**
+     * The name shown to the user in the current language. label() stays the canonical name stored in the database.
+     */
+    public function translatedLabel(): string
+    {
+        return __('item_types.'.strtolower($this->name));
+    }
+
+    /**
      * Expenses and travel allowances are reimbursed as entered, so they have no individual rate.
      */
     public function hasRate(): bool

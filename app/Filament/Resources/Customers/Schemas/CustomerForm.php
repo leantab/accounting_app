@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Customers\Schemas;
 
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
@@ -22,7 +22,7 @@ class CustomerForm
                 TextInput::make('phone')
                     ->tel(),
                 TextInput::make('email')
-                    ->label('Email address')
+                    ->label(__('common.email'))
                     ->email(),
                 TextInput::make('address'),
                 TextInput::make('tax_id'),

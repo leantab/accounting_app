@@ -20,54 +20,54 @@ class UsersTable
             ->modifyQueryUsing(fn (Builder $query) => Filament::auth()->user()->is_admin ? $query : $query->where('customer_id', Filament::auth()->user()->customer_id))
             ->columns([
                 TextColumn::make('customer.name')
-                    ->label('Customer')
+                    ->label(__('common.customer'))
                     ->visible(fn () => Filament::auth()->user()->is_admin)
                     ->searchable(),
                 TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label(__('common.name'))
                     ->searchable(),
                 TextColumn::make('lastname')
-                    ->label('Apellido')
+                    ->label(__('common.last_name'))
                     ->searchable(),
                 TextColumn::make('role.name')
-                    ->label('Rol')
+                    ->label(__('common.role'))
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('common.email'))
                     ->searchable(),
                 TextColumn::make('phone')
-                    ->label('Teléfono')
+                    ->label(__('common.phone'))
                     ->searchable(),
                 TextColumn::make('address')
-                    ->label('Dirección')
+                    ->label(__('common.address'))
                     ->searchable(),
                 TextColumn::make('tax_id')
-                    ->label('CUIL/CUIT')
+                    ->label(__('common.cuil_cuit'))
                     ->searchable(),
                 TextColumn::make('fixed_daily_rate')
-                    ->label('Fijo por jornada')
+                    ->label(__('users.fixed_daily'))
                     ->numeric(2, ',', '.')
                     ->placeholder('-')
                     ->toggleable(),
                 TextColumn::make('fixed_monthly_rate')
-                    ->label('Fijo mensual')
+                    ->label(__('users.fixed_monthly'))
                     ->numeric(2, ',', '.')
                     ->placeholder('-')
                     ->toggleable(),
                 IconColumn::make('is_active')
-                    ->label('Activo')
+                    ->label(__('common.active'))
                     ->boolean(),
                 IconColumn::make('is_admin')
-                    ->label('Admin')
+                    ->label(__('common.admin'))
                     ->boolean()
                     ->visible(fn () => Filament::auth()->user()->is_admin),
                 TextColumn::make('created_at')
-                    ->label('Creado')
+                    ->label(__('common.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Actualizado')
+                    ->label(__('common.updated'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

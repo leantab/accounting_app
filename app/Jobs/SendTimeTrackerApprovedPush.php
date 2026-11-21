@@ -43,8 +43,8 @@ class SendTimeTrackerApprovedPush implements ShouldQueue
         foreach (DeviceToken::query()->where('user_id', $timeTracker->user_id)->get() as $device) {
             $result = $fcm->send(
                 $device->token,
-                'Planilla aprobada',
-                "Tu planilla \"{$timeTracker->name}\" fue aprobada.",
+                __('time_trackers.approved_notification'),
+                __('time_trackers.approved_push_body', ['name' => $timeTracker->name]),
                 ['type' => 'time_tracker_approved', 'time_tracker_id' => (string) $timeTracker->id],
             );
 

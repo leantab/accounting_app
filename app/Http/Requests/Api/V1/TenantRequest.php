@@ -44,15 +44,15 @@ abstract class TenantRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'customer_id.required' => 'Elegí un cliente.',
-            'name.required' => 'Ingresá un nombre.',
-            'email.email' => 'Ingresá un email válido.',
-            'required' => 'Completá este campo.',
-            'numeric' => 'Ingresá un número.',
-            'integer' => 'Ingresá un número entero.',
+            'customer_id.required' => __('api.choose_customer'),
+            'name.required' => __('api.enter_a_name'),
+            'email.email' => __('api.enter_valid_email'),
+            'required' => __('api.fill_this_field'),
+            'numeric' => __('api.enter_a_number'),
+            'integer' => __('api.enter_an_integer'),
             'min' => 'El valor es demasiado bajo.',
             'max' => 'El valor es demasiado largo.',
-            'date_format' => 'La fecha no es válida.',
+            'date_format' => __('api.invalid_date'),
         ];
     }
 }

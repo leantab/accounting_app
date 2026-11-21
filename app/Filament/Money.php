@@ -25,7 +25,7 @@ class Money
             ->rules([
                 fn (): Closure => function (string $attribute, mixed $value, Closure $fail): void {
                     if (filled($value) && self::parse($value) === null) {
-                        $fail('El monto debe ser un número válido mayor o igual a 0, por ejemplo 1.234,56.');
+                        $fail(__('common.invalid_amount'));
                     }
                 },
             ]);

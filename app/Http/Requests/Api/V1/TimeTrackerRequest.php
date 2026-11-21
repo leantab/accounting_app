@@ -48,8 +48,8 @@ class TimeTrackerRequest extends FormRequest
             'customer_id' => $user->is_admin ? ['required', 'integer', 'exists:customers,id'] : ['exclude'],
             'user_id' => $isEmployee
                 ? ['exclude']
-                : ['required', 'integer', new InTenant(User::class, $customerId, 'El usuario seleccionado no es válido.')],
-            'project_id' => ['nullable', 'integer', new InTenant(Project::class, $customerId, 'El proyecto seleccionado no es válido.')],
+                : ['required', 'integer', new InTenant(User::class, $customerId, __('api.invalid_user'))],
+            'project_id' => ['nullable', 'integer', new InTenant(Project::class, $customerId, __('api.invalid_project'))],
             'name' => ['required', 'string', 'max:255'],
             'date_start' => ['required', 'date_format:Y-m-d'],
             'date_end' => ['required', 'date_format:Y-m-d', 'after_or_equal:date_start'],
@@ -57,11 +57,11 @@ class TimeTrackerRequest extends FormRequest
             'billed' => $isEmployee ? ['exclude'] : ['sometimes', 'boolean'],
             'invoice_id' => $isEmployee
                 ? ['exclude']
-                : ['nullable', 'integer', new InTenant(Invoice::class, $customerId, 'La factura seleccionada no es válida.')],
+                : ['nullable', 'integer', new InTenant(Invoice::class, $customerId, __('api.invalid_invoice'))],
             'paid' => $isEmployee ? ['exclude'] : ['sometimes', 'boolean'],
             'payment_id' => $isEmployee
                 ? ['exclude']
-                : ['nullable', 'integer', new InTenant(Payment::class, $customerId, 'El pago seleccionado no es válido.')],
+                : ['nullable', 'integer', new InTenant(Payment::class, $customerId, __('api.invalid_payment'))],
             'items' => ['sometimes', 'array'],
             'items.*.id' => ['nullable', 'integer'],
             'items.*.date' => ['required', 'date_format:Y-m-d'],
@@ -85,7 +85,7 @@ class TimeTrackerRequest extends FormRequest
                 $type = ItemTypes::enumFor((int) $item['time_tracker_item_type_id']);
 
                 if ($type?->isHourly() && blank($item['hours'] ?? null)) {
-                    $validator->errors()->add("items.{$index}.hours", 'Ingresá la cantidad de horas.');
+                    $validator->errors()->add("items.{$index}.hours", __('api.enter_hours'));
                 }
             }
         });
@@ -97,16 +97,16 @@ class TimeTrackerRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'customer_id.required' => 'Elegí un cliente.',
-            'user_id.required' => 'Elegí un usuario.',
-            'name.required' => 'Ingresá un nombre.',
-            'date_start.required' => 'Ingresá la fecha de inicio.',
-            'date_end.required' => 'Ingresá la fecha de fin.',
+            'customer_id.required' => __('api.choose_customer'),
+            'user_id.required' => __('api.choose_user'),
+            'name.required' => __('api.enter_a_name'),
+            'date_start.required' => __('api.enter_start_date'),
+            'date_end.required' => __('api.enter_end_date'),
             'date_end.after_or_equal' => 'La fecha de fin no puede ser anterior a la de inicio.',
-            'items.*.date.required' => 'Ingresá la fecha del ítem.',
-            'items.*.time_tracker_item_type_id.required' => 'Elegí el tipo de ítem.',
-            'items.*.hours.integer' => 'Las horas deben ser un número entero.',
-            'items.*.amount.numeric' => 'El monto debe ser un número.',
+            'items.*.date.required' => __('api.enter_item_date'),
+            'items.*.time_tracker_item_type_id.required' => __('api.choose_item_type'),
+            'items.*.hours.integer' => __('api.hours_integer'),
+            'items.*.amount.numeric' => __('api.amount_numeric'),
             'items.*.amount.min' => 'El monto no puede ser negativo.',
         ];
     }

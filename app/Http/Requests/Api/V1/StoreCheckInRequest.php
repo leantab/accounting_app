@@ -23,7 +23,7 @@ class StoreCheckInRequest extends FormRequest
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
             'accuracy' => ['nullable', 'numeric', 'min:0'],
-            'project_id' => ['nullable', 'integer', new InTenant(Project::class, null, 'El proyecto seleccionado no es válido.')],
+            'project_id' => ['nullable', 'integer', new InTenant(Project::class, null, __('api.invalid_project'))],
             'notes' => ['nullable', 'string', 'max:500'],
         ];
     }
@@ -34,10 +34,10 @@ class StoreCheckInRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'latitude.required' => 'No se recibió la ubicación.',
-            'longitude.required' => 'No se recibió la ubicación.',
-            'latitude.between' => 'La ubicación recibida no es válida.',
-            'longitude.between' => 'La ubicación recibida no es válida.',
+            'latitude.required' => __('check_ins.location_missing'),
+            'longitude.required' => __('check_ins.location_missing'),
+            'latitude.between' => __('check_ins.location_invalid'),
+            'longitude.between' => __('check_ins.location_invalid'),
             'notes.max' => 'Las notas no pueden superar los 500 caracteres.',
         ];
     }

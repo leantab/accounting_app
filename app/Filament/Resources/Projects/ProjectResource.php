@@ -17,7 +17,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
-use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -29,10 +28,6 @@ class ProjectResource extends Resource
     protected static ?string $model = Project::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCircleStack;
-
-    protected static ?string $navigationLabel = 'Proyectos';
-
-    protected static ?string $modelLabel = 'Proyecto';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -61,33 +56,33 @@ class ProjectResource extends Resource
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label('Nombre')
+                    ->label(__('common.name'))
                     ->required()
                     ->maxLength(255),
                 Select::make('customer_id')
-                    ->label('Cliente')
+                    ->label(__('common.customer'))
                     ->relationship('customer', 'name')
                     ->default(Filament::auth()->user()->customer_id)
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin)
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin)
                     ->required(),
                 Select::make('company_id')
-                    ->label('Empresa')
+                    ->label(__('common.company'))
                     ->relationship('company', 'name')
                     ->nullable(),
                 TextInput::make('description')
-                    ->label('Descripción')
+                    ->label(__('common.description'))
                     ->maxLength(255),
                 DatePicker::make('start_date')
-                    ->label('Fecha de inicio')
+                    ->label(__('common.start_date'))
                     ->native(false)
                     ->displayFormat('d/m/Y')
                     ->required(),
                 DatePicker::make('end_date')
-                    ->label('Fecha de fin')
+                    ->label(__('common.end_date'))
                     ->native(false)
                     ->displayFormat('d/m/Y'),
                 Select::make('project_status_id')
-                    ->label('Estado')
+                    ->label(__('common.status'))
                     ->relationship('status', 'name')
                     ->required(),
             ]);
@@ -98,53 +93,53 @@ class ProjectResource extends Resource
         return $schema
             ->components([
                 TextEntry::make('name')
-                    ->label('Nombre'),
+                    ->label(__('common.name')),
                 TextEntry::make('customer.name')
-                    ->label('Cliente')
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                    ->label(__('common.customer'))
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 TextEntry::make('company.name')
-                    ->label('Empresa'),
+                    ->label(__('common.company')),
                 TextEntry::make('description')
-                    ->label('Descripción'),
+                    ->label(__('common.description')),
                 TextEntry::make('start_date')
-                    ->label('Fecha de inicio')
+                    ->label(__('common.start_date'))
                     ->date('d/m/Y'),
                 TextEntry::make('end_date')
-                    ->label('Fecha de fin')
+                    ->label(__('common.end_date'))
                     ->date('d/m/Y'),
                 TextEntry::make('status.name')
-                    ->label('Estado'),
+                    ->label(__('common.status')),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => Filament::auth()->user()->is_admin ? $query : $query->where('customer_id', Filament::auth()->user()->customer_id))
+            ->modifyQueryUsing(fn (Builder $query) => Filament::auth()->user()->is_admin ? $query : $query->where('customer_id', Filament::auth()->user()->customer_id))
             ->recordTitleAttribute('Proyecto')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label(__('common.name'))
                     ->searchable(),
                 TextColumn::make('customer.name')
-                    ->label('Cliente')
-                    ->hidden(fn() => ! Filament::auth()->user()->is_admin),
+                    ->label(__('common.customer'))
+                    ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 TextColumn::make('company.name')
-                    ->label('Empresa')
+                    ->label(__('common.company'))
                     ->searchable(),
                 TextColumn::make('description')
-                    ->label('Descripción')
+                    ->label(__('common.description'))
                     ->limit(20),
                 TextColumn::make('start_date')
-                    ->label('Fecha de inicio')
+                    ->label(__('common.start_date'))
                     ->date('d/m/Y'),
                 TextColumn::make('end_date')
-                    ->label('Fecha de fin')
+                    ->label(__('common.end_date'))
                     ->date('d/m/Y'),
                 TextColumn::make('status.name')
-                    ->label('Estado')
+                    ->label(__('common.status'))
                     ->badge()
-                    ->color(fn($state) => match ($state) {
+                    ->color(fn ($state) => match ($state) {
                         'Borrador' => 'gray',
                         'En Proceso' => 'blue',
                         'Completado' => 'green',
@@ -171,5 +166,15 @@ class ProjectResource extends Resource
         return [
             'index' => ManageProjects::route('/'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('projects.plural');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('common.project');
     }
 }

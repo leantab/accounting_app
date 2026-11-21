@@ -108,16 +108,16 @@ class UserController extends CrudController
             report($exception);
 
             return response()->json([
-                'message' => 'No se pudo enviar la invitación. Intente nuevamente en unos minutos.',
+                'message' => __('api.invite_failed'),
             ], 502);
         }
 
-        return response()->json(['message' => 'Invitación enviada']);
+        return response()->json(['message' => __('users.invite_sent')]);
     }
 
     protected function guardDelete(Request $request, Model $record): void
     {
-        abort_if($record->is($request->user()), 422, 'No podés eliminar tu propio usuario.');
+        abort_if($record->is($request->user()), 422, __('api.cannot_delete_self'));
     }
 
     /**

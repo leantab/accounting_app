@@ -34,12 +34,6 @@ class CompanyResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice;
 
-    protected static ?string $navigationLabel = 'Empresas';
-
-    protected static ?string $modelLabel = 'Empresa';
-
-    protected static ?string $pluralModelLabel = 'Empresas';
-
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function canViewAny(): bool
@@ -68,42 +62,42 @@ class CompanyResource extends Resource
             ->components([
                 Select::make('customer_id')
                     ->relationship('customer')
-                    ->label('Cliente')
+                    ->label(__('common.customer'))
                     ->searchable()
                     ->options(Customer::all()->pluck('name', 'id'))
                     ->required()
                     ->default(fn () => Filament::auth()->user()?->currentCustomerId())
                     ->visible(fn () => Filament::auth()->user()?->isAdmin()),
                 /*MorphToSelect::make('companyable')
-                    ->label('Relacionado con')
+                    ->label(__('companies.related_with'))
                     ->types([
                         MorphToSelect\Type::make(Customer::class)
-                            ->label('Cliente')
+                            ->label(__('common.customer'))
                             ->titleAttribute('name'),
                         MorphToSelect\Type::make(User::class)
-                            ->label('Usuario')
+                            ->label(__('common.user'))
                             ->titleAttribute('email'),
                     ])
                     ->searchable()
                     ->preload(),*/
                 TextInput::make('name')
-                    ->label('Nombre')
+                    ->label(__('common.name'))
                     ->required(),
                 Textarea::make('description')
-                    ->label('Descripción')
+                    ->label(__('common.description'))
                     ->columnSpanFull(),
                 TextInput::make('phone')
-                    ->label('Teléfono')
+                    ->label(__('common.phone'))
                     ->tel(),
                 TextInput::make('email')
-                    ->label('Email')
+                    ->label(__('common.email'))
                     ->email(),
                 TextInput::make('address')
-                    ->label('Dirección'),
+                    ->label(__('common.address')),
                 TextInput::make('tax_id')
-                    ->label('ID fiscal'),
+                    ->label(__('common.tax_id')),
                 Toggle::make('is_tax_retained')
-                    ->label('Retiene impuestos')
+                    ->label(__('companies.retains_taxes'))
                     ->default(false),
             ]);
     }
@@ -113,36 +107,36 @@ class CompanyResource extends Resource
         return $schema
             ->components([
                 /*TextEntry::make('companyable_type')
-                    ->label('Tipo relacionado')
+                    ->label(__('companies.related_type'))
                     ->formatStateUsing(fn ($state) => class_basename($state)),
                 TextEntry::make('companyable.name')
-                    ->label('Entidad relacionada'),*/
+                    ->label(__('companies.related_entity')),*/
                 TextEntry::make('name'),
                 TextEntry::make('description')
-                    ->label('Descripción')
+                    ->label(__('common.description'))
                     ->placeholder('-')
                     ->columnSpanFull(),
                 TextEntry::make('phone')
-                    ->label('Teléfono')
+                    ->label(__('common.phone'))
                     ->placeholder('-'),
                 TextEntry::make('email')
-                    ->label('Email')
+                    ->label(__('common.email'))
                     ->placeholder('-'),
                 TextEntry::make('address')
-                    ->label('Dirección')
+                    ->label(__('common.address'))
                     ->placeholder('-'),
                 TextEntry::make('tax_id')
-                    ->label('ID fiscal')
+                    ->label(__('common.tax_id'))
                     ->placeholder('-'),
                 IconEntry::make('is_tax_retained')
                     ->boolean()
-                    ->label('Retiene impuestos'),
+                    ->label(__('companies.retains_taxes')),
                 TextEntry::make('created_at')
-                    ->label('Creado')
+                    ->label(__('common.created'))
                     ->dateTime()
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
-                    ->label('Actualizado')
+                    ->label(__('common.updated'))
                     ->dateTime()
                     ->placeholder('-'),
             ]);
@@ -154,43 +148,43 @@ class CompanyResource extends Resource
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('customer.name')
-                    ->label('Cliente')
+                    ->label(__('common.customer'))
                     ->sortable()
                     ->visible(fn () => Filament::auth()->user()?->isAdmin()),
                 /*TextColumn::make('companyable_type')
-                    ->label('Tipo relacionado')
+                    ->label(__('companies.related_type'))
                     ->formatStateUsing(fn ($state) => class_basename($state))
                     ->sortable(),
                 TextColumn::make('companyable.name')
-                    ->label('Entidad relacionada')
+                    ->label(__('companies.related_entity'))
                     ->searchable()
                     ->sortable(),*/
                 TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label(__('common.name'))
                     ->searchable(),
                 TextColumn::make('phone')
-                    ->label('Teléfono')
+                    ->label(__('common.phone'))
                     ->searchable(),
                 TextColumn::make('email')
-                    ->label('Email')
+                    ->label(__('common.email'))
                     ->searchable(),
                 TextColumn::make('address')
-                    ->label('Dirección')
+                    ->label(__('common.address'))
                     ->searchable(),
                 TextColumn::make('tax_id')
-                    ->label('ID fiscal')
-                    ->label('ID fiscal')
+                    ->label(__('common.tax_id'))
+                    ->label(__('common.tax_id'))
                     ->searchable(),
                 IconColumn::make('is_tax_retained')
                     ->boolean()
-                    ->label('Retiene impuestos'),
+                    ->label(__('companies.retains_taxes')),
                 TextColumn::make('created_at')
-                    ->label('Creado')
+                    ->label(__('common.created'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Actualizado')
+                    ->label(__('common.updated'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -215,5 +209,20 @@ class CompanyResource extends Resource
         return [
             'index' => ManageCompanies::route('/'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('companies.plural');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('common.company');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('companies.plural');
     }
 }

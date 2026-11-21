@@ -14,6 +14,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Collection;
 
 /**
@@ -22,10 +23,6 @@ use Illuminate\Support\Collection;
 class RegisterCheckIn extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
-
-    protected static ?string $navigationLabel = 'Registrar asistencia';
-
-    protected static ?string $title = 'Registrar asistencia';
 
     protected static ?string $slug = 'registrar-asistencia';
 
@@ -53,11 +50,11 @@ class RegisterCheckIn extends Page
         return $schema
             ->components([
                 Select::make('project_id')
-                    ->label('Proyecto (opcional)')
+                    ->label(__('check_ins.project_optional'))
                     ->options(fn (): array => Project::query()->orderBy('name')->pluck('name', 'id')->all())
                     ->searchable(),
                 Textarea::make('notes')
-                    ->label('Notas (opcional)')
+                    ->label(__('check_ins.notes_optional'))
                     ->rows(2)
                     ->maxLength(500),
             ])
@@ -79,7 +76,7 @@ class RegisterCheckIn extends Page
         abort_unless(CheckIn::canBeRecordedBy($user), 403);
 
         if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
-            $this->notifyLocationError('La ubicación recibida no es válida.');
+            $this->notifyLocationError(__('check_ins.location_invalid'));
 
             return;
         }
@@ -108,7 +105,7 @@ class RegisterCheckIn extends Page
 
         Notification::make()
             ->success()
-            ->title($type === CheckInTypeEnum::In ? 'Entrada registrada' : 'Salida registrada')
+            ->title($type === CheckInTypeEnum::In ? __('check_ins.recorded_in') : __('check_ins.recorded_out'))
             ->send();
     }
 
@@ -116,7 +113,7 @@ class RegisterCheckIn extends Page
     {
         Notification::make()
             ->danger()
-            ->title('No se pudo registrar la asistencia')
+            ->title(__('check_ins.failed'))
             ->body($message)
             ->send();
     }
@@ -141,5 +138,15 @@ class RegisterCheckIn extends Page
             ->latest('id')
             ->limit(10)
             ->get();
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('check_ins.register');
+    }
+
+    public function getTitle(): string|Htmlable
+    {
+        return __('check_ins.register');
     }
 }

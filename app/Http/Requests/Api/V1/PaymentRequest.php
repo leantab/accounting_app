@@ -19,13 +19,13 @@ class PaymentRequest extends TenantRequest
      */
     public function rules(): array
     {
-        $company = new InTenant(Company::class, $this->customerId(), 'La empresa seleccionada no es válida.');
+        $company = new InTenant(Company::class, $this->customerId(), __('api.invalid_company'));
 
         return [
             'customer_id' => $this->customerRule(),
             'from_company_id' => ['required', 'integer', $company],
             'to_company_id' => ['required', 'integer', $company],
-            'invoice_id' => ['nullable', 'integer', new InTenant(Invoice::class, $this->customerId(), 'La factura seleccionada no es válida.')],
+            'invoice_id' => ['nullable', 'integer', new InTenant(Invoice::class, $this->customerId(), __('api.invalid_invoice'))],
             'reference' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:0', 'max:999999999999999999.99'],
         ];
@@ -38,10 +38,10 @@ class PaymentRequest extends TenantRequest
     {
         return [
             ...parent::messages(),
-            'from_company_id.required' => 'Elegí la empresa que paga.',
-            'to_company_id.required' => 'Elegí la empresa que cobra.',
-            'reference.required' => 'Ingresá una referencia.',
-            'amount.required' => 'Ingresá el monto.',
+            'from_company_id.required' => __('api.choose_paying_company'),
+            'to_company_id.required' => __('api.choose_collecting_company'),
+            'reference.required' => __('api.enter_reference'),
+            'amount.required' => __('api.enter_amount'),
         ];
     }
 }

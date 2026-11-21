@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TimeTrackers\Tables;
 
 use App\Actions\TimeTracker\AutoCompleteTimeTrackerAction;
 use App\Enums\UserRoleEnum;
+use App\Models\TimeTrackerItemType;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -35,92 +36,97 @@ class TimeTrackersTable
             })
             ->columns([
                 TextColumn::make('customer.name')
-                    ->label('Cliente')
+                    ->label(__('common.customer'))
                     ->searchable()
                     ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 TextColumn::make('user.fullName')
-                    ->label('Usuario')
+                    ->label(__('common.user'))
                     ->searchable(),
                 TextColumn::make('project.name')
-                    ->label('Proyecto')
+                    ->label(__('common.project'))
                     ->searchable(),
                 TextColumn::make('name')
-                    ->label('Nombre')
+                    ->label(__('common.name'))
                     ->searchable(),
                 TextColumn::make('date_start')
-                    ->label('Fecha de inicio')
+                    ->label(__('common.start_date'))
                     ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('date_end')
-                    ->label('Fecha de fin')
+                    ->label(__('common.end_date'))
                     ->date('d/m/Y')
                     ->sortable(),
                 TextColumn::make('amount')
-                    ->label('Monto')
+                    ->label(__('common.amount'))
                     ->numeric(2, ',', '.')
                     ->sortable(),
                 IconColumn::make('approved')
-                    ->label('Aprobado')
+                    ->label(__('common.approved'))
                     ->boolean(),
                 IconColumn::make('billed')
-                    ->label('Facturado')
+                    ->label(__('common.billed'))
                     ->boolean(),
                 IconColumn::make('paid')
-                    ->label('Pagado')
+                    ->label(__('common.paid'))
                     ->boolean(),
                 TextColumn::make('approved_at')
-                    ->label('Fecha de aprobación')
+                    ->label(__('time_trackers.approved_at'))
                     ->date('d/m/Y'),
                 TextColumn::make('approvedBy.fullName')
-                    ->label('Aprobado por'),
+                    ->label(__('time_trackers.approved_by')),
                 TextColumn::make('invoice.name')
-                    ->label('Factura')
+                    ->label(__('common.invoice'))
                     ->searchable(),
                 TextColumn::make('payment.id')
-                    ->label('Pago')
+                    ->label(__('common.payment'))
                     ->searchable(),
+                TextColumn::make('expected_payment_date')
+                    ->label(__('time_trackers.expected_payment_date'))
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->placeholder('-'),
                 TextColumn::make('paid_date')
-                    ->label('Fecha de pago')
+                    ->label(__('time_trackers.paid_date'))
                     ->date('d/m/Y'),
                 TextColumn::make('created_at')
-                    ->label('Fecha de creación')
+                    ->label(__('common.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Fecha de actualización')
+                    ->label(__('common.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('customer_id')
-                    ->label('Cliente')
+                    ->label(__('common.customer'))
                     ->relationship('customer', 'name')
                     ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 SelectFilter::make('user_id')
-                    ->label('Usuario')
+                    ->label(__('common.user'))
                     ->relationship('user', 'lastname'),
                 SelectFilter::make('project_id')
-                    ->label('Proyecto')
+                    ->label(__('common.project'))
                     ->relationship('project', 'name'),
                 SelectFilter::make('approved')
-                    ->label('Aprobado')
+                    ->label(__('common.approved'))
                     ->options([
-                        '1' => 'Aprobado',
-                        '0' => 'No aprobado',
+                        '1' => __('common.approved'),
+                        '0' => __('common.not_approved'),
                     ]),
                 SelectFilter::make('billed')
-                    ->label('Facturado')
+                    ->label(__('common.billed'))
                     ->options([
-                        '1' => 'Facturado',
-                        '0' => 'No facturado',
+                        '1' => __('common.billed'),
+                        '0' => __('common.not_billed'),
                     ]),
                 SelectFilter::make('paid')
-                    ->label('Pagado')
+                    ->label(__('common.paid'))
                     ->options([
-                        '1' => 'Pagado',
-                        '0' => 'No pagado',
+                        '1' => __('common.paid'),
+                        '0' => __('common.not_paid'),
                     ]),
             ])
             ->recordActions([
@@ -132,14 +138,14 @@ class TimeTrackersTable
                 //     DeleteBulkAction::make(),
                 // ]),
                 Action::make('auto_complete')
-                    ->label('Auto-Completar')
+                    ->label(__('time_trackers.auto_complete'))
                     ->icon('heroicon-o-document-text')
                     ->action(function (): void {
                         $result = AutoCompleteTimeTrackerAction::execute();
 
                         if ($result['trackers'] === 0) {
                             Notification::make()
-                                ->title('No hay planillas pendientes de calcular')
+                                ->title(__('time_trackers.nothing_to_calculate'))
                                 ->info()
                                 ->send();
 
@@ -148,8 +154,8 @@ class TimeTrackersTable
 
                         if ($result['missing_rates'] !== []) {
                             Notification::make()
-                                ->title('Planillas calculadas, pero faltan tarifas')
-                                ->body('Cargue una tarifa por defecto o individual para: '.implode(', ', $result['missing_rates']).'.')
+                                ->title(__('time_trackers.calculated_missing_rates'))
+                                ->body(__('rates.missing_body', ['types' => TimeTrackerItemType::translateMany($result['missing_rates'])]))
                                 ->warning()
                                 ->persistent()
                                 ->send();
@@ -158,7 +164,7 @@ class TimeTrackersTable
                         }
 
                         Notification::make()
-                            ->title('Planillas calculadas')
+                            ->title(__('time_trackers.calculated'))
                             ->success()
                             ->send();
                     }),

@@ -17,7 +17,7 @@ class InTenant implements ValidationRule
     public function __construct(
         private readonly string $model,
         private readonly ?int $customerId = null,
-        private readonly string $message = 'El valor seleccionado no es válido.',
+        private readonly ?string $message = null,
     ) {}
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
@@ -33,7 +33,7 @@ class InTenant implements ValidationRule
         }
 
         if (! $query->exists()) {
-            $fail($this->message);
+            $fail($this->message ?? __('api.invalid_value'));
         }
     }
 }
