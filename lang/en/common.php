@@ -42,4 +42,5 @@ return [
     'notes' => 'Notes',
     'default' => 'Default',
     'invalid_amount' => 'The amount must be a valid number greater than or equal to 0, for example 1.234,56.',
+    'install_app' => 'Install app',
 ];

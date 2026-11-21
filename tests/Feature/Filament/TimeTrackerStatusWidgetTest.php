@@ -2,6 +2,7 @@
 
 use App\Enums\TimeTrackerItemTypeEnum;
 use App\Enums\UserRoleEnum;
+use App\Filament\Resources\CheckIns\Pages\ListCheckIns;
 use App\Filament\Resources\TimeTrackers\Pages\CreateTimeTracker;
 use App\Filament\Resources\TimeTrackers\Pages\EditTimeTracker;
 use App\Filament\Resources\TimeTrackers\Pages\ListTimeTrackers;
@@ -216,4 +217,25 @@ it('includes the expected payment date in the mobile API resource', function ():
     $data = (new TimeTrackerResource($tracker))->toArray(Request::create('/'));
 
     expect($data['expected_payment_date'])->toBe('2026-12-15');
+});
+
+it('shows first and last name in every user select', function (): void {
+    $customer = Customer::factory()->create();
+    $worker = User::factory()->create(['customer_id' => $customer->id, 'name' => 'Lucía', 'lastname' => 'Fernández']);
+    $tracker = statusTracker($customer, ['user_id' => $worker->id]);
+
+    actingAs(statusUser(UserRoleEnum::Owner, $customer));
+
+    livewire(CreateTimeTracker::class)
+        ->assertFormFieldExists('user_id', fn ($field): bool => in_array('Lucía Fernández', $field->getOptions(), true));
+
+    livewire(ListTimeTrackers::class)
+        ->assertTableFilterExists('user_id', function ($filter) use ($worker): bool {
+            return (fn () => ($this->getOptionLabelFromRecordUsing)($worker))->call($filter) === 'Lucía Fernández';
+        });
+
+    livewire(ListCheckIns::class)
+        ->assertTableFilterExists('user_id', function ($filter) use ($worker): bool {
+            return (fn () => ($this->getOptionLabelFromRecordUsing)($worker))->call($filter) === 'Lucía Fernández';
+        });
 });

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\TimeTrackers\Tables;
 use App\Actions\TimeTracker\AutoCompleteTimeTrackerAction;
 use App\Enums\UserRoleEnum;
 use App\Models\TimeTrackerItemType;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -106,7 +107,8 @@ class TimeTrackersTable
                     ->hidden(fn () => ! Filament::auth()->user()->is_admin),
                 SelectFilter::make('user_id')
                     ->label(__('common.user'))
-                    ->relationship('user', 'lastname'),
+                    ->relationship('user', 'lastname')
+                    ->getOptionLabelFromRecordUsing(fn (User $record): string => $record->full_name),
                 SelectFilter::make('project_id')
                     ->label(__('common.project'))
                     ->relationship('project', 'name'),

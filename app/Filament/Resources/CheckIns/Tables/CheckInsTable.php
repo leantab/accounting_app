@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CheckIns\Tables;
 
 use App\Enums\CheckInTypeEnum;
 use App\Models\CheckIn;
+use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -51,7 +52,8 @@ class CheckInsTable
             ->filters([
                 SelectFilter::make('user_id')
                     ->label(__('common.user'))
-                    ->relationship('user', 'lastname'),
+                    ->relationship('user', 'lastname')
+                    ->getOptionLabelFromRecordUsing(fn (User $record): string => $record->full_name),
                 SelectFilter::make('project_id')
                     ->label(__('common.project'))
                     ->relationship('project', 'name'),
