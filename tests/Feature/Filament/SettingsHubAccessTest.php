@@ -36,3 +36,12 @@ it('renders the install app button on the panel', function (): void {
 
     $this->get('/app')->assertSee('Instalar app');
 });
+
+it('keeps the panel favicon and does not let the PWA plugin override it', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    $html = $this->get('/app')->getContent();
+
+    expect(substr_count($html, 'rel="icon"'))->toBe(1)
+        ->and($html)->toContain('icon.png');
+});
