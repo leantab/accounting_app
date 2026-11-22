@@ -9,6 +9,7 @@ use App\Models\TimeTracker;
 use App\Models\TimeTrackerItem;
 use App\Models\TimeTrackerItemType;
 use App\Models\User;
+use App\Support\Api\MobileAccess;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
@@ -302,6 +303,43 @@ test('auto complete calculates approved trackers without amount', function (): v
         ->assertOk()
         ->assertJsonPath('trackers', 0)
         ->assertJsonPath('message', 'No hay planillas pendientes de calcular.');
+});
+
+test('auto complete is refused to managers and employees', function (): void {
+    $owner = User::factory()->customerOwner()->create();
+
+    foreach ([UserRoleEnum::Manager, UserRoleEnum::Employee] as $role) {
+        Sanctum::actingAs(colleague($owner, $role));
+
+        postJson('/api/v1/time-trackers/auto-complete')
+            ->assertForbidden()
+            ->assertJsonPath('message', 'No tenés permiso para calcular montos automáticamente.');
+
+        expect(MobileAccess::abilities(colleague($owner, $role))['time_trackers']['auto_complete'])->toBeFalse();
+    }
+
+    expect(MobileAccess::abilities($owner)['time_trackers']['auto_complete'])->toBeTrue();
+});
+
+test('every item type accepts an optional description', function (): void {
+    $employee = User::factory()->customerEmployee()->create();
+    Sanctum::actingAs($employee);
+
+    $day = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::DAY);
+    $hour = TimeTrackerItemType::ensureIdFor(TimeTrackerItemTypeEnum::EXTRA_HOUR);
+
+    $response = postJson('/api/v1/time-trackers', [
+        'name' => 'Con notas',
+        'date_start' => '2026-03-01',
+        'date_end' => '2026-03-02',
+        'items' => [
+            ['date' => '2026-03-01', 'time_tracker_item_type_id' => $day, 'description' => 'Armado de escenario'],
+            ['date' => '2026-03-02', 'time_tracker_item_type_id' => $hour, 'hours' => 2],
+        ],
+    ])->assertCreated();
+
+    expect($response->json('data.items.0.description'))->toBe('Armado de escenario')
+        ->and($response->json('data.items.1.description'))->toBeNull();
 });
 
 test('platform admins choose the customer of a tracker', function (): void {

@@ -112,7 +112,7 @@ final class MobileAccess
                 'delete' => $usesTimeTrackers,
                 'approve' => self::approvesTimeTrackers($user),
                 'recalculate' => self::approvesTimeTrackers($user),
-                'auto_complete' => $usesTimeTrackers,
+                'auto_complete' => self::approvesTimeTrackers($user),
                 'manage_billing' => $usesTimeTrackers && ! self::isEmployee($user),
                 'choose_user' => $usesTimeTrackers && ! self::isEmployee($user),
             ],

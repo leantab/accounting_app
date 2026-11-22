@@ -239,3 +239,47 @@ it('shows first and last name in every user select', function (): void {
             return (fn () => ($this->getOptionLabelFromRecordUsing)($worker))->call($filter) === 'Lucía Fernández';
         });
 });
+
+it('hides the expected payment date from employees in the table and the detail page', function (): void {
+    $customer = Customer::factory()->create();
+    $employee = statusUser(UserRoleEnum::Employee, $customer);
+    $tracker = statusTracker($customer, ['user_id' => $employee->id, 'expected_payment_date' => '2026-12-15']);
+
+    actingAs($employee);
+
+    livewire(ListTimeTrackers::class)
+        ->assertCanSeeTableRecords([$tracker])
+        ->assertTableColumnHidden('expected_payment_date')
+        ->assertDontSee('15/12/2026');
+
+    livewire(ViewTimeTracker::class, ['record' => $tracker->id])
+        ->assertDontSee('15/12/2026')
+        ->assertDontSee('Fecha de pago prevista');
+});
+
+it('shows the expected payment date to managers, administrators and owners', function (): void {
+    $customer = Customer::factory()->create();
+    $tracker = statusTracker($customer, ['expected_payment_date' => '2026-12-15']);
+
+    foreach ([UserRoleEnum::Manager, UserRoleEnum::Admin, UserRoleEnum::Owner] as $role) {
+        actingAs(statusUser($role, $customer));
+
+        livewire(ListTimeTrackers::class)->assertTableColumnVisible('expected_payment_date');
+        livewire(ViewTimeTracker::class, ['record' => $tracker->id])->assertSee('15/12/2026');
+    }
+});
+
+it('leaves the expected payment date out of the mobile API for employees', function (): void {
+    $customer = Customer::factory()->create();
+    $employee = statusUser(UserRoleEnum::Employee, $customer);
+    $manager = statusUser(UserRoleEnum::Manager, $customer);
+    $tracker = statusTracker($customer, ['expected_payment_date' => '2026-12-15']);
+
+    $asEmployee = Request::create('/');
+    $asEmployee->setUserResolver(fn () => $employee);
+    $asManager = Request::create('/');
+    $asManager->setUserResolver(fn () => $manager);
+
+    expect((new TimeTrackerResource($tracker))->resolve($asEmployee))->not->toHaveKey('expected_payment_date')
+        ->and((new TimeTrackerResource($tracker))->resolve($asManager)['expected_payment_date'])->toBe('2026-12-15');
+});

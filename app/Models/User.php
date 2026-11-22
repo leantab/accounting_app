@@ -191,22 +191,22 @@ class User extends Authenticatable implements FilamentUser
 
     public function isOwner(): bool
     {
-        return $this->role_id === UserRoleEnum::Owner->value;
+        return $this->user_role_id === UserRoleEnum::Owner->value;
     }
 
     public function isAccountant(): bool
     {
-        return $this->role_id === UserRoleEnum::Admin->value;
+        return $this->user_role_id === UserRoleEnum::Admin->value;
     }
 
     public function isManager(): bool
     {
-        return $this->role_id === UserRoleEnum::Manager->value;
+        return $this->user_role_id === UserRoleEnum::Manager->value;
     }
 
     public function isEmployee(): bool
     {
-        return $this->role_id === UserRoleEnum::Employee->value;
+        return $this->user_role_id === UserRoleEnum::Employee->value;
     }
 
     public function canAccessCustomer(Customer $customer): bool

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\TimeTrackers\Schemas;
 
 use App\Models\TimeTrackerItemType;
+use App\Support\Api\MobileAccess;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Infolists\Components\IconEntry;
@@ -56,7 +57,8 @@ class TimeTrackerInfolist
                 TextEntry::make('expected_payment_date')
                     ->label(__('time_trackers.expected_payment_date'))
                     ->date('d/m/Y')
-                    ->placeholder('-'),
+                    ->placeholder('-')
+                    ->hidden(fn (): bool => MobileAccess::isEmployee(Filament::auth()->user())),
                 TextEntry::make('paid_date')
                     ->label(__('time_trackers.paid_date'))
                     ->date()

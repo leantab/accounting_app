@@ -147,7 +147,9 @@ class TimeTrackerController extends Controller
 
     public function autoComplete(Request $request): JsonResponse
     {
-        $this->authorizedUser($request);
+        $user = $this->authorizedUser($request);
+
+        abort_unless(MobileAccess::approvesTimeTrackers($user), 403, __('api.no_permission_auto_complete'));
 
         $result = AutoCompleteTimeTrackerAction::execute();
 

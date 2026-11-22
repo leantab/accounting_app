@@ -14,6 +14,7 @@ return [
     'invite_failed' => 'No se pudo enviar la invitación. Intente nuevamente en unos minutos.',
     'no_permission_approve' => 'No tenés permiso para aprobar planillas.',
     'no_permission_recalculate' => 'No tenés permiso para recalcular montos.',
+    'no_permission_auto_complete' => 'No tenés permiso para calcular montos automáticamente.',
     'already_approved' => 'La planilla ya estaba aprobada.',
     'time_tracker_approved' => 'Planilla aprobada.',
     'time_tracker_deleted' => 'Planilla eliminada.',

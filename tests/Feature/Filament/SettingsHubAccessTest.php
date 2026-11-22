@@ -14,7 +14,10 @@ it('shows the settings link and pages only to platform admins', function (): voi
     actingAs(User::factory()->admin()->create());
 
     $this->get('/app')->assertOk()->assertSee('/app/settings-hub', false);
-    $this->get('/app/settings-hub')->assertOk();
+    $this->get('/app/settings-hub')
+        ->assertOk()
+        ->assertSee('/app/pwa-settings-page', false)
+        ->assertSee('/app/site-settings', false);
     $this->get('/app/pwa-settings-page')->assertOk();
 });
 

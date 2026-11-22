@@ -136,7 +136,8 @@ class TimeTrackerForm
                         self::timeSelect('time_end', __('time_trackers.end_time')),
                         TextInput::make('description')
                             ->label(__('common.description'))
-                            ->visible(fn (Get $get) => in_array($get('time_tracker_item_type_id'), [TimeTrackerItemTypeEnum::EXPENSES->value, TimeTrackerItemTypeEnum::TRAVEL->value, TimeTrackerItemTypeEnum::GUARD->value])),
+                            ->maxLength(1000)
+                            ->columnSpanFull(),
                         Money::input('amount')
                             ->label(__('common.amount'))
                             ->visible(fn (Get $get) => in_array($get('time_tracker_item_type_id'), [TimeTrackerItemTypeEnum::EXPENSES->value, TimeTrackerItemTypeEnum::TRAVEL->value]))

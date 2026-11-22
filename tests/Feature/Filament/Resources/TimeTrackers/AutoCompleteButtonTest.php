@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\TimeTrackerItemTypeEnum;
+use App\Enums\UserRoleEnum;
 use App\Filament\Resources\TimeTrackers\Pages\CreateTimeTracker;
 use App\Filament\Resources\TimeTrackers\Pages\ListTimeTrackers;
 use App\Models\Customer;
@@ -126,4 +127,34 @@ it('tells the user when there is nothing to calculate', function (): void {
     livewire(ListTimeTrackers::class)
         ->callAction(TestAction::make('auto_complete')->table())
         ->assertNotified('No hay planillas pendientes de calcular');
+});
+
+it('shows the auto complete button only to platform admins, owners and administrators', function (): void {
+    $customer = Customer::factory()->create();
+
+    foreach ([UserRoleEnum::Owner, UserRoleEnum::Admin] as $role) {
+        actingAs(User::factory()->create(['customer_id' => $customer->id, 'user_role_id' => $role->value]));
+
+        livewire(ListTimeTrackers::class)->assertActionVisible(TestAction::make('auto_complete')->table());
+    }
+
+    actingAs(User::factory()->admin()->create());
+    livewire(ListTimeTrackers::class)->assertActionVisible(TestAction::make('auto_complete')->table());
+
+    foreach ([UserRoleEnum::Manager, UserRoleEnum::Employee] as $role) {
+        actingAs(User::factory()->create(['customer_id' => $customer->id, 'user_role_id' => $role->value]));
+
+        livewire(ListTimeTrackers::class)->assertActionHidden(TestAction::make('auto_complete')->table());
+    }
+});
+
+it('does not let an employee run the auto complete', function (): void {
+    $customer = Customer::factory()->create();
+    $tracker = TimeTracker::factory()->approved()->create(['customer_id' => $customer->id, 'amount' => null]);
+
+    actingAs(User::factory()->create(['customer_id' => $customer->id, 'user_role_id' => UserRoleEnum::Employee->value]));
+
+    livewire(ListTimeTrackers::class)->assertActionHidden(TestAction::make('auto_complete')->table());
+
+    expect($tracker->fresh()->amount)->toBeNull();
 });

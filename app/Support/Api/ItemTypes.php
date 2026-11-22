@@ -33,15 +33,11 @@ final class ItemTypes
     }
 
     /**
-     * Types whose description is typed by the worker.
+     * Every type accepts an optional description typed by the worker.
      */
     public static function showsDescription(?TimeTrackerItemTypeEnum $type): bool
     {
-        return in_array($type, [
-            TimeTrackerItemTypeEnum::EXPENSES,
-            TimeTrackerItemTypeEnum::TRAVEL,
-            TimeTrackerItemTypeEnum::GUARD,
-        ], true);
+        return true;
     }
 
     /**

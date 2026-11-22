@@ -5,6 +5,7 @@ namespace App\Http\Resources\V1;
 use App\Models\TimeTracker;
 use App\Models\TimeTrackerItem;
 use App\Support\Api\ItemTypes;
+use App\Support\Api\MobileAccess;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -31,7 +32,10 @@ class TimeTrackerResource extends JsonResource
             'billed' => (bool) $this->billed,
             'paid' => (bool) $this->paid,
             'paid_date' => $this->paid_date?->format('Y-m-d'),
-            'expected_payment_date' => $this->expected_payment_date?->format('Y-m-d'),
+            'expected_payment_date' => $this->when(
+                $request->user() === null || ! MobileAccess::isEmployee($request->user()),
+                fn (): ?string => $this->expected_payment_date?->format('Y-m-d'),
+            ),
             'customer_id' => $this->customer_id,
             'user_id' => $this->user_id,
             'project_id' => $this->project_id,

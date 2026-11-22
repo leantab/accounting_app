@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\TimeTrackers\Pages;
 
+use App\Actions\TimeTracker\ApproveTimeTrackerAction;
 use App\Actions\TimeTracker\AutoCompleteTimeTrackerAction;
 use App\Enums\UserRoleEnum;
 use App\Filament\Resources\TimeTrackers\TimeTrackerResource;
 use App\Models\TimeTrackerItemType;
-use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Facades\Filament;
@@ -62,18 +62,7 @@ class ViewTimeTracker extends ViewRecord
                     && (Filament::auth()->user()->is_admin
                         || in_array(Filament::auth()->user()->user_role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value])))
                 ->action(function ($record) {
-                    $record->update([
-                        'approved' => true,
-                        'approved_at' => now(),
-                        'approved_by' => Filament::auth()->user()->id,
-                    ]);
-
-                    /** @var User $user */
-                    $user = User::find($record->user_id);
-                    Notification::make()
-                        ->title(__('time_trackers.approved_notification'))
-                        ->success()
-                        ->sendToDatabase($user);
+                    ApproveTimeTrackerAction::execute($record, Filament::auth()->user());
                 }),
         ];
     }
@@ -83,6 +72,6 @@ class ViewTimeTracker extends ViewRecord
         $user = Filament::auth()->user();
 
         return (bool) $user->is_admin
-            || in_array($user->user_role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value], true);
+            || in_array($user->user_role_id, [UserRoleEnum::Admin->value, UserRoleEnum::Owner->value, UserRoleEnum::Manager->value], true);
     }
 }

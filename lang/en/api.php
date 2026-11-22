@@ -14,6 +14,7 @@ return [
     'invite_failed' => 'The invitation could not be sent. Please try again in a few minutes.',
     'no_permission_approve' => 'You do not have permission to approve time sheets.',
     'no_permission_recalculate' => 'You do not have permission to recalculate amounts.',
+    'no_permission_auto_complete' => 'You do not have permission to calculate amounts automatically.',
     'already_approved' => 'The time sheet was already approved.',
     'time_tracker_approved' => 'Time sheet approved.',
     'time_tracker_deleted' => 'Time sheet deleted.',

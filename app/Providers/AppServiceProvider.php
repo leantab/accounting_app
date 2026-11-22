@@ -30,12 +30,16 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * The settings hub plugin checks `can('')` on its pages when shield mode is on
-     * and no shield package is installed, so only platform admins pass that check.
+     * With shield mode on, the settings hub checks `can('')` to open a page and `can('View:PageName')`
+     * to list each card. No shield package is installed, so only platform admins pass those checks.
      */
     protected function restrictSettingsHubToPlatformAdmins(): void
     {
         Gate::before(fn (?User $user, string $ability): ?bool => $ability === '' ? (bool) $user?->is_admin : null);
+
+        foreach (['SettingsHub', 'SiteSettings', 'SocialMenuSettings', 'ColorSettings', 'PWASettingsPage'] as $page) {
+            Gate::define('View:'.$page, fn (?User $user): bool => (bool) $user?->is_admin);
+        }
     }
 
     /**

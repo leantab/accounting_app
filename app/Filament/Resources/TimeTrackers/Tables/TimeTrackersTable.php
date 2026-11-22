@@ -6,9 +6,8 @@ use App\Actions\TimeTracker\AutoCompleteTimeTrackerAction;
 use App\Enums\UserRoleEnum;
 use App\Models\TimeTrackerItemType;
 use App\Models\User;
+use App\Support\Api\MobileAccess;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
@@ -49,14 +48,6 @@ class TimeTrackersTable
                 TextColumn::make('name')
                     ->label(__('common.name'))
                     ->searchable(),
-                TextColumn::make('date_start')
-                    ->label(__('common.start_date'))
-                    ->date('d/m/Y')
-                    ->sortable(),
-                TextColumn::make('date_end')
-                    ->label(__('common.end_date'))
-                    ->date('d/m/Y')
-                    ->sortable(),
                 TextColumn::make('amount')
                     ->label(__('common.amount'))
                     ->numeric(2, ',', '.')
@@ -70,35 +61,12 @@ class TimeTrackersTable
                 IconColumn::make('paid')
                     ->label(__('common.paid'))
                     ->boolean(),
-                TextColumn::make('approved_at')
-                    ->label(__('time_trackers.approved_at'))
-                    ->date('d/m/Y'),
-                TextColumn::make('approvedBy.fullName')
-                    ->label(__('time_trackers.approved_by')),
-                TextColumn::make('invoice.name')
-                    ->label(__('common.invoice'))
-                    ->searchable(),
-                TextColumn::make('payment.id')
-                    ->label(__('common.payment'))
-                    ->searchable(),
                 TextColumn::make('expected_payment_date')
                     ->label(__('time_trackers.expected_payment_date'))
                     ->date('d/m/Y')
                     ->sortable()
-                    ->placeholder('-'),
-                TextColumn::make('paid_date')
-                    ->label(__('time_trackers.paid_date'))
-                    ->date('d/m/Y'),
-                TextColumn::make('created_at')
-                    ->label(__('common.created_at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->label(__('common.updated_at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->placeholder('-')
+                    ->hidden(fn (): bool => Filament::auth()->user()->isEmployee()),
             ])
             ->filters([
                 SelectFilter::make('customer_id')
@@ -142,7 +110,10 @@ class TimeTrackersTable
                 Action::make('auto_complete')
                     ->label(__('time_trackers.auto_complete'))
                     ->icon('heroicon-o-document-text')
+                    ->visible(fn (): bool => MobileAccess::approvesTimeTrackers(Filament::auth()->user()))
                     ->action(function (): void {
+                        abort_unless(MobileAccess::approvesTimeTrackers(Filament::auth()->user()), 403);
+
                         $result = AutoCompleteTimeTrackerAction::execute();
 
                         if ($result['trackers'] === 0) {
