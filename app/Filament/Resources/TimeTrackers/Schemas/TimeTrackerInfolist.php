@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\TimeTrackers\Schemas;
 
+use App\Enums\TimeTrackerItemTypeEnum;
+use App\Models\TimeTrackerItem;
 use App\Models\TimeTrackerItemType;
 use App\Support\Api\MobileAccess;
 use Filament\Facades\Filament;
@@ -99,6 +101,9 @@ class TimeTrackerInfolist
                         TextEntry::make('timeTrackerItemType.name')
                             ->formatStateUsing(fn (string $state): string => TimeTrackerItemType::translate($state)),
                         TextEntry::make('hours')
+                            ->state(fn (TimeTrackerItem $record): ?string => TimeTrackerItemTypeEnum::tryFrom((int) $record->time_tracker_item_type_id)?->isHourly()
+                                ? $record->hours
+                                : null)
                             ->numeric()
                             ->placeholder('-'),
                         TextEntry::make('time_start')
