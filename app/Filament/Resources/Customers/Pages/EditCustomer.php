@@ -11,6 +11,11 @@ class EditCustomer extends EditRecord
 {
     protected static string $resource = CustomerResource::class;
 
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
+    }
+
     protected function getHeaderActions(): array
     {
         return [
